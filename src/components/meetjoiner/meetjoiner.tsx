@@ -1,14 +1,14 @@
 import React,{useState, useEffect, MutableRefObject} from 'react';
 import { useSelector } from 'react-redux';
 import "./meetjoiner.styles.scss";
-
-// import MicOffIcon from '@mui/icons-material/MicOff';
+import Tooltip from '@mui/material/Tooltip';
+import MicOffIcon from '@mui/icons-material/MicOff';
 import Screen from "../screen/screen";
 // {currentIndex,curJoiner,hideVideo,camRef,showPhoto,currentUser}
 
 type MeetJoinerProps = {
   currentIndex:number;
-  curJoiner:any;
+  curJoiner:object | null;
   hideVideo:boolean;
   camRef: MutableRefObject<HTMLVideoElement> ;
   showPhoto:boolean;
@@ -20,19 +20,7 @@ const MeetJoiner:React.FC<MeetJoinerProps> = ({currentIndex,curJoiner,hideVideo,
   const [curUser ,setCurUser]= useState(null)
   // const currentUserData = useSelector((state) => state.user.currentUser); 
 
-  // useEffect(()=> {
-  //   if(!!currentUserData){
-  //   const {userName,currentUser} = currentUserData[Object.keys(currentUserData)[0]];
-  //   // console.log("user ineer",user);
-  //   setUser(userName)
-  //   setCurUser(currentUser)
-  // } 
-  // },[currentUserData , curJoiner])
 
-  // if (!curJoiner){
-  //   return null;
-
-  // }
 
   // const {joinerInitialSettings,userName,photoURLColor} = curJoiner; 
 
@@ -58,6 +46,10 @@ const MeetJoiner:React.FC<MeetJoinerProps> = ({currentIndex,curJoiner,hideVideo,
 
         {/* <MicOffIcon title="Muted"  className={`mic-off ${ curUser?.joinerInitialSettings?.audio === false ? "" : "hidden"}`}/> */}
 
+        <Tooltip  title="Muted" >
+            <MicOffIcon className={`mic-off`}/>
+        </Tooltip>;
+
         {/* <div className={`photo ${ !showPhoto ? "hidden" : ""}`} style={{
           backgroundColor:photoURLColor
         }}>{ showPhoto === true && userName[0].toUpperCase()}</div> */}
@@ -66,7 +58,7 @@ const MeetJoiner:React.FC<MeetJoinerProps> = ({currentIndex,curJoiner,hideVideo,
         {/* <div className="display-name">
           {userName} <span> {currentUser ?  "(You)" : ""}</span>
         </div> */}
-      Meetjoiner
+
       </Screen>
 
     </div>

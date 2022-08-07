@@ -110,7 +110,7 @@ const MeetJoiners:React.FC = () => {
         // showPhoto={ currentUser?.joinerInitialSettings?.video === false && currentUser?.joinerInitialSettings?.screen === false ? true : false }
         camRef={videoRef}
         currentIndex={0} 
-        curJoiner={undefined} 
+        curJoiner={null} 
         hideVideo={false} 
         showPhoto={false} 
         currentUser={true}

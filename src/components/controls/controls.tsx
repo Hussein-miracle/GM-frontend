@@ -1,61 +1,87 @@
-import React,{useState , useEffect } from 'react';
-import {useSelector,useDispatch} from "react-redux";
-// import ReactTooltip from "react-tooltip";
+import React, { useState, useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+
+import Tooltip from "@mui/material/Tooltip";
+import MicIcon from "@mui/icons-material/Mic";
+import MicOffIcon from "@mui/icons-material/MicOff";
+import PresentToAllIcon from "@mui/icons-material/PresentToAll";
+import ClosedCaptionOffIcon from "@mui/icons-material/ClosedCaptionOff";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
+import CallEndIcon from "@mui/icons-material/CallEnd";
+
+import { ReactComponent as VideoCamOnIcon } from "../../assets/icons/videoCamOn.svg";
+import { ReactComponent as VideoCamOffIcon } from "../../assets/icons/videoCamOff.svg";
+
 import "./controls.styles.scss";
-// import { ReactComponent  as VideoCamOnIcon } from '../../assets/icons/videoCamOn.svg';
-// import { ReactComponent  as VideoCamOffIcon } from '../../assets/icons/videoCamOff.svg';
-// import MicIcon from '@mui/icons-material/Mic';
-// import MicOffIcon from '@mui/icons-material/MicOff';
-// import PresentToAllIcon from '@mui/icons-material/PresentToAll';
-// import ClosedCaptionOffIcon from '@mui/icons-material/ClosedCaptionOff';
-// import MoreVertIcon from '@mui/icons-material/MoreVert';
-// import CallEndIcon from '@mui/icons-material/CallEnd';
 
 // {handleMicClick,handleShareScreenClick,handleCamClick})
-const Controls:React.FC = () => {
+const Controls: React.FC = () => {
+  const handleClickMic = () => {};
+  const handleClickCam = () => {};
+  const handleShareScreen = () => {};
+
+  const handleClickCaption = () => {};
   return (
     <div className="controls">
 
 
-Controls
+      {/* data-tip={streamState.micOn ? "Mute Mic" : "Unmute Mic"}  */}
 
-    {/* <button  data-tip={streamState.micOn ? "Mute Mic" : "Unmute Mic"}  className={`controls__btn ${ streamState.micOn === false ? "off" : "" }`}  onClick={handleClickMic} >
-      {streamState.micOn ? <MicIcon/> : <MicOffIcon/>}
-      
-    </button> */}
+      <Tooltip title={true ? "Mute Mic" : "Unmute Mic"} arrow>
+              {/*  className={`controls__btn ${ streamState.micOn === false ? "off" : "" }`} */}
+        <button className={`controls__btn`} onClick={handleClickMic}>
+          {/* {streamState.micOn ? <MicIcon/> : <MicOffIcon/>} */}
+          {true ? <MicIcon /> : <MicOffIcon />}
+        </button>
+      </Tooltip>
 
+      {/* data-tip={streamState.camOn ? "Close Cam" : "Open Cam"} */}
+      <Tooltip title={true ? "Close Cam" : "Open Cam"} arrow>
+        {/* className={`controls__btn ${ streamState.camOn === false ? "off" : "" }`} */}
+        <button
+          className={`controls__btn ${false ? "off" : ""}`}
+          onClick={handleClickCam}
+        >
+          {/* {streamState.camOn ? <VideoCamOnIcon/> : <VideoCamOffIcon />}         */}
+          {true ? <VideoCamOnIcon /> : <VideoCamOffIcon />}
+        </button>
+      </Tooltip>
 
-{/* 
-    <button  data-tip={streamState.camOn ? "Close Cam" : "Open Cam"}  className={`controls__btn ${ streamState.camOn === false ? "off" : "" }`}   onClick={handleClickCam} >
-      {streamState.camOn ? <VideoCamOnIcon/> : <VideoCamOffIcon />}        
-    </button> */}
+      {/* data-tip={streamState.captionOn ? "disable caption" : "show caption"} */}
+      <Tooltip title={true ? "Disable Caption" : "Show Caption"} arrow>
+        {/* className={`controls__btn ${ streamState.captionOn ? "caption" : "" }`} */}
+        <button
+          className={`controls__btn ${true ? "caption" : ""}`}
+          onClick={handleClickCaption}
+        >
+          {/* {streamState.captionOn ? <ClosedCaptionOffIcon/> : <ClosedCaptionOffIcon/>} */}
+          {true ? <ClosedCaptionOffIcon /> : <ClosedCaptionOffIcon />}
+        </button>
+      </Tooltip>
 
-
-
-{/* 
-    <button data-tip={streamState.captionOn ? "disable caption" : "show caption"}   className={`controls__btn ${ streamState.captionOn ? "caption" : "" }`}  onClick={handleClickCaption}>
-
-      {streamState.captionOn ? <ClosedCaptionOffIcon/> : <ClosedCaptionOffIcon/>}
-      
-    </button> */}
-
-
-
-
-
-
-    {/* <button className="controls__btn" data-tip="Share Screen " disabled={streamState.screen} onClick={handleShareScreen}>
-      <PresentToAllIcon/>
-    </button>
-    <button className="controls__btn" data-tip="More Options">
-      <MoreVertIcon/>
-    </button>
-    <button className="controls__btn-call"  data-tip="Leave Meet">
-      <CallEndIcon/>
-    </button>
-    <ReactTooltip /> */}
-  </div>
-  )
-}
+      <Tooltip title="Share Screen" arrow>
+        {/* disabled={streamState.screen} onClick={handleShareScreen} */}
+        <button
+          type="button"
+          className="controls__btn"
+          disabled={false}
+          onClick={handleShareScreen}
+        >
+          <PresentToAllIcon />
+        </button>
+      </Tooltip>
+      <Tooltip title="More Options" arrow>
+        <button type="button" className="controls__btn">
+          <MoreVertIcon />
+        </button>
+      </Tooltip>
+      <Tooltip title="Leave Meet" arrow>
+        <button className="controls__btn-call">
+          <CallEndIcon />
+        </button>
+      </Tooltip>
+    </div>
+  );
+};
 
 export default Controls;

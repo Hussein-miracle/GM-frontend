@@ -7,7 +7,6 @@ import "./home.styles.scss";
 const Home:React.FC = () => {
   return (
     <div className="home">
-      Home
     <main className="home__content">
         <HomeScreen/>
     </main>
