@@ -5,7 +5,7 @@ import Tooltip from "@mui/material/Tooltip";
 import MicOffIcon from "@mui/icons-material/MicOff";
 import Screen from "../screen/screen";
 
-import { randomColor } from "../../utils/randomHex";
+import { randomColor } from "../../utils/helpers";
 // {currentIndex,curJoiner,hideVideo,camRef,showPhoto,currentUser}
 
 type MeetJoinerProps = {
