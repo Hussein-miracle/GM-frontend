@@ -48,8 +48,14 @@ body {
     --gm-colortextbutton-ink-color: var(--gm-theme-color);
     --gm-colortextbutton-ink-color--stateful: var(--gm-theme-color--stateful);
     --gm-colortextbutton-state-color: var(--gm-theme-color);
+
+
+    /* &:thu */
 }
 
+body::-webkit-scrollbar {
+  display: none;
+}
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
@@ -57,6 +63,10 @@ code {
 
 input{
   font-size:1rem;
+}
+
+html{
+  /* font-size: 62.5%; */
 }
 
 html,body{

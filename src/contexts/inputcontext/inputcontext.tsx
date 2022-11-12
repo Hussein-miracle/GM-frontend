@@ -1,4 +1,4 @@
-import { createContext, useState,ReactNode,FC } from "react";
+import { createContext, useState,ReactNode} from "react";
 
 
 type InputContextInterface = {
@@ -17,7 +17,7 @@ type Props = {
     children:JSX.Element | JSX.Element[] | ReactNode | ReactNode[]
 }
 
-const InputContext = createContext<InputContextInterface | null>(initialContextState);
+export const InputContext = createContext<InputContextInterface>(initialContextState);
 
 const InputContextProvider = ({ children }:Props) => {
   const [name, setName] = useState<string>("");

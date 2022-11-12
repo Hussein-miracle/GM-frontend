@@ -1,0 +1,81 @@
+const meeters = [
+  {
+    name: "",
+    id: "ie",
+    meetCreator: !false,
+    screen: true,
+    voice: true,
+  },
+  {
+    name: "ola",
+    id: "id",
+    meetCreator: false,
+    screen: true,
+    voice: true,
+  },
+  {
+    name: "sola",
+    id: "ied",
+    screen: true,
+    voice: true,
+    meetCreator: false,
+  },
+  {
+    name: "popoola",
+    id: "ied",
+    meetCreator: false,
+    screen: true,
+    voice: true,
+  },
+  {
+    name: "ade",
+    screen: true,
+    voice: true,
+    id: "idse",
+    meetCreator: false,
+  },
+  {
+    name: "kunle",
+    id: "iess",
+    screen: true,
+    voice: true,
+    meetCreator: false,
+  },
+  {
+    name: "dekunle",
+    id: "iss",
+    screen: true,
+    voice: true,
+    meetCreator: false,
+  },
+  {
+    name: "lkane",
+    id: "ss",
+    screen: true,
+    voice: true,
+    meetCreator: false,
+  },
+  {
+    name: "likane",
+    id: "ssa",
+    screen: true,
+    voice: true,
+    meetCreator: false,
+  },
+  {
+    name: "lakaane",
+    id: "sis",
+    screen: true,
+    voice: true,
+    meetCreator: false,
+  },
+  {
+    name: "kane",
+    id: "ssd",
+    meetCreator: false,
+    screen: true,
+    voice: true,
+  },
+];
+
+export default meeters;

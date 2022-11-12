@@ -1,37 +1,44 @@
-import React ,{MutableRefObject, useEffect,useRef} from 'react';
+import React, { MutableRefObject, useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
 import "./meetjoiners.styles.scss";
-import MeetJoiner from '../meetjoiner/meetjoiner';
-const MeetJoiners:React.FC = () => {
-  const videoRef = useRef<HTMLVideoElement | null>(null) as MutableRefObject<HTMLVideoElement>;
-  const meetJoinersIds:object[]  = [{},{}]
-  // const meetJoiners = useSelector((state) => state.user.meetJoiners);
-  // const stream = useSelector((state) => state.user.mainStream);
-  // const meetJoinersIds = Object.keys(meetJoiners);
+import MeetJoiner from "../meetjoiner/meetjoiner";
 
 
-  // const currentUserData = useSelector((state) => state.user.currentUser);
+const handleGrid = (usersLen: number, factor: number): number => {
+  if (usersLen + 1 <= 4) {
+    return usersLen;
+  } else {
+    const value = Math.ceil(usersLen / factor);
+    return value;
+  }
+};
 
-  // console.log(currentUserData , "current user d")
+
+const MeetJoiners: React.FC = () => {
+  const camRef = useRef<HTMLVideoElement | null>(
+    null
+  ) as MutableRefObject<HTMLVideoElement>;
+  const meetJoiners = useSelector((state: any) => state.user.meetJoiners);
+  const currentUserData = useSelector((state: any) => state.user.currentUser);
+
+  // console.log(currentUserData)
+  const stream = useSelector((state: any) => state.user.mainStream);
+  const meetJoinersIds: any[] = Object.values(meetJoiners);
+  // console.log(meetJoinersIds);
+
   // const currentUser = currentUserData ? Object.values(currentUserData)[0]    : null;
   // console.log(currentUser ,"[cur user meetjoiners component]")
 
-
-  // let gridCol = meetJoinersIds.length <= 4 ? 1 : 2;
-  // let gridRow = meetJoinersIds.length <= 4 ? meetJoinersIds.length : Math.ceil(meetJoinersIds.length / 2);
-
-  // useEffect(() => {
-  //   if (videoRef.current) {
-  //     videoRef.current.srcObject = stream;
-  //     videoRef.current.muted = currentUser.audio; 
-  //   }
-  // }, [currentUser,stream]);
-
-  
+  useEffect(() => {
+    if (camRef.current && stream) {
+      console.log(stream,'stream')
+      camRef.current.srcObject = stream;
+      camRef.current.muted = currentUserData.audio;
+    }
+  }, [currentUserData.audio, stream]);
 
   // const findScreenSharer = meetJoinersIds.find((element) => {
   //   const currentJoiner = meetJoiners[element];
-
   //   return currentJoiner.screen;
   // });
 
@@ -40,84 +47,57 @@ const MeetJoiners:React.FC = () => {
   //   gridRow = 2;
   // }
 
+  const joiners = meetJoinersIds.map((meetJoiner, index) => {
+    // console.log(meetJoiner, "joiner");
 
-  // const joiners = meetJoinersIds.map((meetJoinerId, index) => {
-
-  //   console.log(index)
-
-  //   const curJoiner = meetJoiners[meetJoinerId];
-  //   // console.log(curJoiner, "joineer")
-  //   const isCurrentUser = curJoiner.currentUser;
-
-  //   if (isCurrentUser) {
-  //     return null;
-  //   }
-  //   const peerCon = curJoiner.peerConnection;
-    
-  //   const remoteStream = new MediaStream();
-
-  //   let currentIndex = index;
-
-  //   if (peerCon) {
-  //     peerCon.ontrack = (event) => {
-  //       console.log(event    , "[peerCon meet-joiners comp event]")
-
-  //       event.streams[0].getTracks().forEach((track) => {
-  //         remoteStream.addTrack(track);
-  //       });
-
-
-  //       const videoElement = document.getElementById(
-  //         `meetJoinerCam${currentIndex}`
-  //       );
-
-
-  //       if(videoElement) videoElement.srcObject = remoteStream;
-  //     };
-  //   }
-
-  //   return (
-
-  //     <MeetJoiner
-  //       key={currentIndex}
-  //       curJoiner={curJoiner} 
-  //       data={curJoiner}
-  //       currentIndex={currentIndex} 
-  //       hideVideo={findScreenSharer && findScreenSharer !== meetJoinerId}
-  //       showPhoto={ (curJoiner?.video === false && curJoiner?.screen === false)  ?  true : false
-  //       }
-  //     />
-  //   );
-  // });
-
+    return (
+      <MeetJoiner
+        key={meetJoiner.id}
+        creator={meetJoiner.meetCreator}
+        name={meetJoiner.name}
+        currentUser={!true}
+        stream={meetJoiner.stream}
+        // curJoiner={curJoiner}
+        // data={curJoiner}
+        // currentIndex={index} curJoiner={null} hideVideo={false} 
+        camRef={null} 
+        avatar={!false} 
+        // currentUser={undefined}
+      />
+    );
+  });
 
   // if(currentUserData === null) return <></>;
 
   return (
-    <div className="meetjoiners" style={{  
-      // "--grid-col":gridCol,
-      // "--grid-row":gridRow
-    }}> 
-
-      {/* {joiners}  */}
-
+    <div
+      className="meetjoiners"
+      style={{
+        //@ts-ignore//
+        "--grid-col": handleGrid(meetJoinersIds.length, 2),
+        "--grid-row": handleGrid(meetJoinersIds.length, 3),
+      }}
+    >
       <MeetJoiner
-
-        key={meetJoinersIds.length} 
-        // curJoiner={currentUser} 
+        key={currentUserData.id}
+        creator={currentUserData.meetCreator}
+        name={currentUserData.name}
+        // curJoiner={currentUser}
         // currentIndex={meetJoinersIds.length - 1}
         // hideVideo={findScreenSharer && !currentUser.screen}
-        // showPhoto={ currentUser?.joinerInitialSettings?.video === false && currentUser?.joinerInitialSettings?.screen === false ? true : false }
-        camRef={videoRef}
-        currentIndex={0} 
-        curJoiner={null} 
-        hideVideo={false} 
-        showPhoto={false} 
+        avatar ={false}
+        camRef={camRef}
+        // currentIndex={0}
+        // curJoiner={null}
+        // hideVideo={false}
+        // showPhoto={false}
+        stream={stream}
         currentUser={true}
       />
-      
+
+      {joiners}
     </div>
-  )
-}
+  );
+};
 
 export default MeetJoiners;

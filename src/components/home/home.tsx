@@ -1,25 +1,21 @@
-import React,{useRef , useEffect } from "react";
-import {useSelector,useDispatch} from "react-redux";
-import Controls from "../controls/controls";
-import HomeScreen from "../homescreen/homescreen";
-
+import MeetLogo from "../../assets/images/Google_Meet-Logo.svg";
 import "./home.styles.scss";
-const Home:React.FC = () => {
+const Home = () => {
   return (
     <div className="home">
-    <main className="home__content">
-        <HomeScreen/>
-    </main>
-    <footer className="home__footer">
-        <Controls 
-        // handleShareScreenClick={handleShareScreenClick}
-        // handleMicClick={handleMicClick} 
-        // handleCamClick={handleCamClick}
+      <header className="home__header">
+        <div title="Low-Budget Google Meet" className="home__header--logo">
+          <img
+            src={MeetLogo}
+            className="home__header--logo__img"
+            alt="Low-Budget Google Meet logo"
+          />
+          <span className="home__header--logo__title">Low-Budget Google</span>
+        </div>
+        <span>Meet</span>
+      </header>
+    </div>
+  );
+};
 
-       /> 
-    </footer>
-</div>
-  )
-}
-
-export default Home
+export default Home;

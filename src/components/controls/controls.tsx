@@ -18,7 +18,18 @@ import "./controls.styles.scss";
 const Controls: React.FC = () => {
   const handleClickMic = () => {};
   const handleClickCam = () => {};
-  const handleShareScreen = () => {};
+  const handleShareScreen = async () => {
+    const stream = await navigator.mediaDevices.getDisplayMedia({
+      video:true,
+      audio: {
+        echoCancellation: true,
+        noiseSuppression: true,
+        sampleRate: 44100
+      }
+    })
+
+    console.log(stream)
+  };
 
   const handleClickCaption = () => {};
   return (
