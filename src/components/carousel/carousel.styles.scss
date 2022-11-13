@@ -1,0 +1,23 @@
+@mixin carouselbtn {
+  background-color: transparent;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  outline: none;
+  border: none;
+  width: 2rem;
+  height: 2rem;
+  cursor: pointer;
+}
+.carousel{
+  // background-color: deeppink;
+  display: flex;
+
+  &__btn{
+    @include carouselbtn();
+    &:hover{
+      background-color: #eee;
+    }
+  }
+}

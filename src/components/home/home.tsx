@@ -1,22 +1,46 @@
+import { useState } from "react";
 import { manageDateTime } from "../../utils/helpers";
+
 import MeetLogo from "../../assets/images/Google_Meet-Logo.svg";
 import { ReactComponent as AppIcon } from "../../assets/icons/apps.svg";
-import { styled } from "@mui/material/styles";
 
+
+import { styled } from "@mui/material/styles";
 import Tooltip, { TooltipProps, tooltipClasses } from "@mui/material/Tooltip";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import FeedbackOutlinedIcon from "@mui/icons-material/FeedbackOutlined";
 import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import VideoCallOutlinedIcon from "@mui/icons-material/VideoCallOutlined";
-
 import KeyboardIcon from "@mui/icons-material/Keyboard";
-import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
-import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
+
+import Carousel from "../carousel/carousel";
 import "./home.styles.scss";
 
 const Home = () => {
+  const [text,setText] = useState('');
+  const [hovered,setHovered] = useState(false);
   const { time, day, dateFormat } = manageDateTime();
+
+  const handleChange = (e:any) => {
+    const val = e.target.value;
+    setText(val);
+  }
+
+  const handleMouse = () => {
+    setHovered(true)
+  }
+
+  const handleMouseLeave = () => {
+    setHovered(!true)
+  }
+
+
+  const handleClick = () => {
+    console.log('clickd')
+    console.log(text,'text');
+  }
+
   return (
     <div className="home">
       <header className="home__header">
@@ -90,16 +114,26 @@ const Home = () => {
 
           <div className="home__main--right__cta">
             <button className="btn-create">
-              <VideoCallOutlinedIcon/>
+              <VideoCallOutlinedIcon />
               <span>New meeting</span>
             </button>
-            <input className="link-input"></input>
-            <button className="btn-join"></button>
+
+            <label className="link-input" htmlFor='meetingLinkInput'>
+              <KeyboardIcon />
+              <input id="meetingLinkInput" placeholder="Enter a code or link" onChange={handleChange}/>
+            </label>
+
+          {/* //@ts-ignore */}
+            <button className="btn-join" onClick={handleClick} disabled={!text ? true : false}style={{
+              opacity: text !== '' ? 1 : 0.6,
+              color:  text !== '' ? 'var(--gm-theme-color)' : 'var(--gm-caption-color)',
+              backgroundColor: text && hovered ? 'var(--join-enter-color)' : 'transparent'
+            }} onMouseEnter={handleMouse} onMouseLeave={handleMouseLeave}>Join</button>
           </div>
-
-
         </div>
-        <div className="home__main--left"></div>
+        <div className="home__main--left">
+          <Carousel/>
+        </div>
       </main>
     </div>
   );

@@ -49,6 +49,8 @@ body {
     --gm-colortextbutton-ink-color--stateful: var(--gm-theme-color--stateful);
     --gm-colortextbutton-state-color: var(--gm-theme-color);
 
+    --join-enter-color:#76c0f4;
+
 
     /* &:thu */
 }
