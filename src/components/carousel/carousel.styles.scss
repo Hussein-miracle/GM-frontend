@@ -6,18 +6,46 @@
   align-items: center;
   outline: none;
   border: none;
-  width: 2rem;
-  height: 2rem;
+  width: 3rem;
+  height: 3rem;
   cursor: pointer;
 }
 .carousel{
   // background-color: deeppink;
   display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-inline:1rem;
+  height: 100%;
 
   &__btn{
+    // flex:0.1;
     @include carouselbtn();
+    align-self: center;
     &:hover{
       background-color: #eee;
     }
+
+    .MuiSvgIcon-root{
+      color: var(--gm-caption-color);
+      &:hover{
+        color: #212121;
+      }
+    }
+
+  }
+
+  
+  .right{
+    transform: translateX(-3rem);
+  }
+
+  .left{
+      transform: translateX(3rem);
+  
+  }
+
+  &__main{
+    height: 100%;
   }
 }
