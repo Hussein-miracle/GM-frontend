@@ -17,9 +17,9 @@ function App() {
 
   return (
     <div className="App">
-      {/* {name === "" && <Input />}
+      {/* {name === "" && <Input />} */}
 
-      {name && <MainScreen/>} */}
+      {/* {name && <MainScreen/>} */}
 
       <Home/>
     </div>

@@ -61,7 +61,7 @@ const MeetJoiners: React.FC = () => {
         // data={curJoiner}
         // currentIndex={index} curJoiner={null} hideVideo={false} 
         camRef={null} 
-        avatar={!false} 
+        avatar={meetJoiner.voice} 
         // currentUser={undefined}
       />
     );
@@ -80,12 +80,12 @@ const MeetJoiners: React.FC = () => {
     >
       <MeetJoiner
         key={currentUserData.id}
-        creator={currentUserData.meetCreator}
+        creator={currentUserData.meetCreator || null}
         name={currentUserData.name}
         // curJoiner={currentUser}
         // currentIndex={meetJoinersIds.length - 1}
         // hideVideo={findScreenSharer && !currentUser.screen}
-        avatar ={false}
+        avatar={currentUserData.voice} 
         camRef={camRef}
         // currentIndex={0}
         // curJoiner={null}

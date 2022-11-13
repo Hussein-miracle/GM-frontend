@@ -25,12 +25,14 @@ const MainScreen: React.FC = () => {
   const init = async () => {
     socket = io(`http://localhost:8000`);
     const stream = await navigator.mediaDevices.getUserMedia(MEDIA_CONTRAINTS);
-
+    stream.getAudioTracks()[0].enabled = false;
     // console.log(stream.getTracks(),'tracks');
 
     // dispatch(setMainStream(stream));
 
+    socket.emit('create-meet');
     socket.on("meet-created", (result) => {
+      console.log(result,'meetlink');
       const settings = {
         voice: !true,
         share: false,

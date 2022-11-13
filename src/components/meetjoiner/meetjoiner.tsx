@@ -45,7 +45,7 @@ const MeetJoiner: React.FC<MeetJoinerProps> = ({
 
         <Tooltip title="Muted">
           <MicOffIcon
-            className={`mic-off ${avatar === false ? "" : "hidden"}`}
+            className={`mic-off ${ avatar === false ? "" : "hidden"}`}
           />
         </Tooltip>
 
