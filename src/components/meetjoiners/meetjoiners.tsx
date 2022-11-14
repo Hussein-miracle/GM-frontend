@@ -3,7 +3,6 @@ import { useSelector } from "react-redux";
 import "./meetjoiners.styles.scss";
 import MeetJoiner from "../meetjoiner/meetjoiner";
 
-
 const handleGrid = (usersLen: number, factor: number): number => {
   if (usersLen + 1 <= 4) {
     return usersLen;
@@ -13,29 +12,25 @@ const handleGrid = (usersLen: number, factor: number): number => {
   }
 };
 
-
 const MeetJoiners: React.FC = () => {
   const camRef = useRef<HTMLVideoElement | null>(
     null
   ) as MutableRefObject<HTMLVideoElement>;
   const meetJoiners = useSelector((state: any) => state.user.meetJoiners);
   const currentUserData = useSelector((state: any) => state.user.currentUser);
-
-  // console.log(currentUserData)
   const stream = useSelector((state: any) => state.user.mainStream);
   const meetJoinersIds: any[] = Object.values(meetJoiners);
   // console.log(meetJoinersIds);
-
   // const currentUser = currentUserData ? Object.values(currentUserData)[0]    : null;
   // console.log(currentUser ,"[cur user meetjoiners component]")
 
   useEffect(() => {
     if (camRef.current && stream) {
-      console.log(stream,'stream')
+      // console.log(stream, "stream");
       camRef.current.srcObject = stream;
-      camRef.current.muted = currentUserData.audio;
+      camRef.current.muted = currentUserData.settings.voice;
     }
-  }, [currentUserData.audio, stream]);
+  }, [currentUserData.settings.voice, stream]);
 
   // const findScreenSharer = meetJoinersIds.find((element) => {
   //   const currentJoiner = meetJoiners[element];
@@ -47,25 +42,23 @@ const MeetJoiners: React.FC = () => {
   //   gridRow = 2;
   // }
 
-  const joiners = meetJoinersIds.map((meetJoiner, index) => {
-    // console.log(meetJoiner, "joiner");
+  // const joiners = meetJoinersIds?.map((meetJoiner, index) => {
+  //   // console.log(meetJoiner, "joiner");
+  //   const currentJoiner = meetJoiners[meetJoiner];
 
-    return (
-      <MeetJoiner
-        key={meetJoiner.id}
-        creator={meetJoiner.meetCreator}
-        name={meetJoiner.name}
-        currentUser={!true}
-        stream={meetJoiner.stream}
-        // curJoiner={curJoiner}
-        // data={curJoiner}
-        // currentIndex={index} curJoiner={null} hideVideo={false} 
-        camRef={null} 
-        avatar={meetJoiner.voice} 
-        // currentUser={undefined}
-      />
-    );
-  });
+  //   return (
+  //     <MeetJoiner
+  //       key={meetJoiner.id}
+  //       creator={meetJoiner.meetCreator}
+  //       currentUser={!true}
+  //       currentJoiner={currentJoiner}
+  //       currentIndex={index}
+  //       hideCam={false}
+  //       camRef={null}
+  //       avatar={meetJoiner.voice}
+  //     />
+  //   );
+  // });
 
   // if(currentUserData === null) return <></>;
 
@@ -78,24 +71,19 @@ const MeetJoiners: React.FC = () => {
         "--grid-row": handleGrid(meetJoinersIds.length, 3),
       }}
     >
+      {/* {joiners} */}
       <MeetJoiner
         key={currentUserData.id}
-        creator={currentUserData.meetCreator || null}
-        name={currentUserData.name}
-        // curJoiner={currentUser}
-        // currentIndex={meetJoinersIds.length - 1}
-        // hideVideo={findScreenSharer && !currentUser.screen}
-        avatar={currentUserData.voice} 
+        creator={currentUserData.meetCreator || false}
+        currentJoiner={currentUserData}
+        currentIndex={meetJoinersIds.length}
+        hideCam={false}
+        // hideCam={findScreenSharer && !currentUserData.settings.screen}
+        avatar={currentUserData.settings.cam === true ? false : true}
         camRef={camRef}
-        // currentIndex={0}
-        // curJoiner={null}
-        // hideVideo={false}
-        // showPhoto={false}
-        stream={stream}
         currentUser={true}
       />
 
-      {joiners}
     </div>
   );
 };

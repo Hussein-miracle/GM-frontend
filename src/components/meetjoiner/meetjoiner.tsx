@@ -1,5 +1,5 @@
-import React, { useState, MutableRefObject} from "react";
-import { useSelector } from "react-redux";
+import React, { useState, MutableRefObject,useEffect} from "react";
+// import { useSelector } from "react-redux";
 import "./meetjoiner.styles.scss";
 import Tooltip from "@mui/material/Tooltip";
 import MicOffIcon from "@mui/icons-material/MicOff";
@@ -9,53 +9,59 @@ import { randomColor } from "../../utils/helpers";
 // {currentIndex,curJoiner,hideVideo,camRef,showPhoto,currentUser}
 
 type MeetJoinerProps = {
-  // currentIndex:number;
-  // key:string | number;
-  // curJoiner:object | null;
-  // hideVideo:boolean;
+  currentIndex:number | null;
+  currentJoiner:any | null;
+  hideCam:boolean;
   camRef: MutableRefObject<HTMLVideoElement> | null;
   avatar: boolean;
   currentUser: any;
   creator: boolean;
-  name: string;
-  stream: any;
+  // name: string;
 };
 const MeetJoiner: React.FC<MeetJoinerProps> = ({
   creator,
-  name,
+  // name,
   currentUser,
   camRef,
   avatar,
+  hideCam,
+  currentIndex,
+  currentJoiner
 }) => {
-  // const [curUser ,setCurUser]= useState(null)
-  // const currentUserData = useSelector((state) => state.user.currentUser);
+
+  const {name,settings:{voice}} = currentJoiner;
+  console.log(currentJoiner,'joiner');
+  const [color,setColor] = useState('');
 
   // const {joinerInitialSettings,userName,photoURLColor} = curJoiner;
-
-  //  className={`meetjoiner ${hideVideo ? "hidden" : ""}`}
+  
+  useEffect(() => {
+    const genColor = randomColor();
+    setColor(genColor);
+  },[])
   return (
-    <div className={`meetjoiner`}>
+    <div className={`meetjoiner ${hideCam ? "hidden" : ""}`}>
       <Screen>
         <video
           ref={camRef}
-          id={`meetJoinerCam--${name}`}
+          id={`meetJoinerCam--${name}--${currentIndex}`}
           autoPlay
           playsInline
         ></video>
 
         <Tooltip title="Muted">
           <MicOffIcon
-            className={`mic-off ${ avatar === false ? "" : "hidden"}`}
+            className={`mic-off ${ voice === false ? "" : "hidden"}`}
           />
         </Tooltip>
 
         <div
-          className={`avatar ${!avatar ? "hidden" : ""}`}
+          className={`avatar ${avatar === false? "hidden" : ''}`}
           style={{
-            backgroundColor: randomColor(),
+            backgroundColor: color,
           }}
         >
-          {avatar === true && name[0].toUpperCase()}
+          {name[0].toUpperCase()}
         </div>
 
         <div className="display-name">

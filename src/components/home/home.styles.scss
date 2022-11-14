@@ -18,7 +18,9 @@
 
   height: 100vh;
 
-  background-color: darkorchid;
+  // background-color: darkorchid;
+  background-color: #fff;
+  position: relative;
 
   &__header{
     max-height: 3rem;
@@ -409,13 +411,15 @@
     border-radius: 4px;
     width: 80%;
     margin-left: 1rem;
-    background-color: var(--gm-caption-color);
+    background-color: var(--gm-neutral-outline-color);
     color:#fff;
 
   }
 
   .copy{
     cursor:pointer;
+    border-radius: 50%;
+    background-color: var(--gm-neutral-outline-color);
   }
   .link-box{
     display: flex;
