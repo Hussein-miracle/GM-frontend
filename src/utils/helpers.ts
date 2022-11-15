@@ -42,3 +42,13 @@ export const manageDateTime = () => {
 
   }
 }
+
+
+// @ts-ignore
+export const StopStreams = (stream)  => {
+  console.log(stream , 'streams to stop');
+  // @ts-ignore
+  stream.getAudioTracks()[0].stop();
+  stream.getVideoTracks()[0].stop();
+
+}

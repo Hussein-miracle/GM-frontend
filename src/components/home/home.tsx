@@ -30,6 +30,7 @@ import KeyboardIcon from "@mui/icons-material/Keyboard";
 
 import Carousel from "../carousel/carousel";
 import Input from '../input/input';
+import Loaders,{Loader,LoadingText,SharescreenLoader,GoogleLoader} from "../UI/loaders/loaders";
 
 import "./home.styles.scss";
 interface HomeInterface {
@@ -88,12 +89,16 @@ const Home: React.FC<HomeInterface> = ({ socket }) => {
   const dispatch = useDispatch();
   const  name  = useSelector((state:any) => state.user.currentUser.name);
   const navigator = useNavigate();
+
   const [text, setText] = useState("");
   const [disable,setDisable] = useState(false);
   const [hovered, setHovered] = useState(false);
   const [showCreateModal,setShowCreateModal] = useState(false);
   const [meetLink,setMeetLink] = useState('');
   const [sLink,setSLink] = useState(false);
+  const [loading,setLoading] = useState(false);
+
+
   const { time, day, dateFormat } = manageDateTime();
 
   const handleChange = (e: any) => {
@@ -143,6 +148,7 @@ const Home: React.FC<HomeInterface> = ({ socket }) => {
   };
 
   const handleInstantLink = () => {
+    setLoading(true);
     const settings = {
       voice:false,
       cam: true,
@@ -155,7 +161,7 @@ const Home: React.FC<HomeInterface> = ({ socket }) => {
       meetCreator: !false,
     };
 
-    console.log(data,'data sent to be for link')
+    // console.log(data,'data sent to be for link')
 
     socket.emit("create-meet-link",data);
     socket.on("meet-link-created", (result) => {
@@ -163,6 +169,7 @@ const Home: React.FC<HomeInterface> = ({ socket }) => {
       const user = result.creator;
       const link = result.link;
       dispatch(setCurrentUser(user));
+      setLoading(false);
       navigator(`/${link}`);
       // const link = result.link;
       // setMeetLink(link);
@@ -198,7 +205,11 @@ const Home: React.FC<HomeInterface> = ({ socket }) => {
     <div className="home">
 
       <Input/>
- 
+      <Loaders loading={loading}>
+        {/* <GoogleLoader/> */}
+        <Loader index={1}/>
+        <LoadingText/>
+      </Loaders>
       <header className="home__header">
         <div title="Low-Budget Google Meet" className="home__header--logo">
           <img

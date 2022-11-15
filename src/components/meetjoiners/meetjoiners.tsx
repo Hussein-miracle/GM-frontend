@@ -12,7 +12,12 @@ const handleGrid = (usersLen: number, factor: number): number => {
   }
 };
 
-const MeetJoiners: React.FC = () => {
+interface  MeetJoinerInterface{
+  loadingStream:boolean;
+  setLoadingStream:Function;
+}
+
+const MeetJoiners: React.FC<MeetJoinerInterface> = ({loadingStream,setLoadingStream}) => {
   const camRef = useRef<HTMLVideoElement | null>(
     null
   ) as MutableRefObject<HTMLVideoElement>;
@@ -29,8 +34,12 @@ const MeetJoiners: React.FC = () => {
       // console.log(stream, "stream");
       camRef.current.srcObject = stream;
       camRef.current.muted = currentUserData.settings.voice;
+
+      setLoadingStream(false);
     }
   }, [currentUserData.settings.voice, stream]);
+
+
 
   // const findScreenSharer = meetJoinersIds.find((element) => {
   //   const currentJoiner = meetJoiners[element];
@@ -79,6 +88,7 @@ const MeetJoiners: React.FC = () => {
         currentIndex={meetJoinersIds.length}
         hideCam={false}
         // hideCam={findScreenSharer && !currentUserData.settings.screen}
+        load = {loadingStream}
         avatar={currentUserData.settings.cam === true ? false : true}
         camRef={camRef}
         currentUser={true}

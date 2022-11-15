@@ -23,7 +23,7 @@ const userReducerSlice = createSlice({
   initialState: INITIAL_STATE,
   reducers: {
     setMainStream: (state, action) => {
-      // console.log(action,'setStream action')
+      console.log(action,'setStream action')
       state.mainStream = action.payload;
     },
     setCurrentUser: (state, action) => {
