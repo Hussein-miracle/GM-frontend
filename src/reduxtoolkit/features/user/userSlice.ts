@@ -2,8 +2,8 @@ import { createSlice } from "@reduxjs/toolkit";
 import DUMMY_JOINERS from "../../../utils/meeters";
 
 const INITIAL_STATE = {
-  currentUser: { name: "" },
-  // currentUser:{...DUMMY_JOINERS[0]},
+  // currentUser: { name: "" },
+  currentUser:{...DUMMY_JOINERS[0]},
   meetJoiners: {},
   mainStream: null,
   askName: !false,
@@ -11,7 +11,7 @@ const INITIAL_STATE = {
 
 // INITIAL_STATE.meetJoiners
 
-// const rest = DUMMY_JOINERS.slice(1);
+const rest = DUMMY_JOINERS.slice(1);
 
 // rest.forEach((item,index) => {
 //   // console.log(item,index);
@@ -23,7 +23,7 @@ const userReducerSlice = createSlice({
   initialState: INITIAL_STATE,
   reducers: {
     setMainStream: (state, action) => {
-      console.log(action,'setStream action')
+      // console.log(action,'setStream action')
       state.mainStream = action.payload;
     },
     setCurrentUser: (state, action) => {
@@ -42,10 +42,19 @@ const userReducerSlice = createSlice({
     getName: (state, action) => {
       state.askName = action.payload;
     },
+    closeStreams: (state,action) => {
+      const streams = state.mainStream;
+      // @ts-ignore
+      streams?.getAudioTracks()[0]?.stop();
+      // @ts-ignore
+      streams?.getVideoTracks()[0]?.stop();
+
+      state.mainStream = streams;
+    }
   },
 });
 
-export const { setMainStream, setUserName, setCurrentUser, getName } =
+export const { setMainStream, setUserName, setCurrentUser, getName,    closeStreams } =
   userReducerSlice.actions;
 
 // export {setMainStream};

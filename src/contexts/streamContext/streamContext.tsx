@@ -1,36 +1,32 @@
-import { createContext, useState,ReactNode} from "react";
-
+import { createContext, useState, ReactNode } from "react";
 
 type StreamContextInterface = {
-  mainStream: any | null,
-  setMainStream: (stream:any) => void;
-}
+  contextStream: any | null;
+  setContextStream: (stream: any) => void;
+};
 
-const initialContextState:StreamContextInterface = {
-    mainStream: null,
-    setMainStream(stream) {
-        
-    }
-}
+const initialContextState: StreamContextInterface = {
+  contextStream: null,
+  setContextStream: (stream) => {},
+};
 
 type Props = {
-    children:JSX.Element | JSX.Element[] | ReactNode | ReactNode[]
-}
+  children: JSX.Element | JSX.Element[] | ReactNode | ReactNode[];
+};
 
-export const StreamContext = createContext<StreamContextInterface>(initialContextState);
+export const StreamContext =
+  createContext<StreamContextInterface>(initialContextState);
 
-const StreamContextProvider = ({ children }:Props) => {
-  const [mainStream, setMainStream] = useState<any | null>(null);
+export  const StreamContextProvider = ({ children }: Props) => {
+  const [contextStream, setContextStream] = useState<any | null>(null);
   // const setMainStream = (streamData:any) =>  {
   //     setStream(streamData);
   // }
 
-  const val:StreamContextInterface = {mainStream, setMainStream};
+  const val: StreamContextInterface = { contextStream, setContextStream };
 
   return (
-    <StreamContext.Provider value={val}>
-      {children}
-    </StreamContext.Provider>
+    <StreamContext.Provider value={val}>{children}</StreamContext.Provider>
   );
 };
 

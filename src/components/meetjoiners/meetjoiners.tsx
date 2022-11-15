@@ -1,6 +1,7 @@
-import React, { MutableRefObject, useEffect, useRef } from "react";
+import React, { MutableRefObject, useEffect, useRef ,useContext} from "react";
 import { useSelector } from "react-redux";
 import "./meetjoiners.styles.scss";
+import { StreamContext } from "../../contexts/streamContext/streamContext";
 import MeetJoiner from "../meetjoiner/meetjoiner";
 
 const handleGrid = (usersLen: number, factor: number): number => {
@@ -12,12 +13,15 @@ const handleGrid = (usersLen: number, factor: number): number => {
   }
 };
 
-interface  MeetJoinerInterface{
-  loadingStream:boolean;
-  setLoadingStream:Function;
+interface MeetJoinerInterface {
+  loadingStream: boolean;
+  setLoadingStream: any;
 }
 
-const MeetJoiners: React.FC<MeetJoinerInterface> = ({loadingStream,setLoadingStream}) => {
+const MeetJoiners: React.FC<MeetJoinerInterface> = ({
+  loadingStream,
+  setLoadingStream,
+}) => {
   const camRef = useRef<HTMLVideoElement | null>(
     null
   ) as MutableRefObject<HTMLVideoElement>;
@@ -25,21 +29,32 @@ const MeetJoiners: React.FC<MeetJoinerInterface> = ({loadingStream,setLoadingStr
   const currentUserData = useSelector((state: any) => state.user.currentUser);
   const stream = useSelector((state: any) => state.user.mainStream);
   const meetJoinersIds: any[] = Object.values(meetJoiners);
+
+  let connected = false;
   // console.log(meetJoinersIds);
   // const currentUser = currentUserData ? Object.values(currentUserData)[0]    : null;
   // console.log(currentUser ,"[cur user meetjoiners component]")
 
   useEffect(() => {
-    if (camRef.current && stream) {
-      // console.log(stream, "stream");
-      camRef.current.srcObject = stream;
-      camRef.current.muted = currentUserData.settings.voice;
+    // if (connected) {
 
-      setLoadingStream(false);
-    }
+      if (camRef.current && stream) {
+        // console.log(stream, "stream");
+        camRef.current.srcObject = stream;
+        // camRef.current.muted = currentUserData.settings.voice;
+  
+        // setLoadingStream(false);
+      }
+  
+
+    // }
+
+
+    return () => {
+      //@ts-ignore
+      connected = true;
+    };
   }, [currentUserData.settings.voice, stream]);
-
-
 
   // const findScreenSharer = meetJoinersIds.find((element) => {
   //   const currentJoiner = meetJoiners[element];
@@ -51,23 +66,24 @@ const MeetJoiners: React.FC<MeetJoinerInterface> = ({loadingStream,setLoadingStr
   //   gridRow = 2;
   // }
 
-  // const joiners = meetJoinersIds?.map((meetJoiner, index) => {
-  //   // console.log(meetJoiner, "joiner");
-  //   const currentJoiner = meetJoiners[meetJoiner];
+  const joiners = meetJoinersIds?.map((meetJoiner, index) => {
+    // console.log(meetJoiner, "joiner");
+    const currentJoiner = meetJoiners[meetJoiner];
 
-  //   return (
-  //     <MeetJoiner
-  //       key={meetJoiner.id}
-  //       creator={meetJoiner.meetCreator}
-  //       currentUser={!true}
-  //       currentJoiner={currentJoiner}
-  //       currentIndex={index}
-  //       hideCam={false}
-  //       camRef={null}
-  //       avatar={meetJoiner.voice}
-  //     />
-  //   );
-  // });
+    return (
+      <MeetJoiner
+        key={meetJoiner.id}
+        creator={meetJoiner.meetCreator}
+        currentUser={!true}
+        load={false}
+        currentJoiner={currentJoiner}
+        currentIndex={index}
+        hideCam={false}
+        camRef={null}
+        avatar={meetJoiner.voice}
+      />
+    );
+  });
 
   // if(currentUserData === null) return <></>;
 
@@ -88,12 +104,11 @@ const MeetJoiners: React.FC<MeetJoinerInterface> = ({loadingStream,setLoadingStr
         currentIndex={meetJoinersIds.length}
         hideCam={false}
         // hideCam={findScreenSharer && !currentUserData.settings.screen}
-        load = {loadingStream}
+        load={loadingStream}
         avatar={currentUserData.settings.cam === true ? false : true}
         camRef={camRef}
         currentUser={true}
       />
-
     </div>
   );
 };

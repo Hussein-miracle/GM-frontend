@@ -35,9 +35,15 @@ export const LoadingText = () => {
   return <span className="loading-text">Loading</span>;
 };
 
-export const JoinerLoader1 = () => {
+// @ts-ignore
+export const JoinerLoader1 = ({ load }) => {
   return (
-    <div className="lds-roller">
+    <div
+      className="lds-roller"
+      style={{
+        display: load ? "inline-block" : "none",
+      }}
+    >
       <div className="lds-roller__inner">
         <span></span>
         <span></span>
@@ -51,24 +57,16 @@ export const JoinerLoader1 = () => {
     </div>
   );
 };
-export const JoinerLoader2 = () => {
+
+// @ts-ignore
+export const JoinerLoader2 = ({ load }) => {
   return (
-    <div className="lds-spinner">
-      <div className="lds-spinner__inner">
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-      </div>
-    </div>
+    <div
+      className="sharescreen-loader"
+      style={{
+        display: load ? "block" : "none",
+      }}
+    ></div>
   );
 };
 export const SharescreenLoader = () => {
