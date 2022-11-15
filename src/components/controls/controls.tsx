@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import  {useNavigate} from 'react-router-dom';
 
 import Tooltip from "@mui/material/Tooltip";
 import MicIcon from "@mui/icons-material/Mic";
@@ -16,78 +17,92 @@ import "./controls.styles.scss";
 
 // {handleMicClick,handleShareScreenClick,handleCamClick})
 const Controls: React.FC = () => {
-  const handleClickMic = () => {};
-  const handleClickCam = () => {};
+  const navigate = useNavigate();
+  const settings = useSelector((state: any) => state.user.currentUser.settings);
+  const [voice,setVoice]  = useState(settings.voice);
+  const [cam,setCam]  = useState(settings.cam);
+  const [screen,setScreen]  = useState(false);
+  const [caption,setCaption]  = useState(settings.caption);
+
+  const handleClickVoice = () => {
+    setVoice(!voice);
+  };
+  const handleClickCam = () => {
+    setCam(!cam);
+  };
   const handleShareScreen = async () => {
     const stream = await navigator.mediaDevices.getDisplayMedia({
-      video:true,
+      video: true,
       audio: {
         echoCancellation: true,
         noiseSuppression: true,
-        sampleRate: 44100
-      }
-    })
+        sampleRate: 44100,
+      },
+    });
 
-    console.log(stream)
+    console.log(stream);
   };
 
-  const handleClickCaption = () => {};
-  return (
+  const handleClickCaption = () => {
+    setCaption(!caption);
+  };
+
+  const handleLeaveMeet = () => {
+    const leave = window.confirm('Do you want to leave the meeting ?');
+    if(leave){
+      navigate('/');
+    }
+  }  
+
+
+ return (
     <div className="controls">
-
-
-      {/* data-tip={streamState.micOn ? "Mute Mic" : "Unmute Mic"}  */}
-
-      <Tooltip title={true ? "Mute Mic" : "Unmute Mic"} arrow>
-              {/*  className={`controls__btn ${ streamState.micOn === false ? "off" : "" }`} */}
-        <button className={`controls__btn`} onClick={handleClickMic}>
-          {/* {streamState.micOn ? <MicIcon/> : <MicOffIcon/>} */}
-          {true ? <MicIcon /> : <MicOffIcon />}
+      <Tooltip
+        title={voice === true ? "Mute Mic" : "Unmute Mic"}
+        arrow
+      >
+        <button className={`controls__btn`} onClick={handleClickVoice}>
+          {voice === true ? <MicIcon /> : <MicOffIcon />}
         </button>
       </Tooltip>
-
-      {/* data-tip={streamState.camOn ? "Close Cam" : "Open Cam"} */}
-      <Tooltip title={true ? "Close Cam" : "Open Cam"} arrow>
-        {/* className={`controls__btn ${ streamState.camOn === false ? "off" : "" }`} */}
+      <Tooltip title={settings.cam ? "Close Cam" : "Open Cam"} arrow>
         <button
-          className={`controls__btn ${false ? "off" : ""}`}
+          className={`controls__btn ${!cam === false ? "off" : ""}`}
           onClick={handleClickCam}
         >
-          {/* {streamState.camOn ? <VideoCamOnIcon/> : <VideoCamOffIcon />}         */}
-          {true ? <VideoCamOnIcon /> : <VideoCamOffIcon />}
+          {cam === true ? <VideoCamOffIcon /> : <VideoCamOnIcon />}
         </button>
       </Tooltip>
-
-      {/* data-tip={streamState.captionOn ? "disable caption" : "show caption"} */}
-      <Tooltip title={true ? "Disable Caption" : "Show Caption"} arrow>
-        {/* className={`controls__btn ${ streamState.captionOn ? "caption" : "" }`} */}
+      <Tooltip title={caption ? "Disable Caption" : "Show Caption"} arrow>
         <button
-          className={`controls__btn ${true ? "caption" : ""}`}
+          className={`controls__btn ${caption ? "caption" : ""}`}
           onClick={handleClickCaption}
         >
-          {/* {streamState.captionOn ? <ClosedCaptionOffIcon/> : <ClosedCaptionOffIcon/>} */}
-          {true ? <ClosedCaptionOffIcon /> : <ClosedCaptionOffIcon />}
+          {caption ? (
+            <ClosedCaptionOffIcon />
+          ) : (
+            <ClosedCaptionOffIcon />
+          )}
         </button>
       </Tooltip>
 
       <Tooltip title="Share Screen" arrow>
-        {/* disabled={streamState.screen} onClick={handleShareScreen} */}
         <button
           type="button"
           className="controls__btn"
-          disabled={false}
           onClick={handleShareScreen}
+          disabled={settings.screen}
         >
           <PresentToAllIcon />
         </button>
       </Tooltip>
       <Tooltip title="More Options" arrow>
-        <button type="button" className="controls__btn">
+        <button type="button" className="controls__btn disabled">
           <MoreVertIcon />
         </button>
       </Tooltip>
       <Tooltip title="Leave Meet" arrow>
-        <button className="controls__btn-call">
+        <button className="controls__btn-call" onClick={handleLeaveMeet}>
           <CallEndIcon />
         </button>
       </Tooltip>

@@ -52,6 +52,7 @@ body {
     --join-enter-color:#76c0f4;
 
 
+    background-color:var( --gm-overlay-color--on-theme-background);
     /* &:thu */
 }
 

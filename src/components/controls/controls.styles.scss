@@ -25,6 +25,12 @@
       outline: none;
     }
 
+    &.disabled{
+      opacity: 0.8;
+      pointer-events: none;
+      cursor: not-allowed;
+    }
+    
     &.off {
       background-color: var(--gm-disable-color);
       .MuiSvgIcon-root,
@@ -39,7 +45,7 @@
 
     &.caption {
       background-color: rgb(99, 99, 218);
-      box-shadow: 2px 4px 5px rgb(99, 99, 218), -2px -4px 5px rgb(99, 99, 218);
+      box-shadow: 2px 4px 5px rgb(99, 99, 218), -2px -4px 5px rgb(99, 99, 218),-2px -4px 5px rgb(99, 99, 218),2px 4px 5px rgb(99, 99, 218);
       .MuiSvgIcon-root,
       svg {
         fill: #000;

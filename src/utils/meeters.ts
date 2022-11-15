@@ -7,6 +7,7 @@ const meeters = [
       voice: false,
       cam: true,
       screen: false,
+      caption:false,
     },
   },
   {
@@ -17,6 +18,7 @@ const meeters = [
       voice: false,
       cam: true,
       screen: false,
+      caption:false,
     },
   },
   {
@@ -26,6 +28,7 @@ const meeters = [
       voice: false,
       cam: true,
       screen: false,
+      caption:false,
     },
     meetCreator: false,
   },
@@ -37,6 +40,7 @@ const meeters = [
       voice: false,
       cam: true,
       screen: false,
+      caption:false,
     },
   },
   {
@@ -44,6 +48,7 @@ const meeters = [
     settings:{
       voice: false,
       cam: true,
+      caption:false,
       screen: false,
     },
     id: "idse",
@@ -53,6 +58,7 @@ const meeters = [
     name: "kunle",
     id: "iess",
     settings:{
+      caption:false,
       voice: false,
       cam: true,
       screen: false,
@@ -65,6 +71,7 @@ const meeters = [
     settings:{
       voice: false,
       cam: true,
+            caption:false,
       screen: false,
     },
     meetCreator: false,
@@ -75,6 +82,7 @@ const meeters = [
     settings:{
       voice: false,
       cam: true,
+      caption:false,
       screen: false,
     },
     meetCreator: false,
@@ -85,6 +93,7 @@ const meeters = [
     settings:{
       voice: false,
       cam: true,
+      caption:false,
       screen: false,
     },
     meetCreator: false,
@@ -94,6 +103,7 @@ const meeters = [
     id: "sis",
     settings:{
       voice: false,
+      caption:false,
       cam: true,
       screen: false,
     },
@@ -104,6 +114,7 @@ const meeters = [
     id: "ssd",
     meetCreator: false,
     settings:{
+      caption:false,
       voice: false,
       cam: true,
       screen: false,
