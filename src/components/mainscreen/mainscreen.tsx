@@ -2,11 +2,11 @@ import React, { useEffect, useState, useContext } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 
-import io, { Socket } from "socket.io-client";
+import { Socket } from "socket.io-client";
 
 import {
   setMainStream,
-  setCurrentUser,
+  // setCurrentUser,
 } from "../../reduxtoolkit/features/user/userSlice";
 import {
   StreamContext,
@@ -16,7 +16,7 @@ import {
 import Controls from "../controls/controls";
 import MeetJoiners from "../meetjoiners/meetjoiners";
 import { MEDIA_CONTRAINTS } from "../../utils/constants";
-import { StopStreams } from "../../utils/helpers";
+// import { StopStreams } from "../../utils/helpers";
 // import InputContextProvider from "../../contexts/inputcontext/inputcontext";
 
 import "./mainscreen.styles.scss";
@@ -27,9 +27,9 @@ interface ScreenInterface {
 
 const MainScreen: React.FC<ScreenInterface> = ({ socket }) => {
   const dispatch = useDispatch();
-  const { contextStream, setContextStream } = useContext(StreamContext);
-  const params = useParams();
-  const mainStream = useSelector((state: any) => state.user.mainStream);
+  const {setContextStream } = useContext(StreamContext);
+  const {meetingId} = useParams();
+  // const mainStream = useSelector((state: any) => state.user.mainStream);
   const [loadingStream, setLoadingStream] = useState(!true);
   const settings = useSelector((state: any) => state.user.currentUser.settings);
   let connected = false;
@@ -41,16 +41,20 @@ const MainScreen: React.FC<ScreenInterface> = ({ socket }) => {
     const stream = await navigator.mediaDevices.getUserMedia(MEDIA_CONTRAINTS);
     stream.getAudioTracks()[0].enabled = settings.voice;
     stream.getVideoTracks()[0].enabled = settings.cam;
+    setContextStream(stream);
     dispatch(setMainStream(stream));
   };
 
   useEffect(() => {
-    if (connected) {
-      init();
-      setTimeout(() => {
-        setLoadingStream(false);
-      }, 1000);
-      // console.log(mainStream, "on mount");
+    if(meetingId){
+      if (connected) {
+        init();
+        setTimeout(() => {
+          setLoadingStream(false);
+        }, 1200);
+        // console.log(mainStream, "on mount");
+      }
+  
     }
 
     return () => {
@@ -81,6 +85,7 @@ const MainScreen: React.FC<ScreenInterface> = ({ socket }) => {
         </main>
         <footer className="mainscreen__footer">
           <Controls
+          socket= {socket}
           // handleShareScreenClick={handleShareScreenClick}
           // handleMicClick={handleMicClick}
           // handleCamClick={handleCamClick}

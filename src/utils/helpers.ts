@@ -45,10 +45,19 @@ export const manageDateTime = () => {
 
 
 // @ts-ignore
-export const StopStreams = (stream)  => {
-  console.log(stream , 'streams to stop');
-  // @ts-ignore
-  stream.getAudioTracks()[0].stop();
-  stream.getVideoTracks()[0].stop();
+export const StopStreams = async (stream)  => {
+  try{
+      // @ts-ignore
+  await stream.getAudioTracks()[0].stop();
+  await stream.getVideoTracks()[0].stop();
+  }catch(err){
+    console.error(err);
+    const error = new Error();
+    error.message = 'Unable to stop streams';
+    // error.status = 403;
+    return error;
+  }
 
+
+  return true;
 }

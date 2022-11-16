@@ -4,7 +4,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { Socket } from "socket.io-client";
 
 import {
-  setMainStream,
   setCurrentUser,getName
 } from "../../reduxtoolkit/features/user/userSlice";
 
@@ -37,13 +36,7 @@ interface HomeInterface {
   socket: Socket;
 }
 
-const ColorAlerts = () => {
-  return (
-    <Alert severity="success" color="info">
-      Copied!
-    </Alert>
-  );
-}
+
 // @ts-ignore
 const CreateMeet = ({show,close,socket,handleInstant}) => {
 
@@ -153,6 +146,7 @@ const Home: React.FC<HomeInterface> = ({ socket }) => {
       voice:false,
       cam: true,
       screen: false,
+      caption:false,
     };
 
     const data = {

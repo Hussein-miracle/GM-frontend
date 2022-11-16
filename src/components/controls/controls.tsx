@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import  {useNavigate} from 'react-router-dom';
+import { Socket } from "socket.io-client";
 
+
+import { StopStreams } from "../../utils/helpers";
 import Tooltip from "@mui/material/Tooltip";
 import MicIcon from "@mui/icons-material/Mic";
 import MicOffIcon from "@mui/icons-material/MicOff";
@@ -14,11 +17,16 @@ import { ReactComponent as VideoCamOnIcon } from "../../assets/icons/videoCamOn.
 import { ReactComponent as VideoCamOffIcon } from "../../assets/icons/videoCamOff.svg";
 
 import "./controls.styles.scss";
-
+// import { closeStreams } from "../../reduxtoolkit/features/user/userSlice";
+interface ControlsInterface {
+  socket: Socket;
+}
 // {handleMicClick,handleShareScreenClick,handleCamClick})
-const Controls: React.FC = () => {
+const Controls: React.FC<ControlsInterface> = ({socket}) => {
+  const currentUser = useSelector((state: any) => state.user.currentUser);
   const navigate = useNavigate();
   const settings = useSelector((state: any) => state.user.currentUser.settings);
+  const stream = useSelector((state: any) => state.user.mainStream);
   const [voice,setVoice]  = useState(settings.voice);
   const [cam,setCam]  = useState(settings.cam);
   const [screen,setScreen]  = useState(false);
@@ -47,10 +55,14 @@ const Controls: React.FC = () => {
     setCaption(!caption);
   };
 
-  const handleLeaveMeet = () => {
+  const handleLeaveMeet = async () => {
     const leave = window.confirm('Do you want to leave the meeting ?');
     if(leave){
-      navigate('/');
+      socket.emit('leave-meeting',currentUser);
+      const closed = await StopStreams(stream);
+      if(closed){
+        navigate('/');
+      }
     }
   }  
 
