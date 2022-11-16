@@ -7,8 +7,8 @@ import MainScreen from "./components/mainscreen/mainscreen";
 import Home from "./components/home/home";
 import "./App.css";
 // import { DefaultEventsMap } from "@socket.io/component-emitter";
-// const socket = io("https://alert-jodhpurs-frog.cyclic.app");
-const socket = io("http://localhost:8000/");
+// const socket = io(process.env.REACT_APP_BACKEND_PROD_URL as string);
+const socket = io(process.env.REACT_APP_BACKEND_DEV_URL as string);
 // * note: implement a notice for socket connection error
 // if(!socket.emit){
 //   alert('NetworkConnection error');
