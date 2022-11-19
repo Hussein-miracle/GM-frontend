@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Socket } from "socket.io-client";
 
 import {
-  setCurrentUser,getName
+  setCurrentUser,getName,setLeaveMeetDetails
 } from "../../reduxtoolkit/features/user/userSlice";
 
 import { manageDateTime } from "../../utils/helpers";
@@ -160,9 +160,19 @@ const Home: React.FC<HomeInterface> = ({ socket }) => {
     socket.emit("create-meet-link",data);
     socket.on("meet-link-created", (result) => {
       console.log(result, "meet-link-creation result");
-      const user = result.creator;
-      const link = result.link;
-      dispatch(setCurrentUser(user));
+      const {creator,link} = result;
+
+      const meetData = {
+        link,
+        meetingId:result.currentMeetingId,
+        creator,
+      };
+
+      console.log('leaveMeetdata',meetData);
+
+      dispatch(setLeaveMeetDetails(meetData));
+      dispatch(setCurrentUser(creator));
+
       setLoading(false);
       navigator(`/${link}`);
       // const link = result.link;
@@ -237,7 +247,7 @@ const Home: React.FC<HomeInterface> = ({ socket }) => {
               </button>
             </HtmlTooltip>
 
-            <HtmlTooltip title={<CustomTip text={"Settings"} dr={!true} />}>
+            <HtmlTooltip title={<CustomTip text={"Settings"}  />}>
               <button className="btn">
                 <SettingsOutlinedIcon />
               </button>
@@ -252,7 +262,7 @@ const Home: React.FC<HomeInterface> = ({ socket }) => {
 
               {/* //@ts-ignore */}
               <HtmlTooltip
-                title={<CustomTip text={"Google Account"} dr={true} />}
+                title={<CustomTip text={"Google Account"} name = {name} email={'email@gmail.com'} />}
               >
                 <button className="btn">
                   <AccountCircleIcon />
@@ -346,12 +356,12 @@ const LinkModal = ({showLink,link,close}) => {
   )
 }
 //@ts-ignore
-const CustomTip = ({ text, dr }) => {
+const CustomTip = ({ text, name = '' , email = '' }) => {
   return (
     <div className="tooltip-code">
       <h4>{text}</h4>
-      {dr === true ? <p>Username</p> : null}
-      {dr === true ? <p>useremail</p> : null}
+      {name !== '' ? <p>{name}</p> : null}
+      {email !== '' ? <p>{email}</p> : null}
     </div>
   );
 };

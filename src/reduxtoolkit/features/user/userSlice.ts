@@ -2,16 +2,18 @@ import { createSlice } from "@reduxjs/toolkit";
 import DUMMY_JOINERS from "../../../utils/meeters";
 
 const INITIAL_STATE = {
-  // currentUser: { name: "" },
-  currentUser:{...DUMMY_JOINERS[0]},
+  currentUser: { name: "" },
+  // currentUser:{...DUMMY_JOINERS[0]},
   meetJoiners: {},
   mainStream: null,
   askName: !false,
+  screenStream: null,
+  leaveMeetDetails:null,
 };
 
 // INITIAL_STATE.meetJoiners
 
-const rest = DUMMY_JOINERS.slice(1);
+// const rest = DUMMY_JOINERS.slice(1);
 
 // rest.forEach((item,index) => {
 //   // console.log(item,index);
@@ -50,11 +52,18 @@ const userReducerSlice = createSlice({
       streams?.getVideoTracks()[0]?.stop();
 
       state.mainStream = streams;
+    },
+    setScreenStream: (state,action) => {
+      state.screenStream = action.payload;
+    },
+    setLeaveMeetDetails: (state,action) => {
+      state.leaveMeetDetails = action.payload;
     }
+    
   },
 });
 
-export const { setMainStream, setUserName, setCurrentUser, getName,    closeStreams } =
+export const { setMainStream, setUserName, setCurrentUser, getName,    closeStreams,setScreenStream,setLeaveMeetDetails } =
   userReducerSlice.actions;
 
 // export {setMainStream};

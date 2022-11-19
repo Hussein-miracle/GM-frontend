@@ -1,10 +1,12 @@
 import { configureStore } from "@reduxjs/toolkit";
 
 import userSlice from "../features/user/userSlice";
+import meetSlice from  '../features/meet/meetSlice'
 
 export const store = configureStore({
   reducer:{
-    user:userSlice
+    user:userSlice,
+    meet:meetSlice,
   },
   middleware: (getDefaultMiddleware) => getDefaultMiddleware(
     {

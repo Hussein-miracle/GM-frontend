@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import  {useNavigate} from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 import { Socket } from "socket.io-client";
-
 
 import { StopStreams } from "../../utils/helpers";
 import Tooltip from "@mui/material/Tooltip";
@@ -22,15 +21,16 @@ interface ControlsInterface {
   socket: Socket;
 }
 // {handleMicClick,handleShareScreenClick,handleCamClick})
-const Controls: React.FC<ControlsInterface> = ({socket}) => {
+const Controls: React.FC<ControlsInterface> = ({ socket }) => {
   const currentUser = useSelector((state: any) => state.user.currentUser);
   const navigate = useNavigate();
   const settings = useSelector((state: any) => state.user.currentUser.settings);
+  const meet = useSelector((state: any) => state.user.leaveMeetDetails);
   const stream = useSelector((state: any) => state.user.mainStream);
-  const [voice,setVoice]  = useState(settings.voice);
-  const [cam,setCam]  = useState(settings.cam);
-  const [screen,setScreen]  = useState(false);
-  const [caption,setCaption]  = useState(settings.caption);
+  const [voice, setVoice] = useState(settings.voice || false);
+  const [cam, setCam] = useState(settings.cam || true);
+  const [screen, setScreen] = useState(false);
+  const [caption, setCaption] = useState(settings.caption || false);
 
   const handleClickVoice = () => {
     setVoice(!voice);
@@ -48,7 +48,7 @@ const Controls: React.FC<ControlsInterface> = ({socket}) => {
       },
     });
 
-    console.log(stream);
+    // console.log(stream);
   };
 
   const handleClickCaption = () => {
@@ -56,23 +56,19 @@ const Controls: React.FC<ControlsInterface> = ({socket}) => {
   };
 
   const handleLeaveMeet = async () => {
-    const leave = window.confirm('Do you want to leave the meeting ?');
-    if(leave){
-      socket.emit('leave-meeting',currentUser);
+    const leave = window.confirm("Do you want to leave the meeting ?");
+    if (leave) {
+      socket.emit("leave-meeting", meet);
       const closed = await StopStreams(stream);
-      if(closed){
-        navigate('/');
+      if (closed) {
+        navigate("/");
       }
     }
-  }  
+  };
 
-
- return (
+  return (
     <div className="controls">
-      <Tooltip
-        title={voice === true ? "Mute Mic" : "Unmute Mic"}
-        arrow
-      >
+      <Tooltip title={voice === true ? "Mute Mic" : "Unmute Mic"} arrow>
         <button className={`controls__btn`} onClick={handleClickVoice}>
           {voice === true ? <MicIcon /> : <MicOffIcon />}
         </button>
@@ -90,11 +86,7 @@ const Controls: React.FC<ControlsInterface> = ({socket}) => {
           className={`controls__btn ${caption ? "caption" : ""}`}
           onClick={handleClickCaption}
         >
-          {caption ? (
-            <ClosedCaptionOffIcon />
-          ) : (
-            <ClosedCaptionOffIcon />
-          )}
+          {caption ? <ClosedCaptionOffIcon /> : <ClosedCaptionOffIcon />}
         </button>
       </Tooltip>
 

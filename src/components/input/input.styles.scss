@@ -26,8 +26,8 @@
     // position: fixed;
     top: 50%;
     left: 50%;
-    width:18rem;
-    height: 6rem;
+    width:20rem;
+    height: 8rem;
     transform: translate(-50%, -50%);
     background-color: #eee;
     border-radius: 6px;
@@ -44,8 +44,8 @@
   }
 
   &-btn {
-    height: 5rem;
-    width: 6rem;
+    height: 2rem;
+    width: 4rem;
     // vertical-align: middle;
     text-align: center;
     // margin: 6px 4px;
@@ -70,4 +70,9 @@
   top: 25%;
   left:50%;
   transform: translate(-50%,-50%);
+}
+
+.hint{
+  font-size:8px;
+  color:'';
 }

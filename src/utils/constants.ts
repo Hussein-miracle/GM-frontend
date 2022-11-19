@@ -21,7 +21,7 @@ export const CarouselData = [
     id:'2',
     imgUrl:planAhead,
     title:'Plan ahead',
-    subtitle:'Click New meeting to schedule meetings in Google Calendar and send invites to participants',
+    subtitle:'Click <strong>New meeting</strong> to schedule meetings in Google Calendar and send invites to participants',
   },
   {
     id:'3',

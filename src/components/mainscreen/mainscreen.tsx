@@ -16,7 +16,7 @@ import {
 import Controls from "../controls/controls";
 import MeetJoiners from "../meetjoiners/meetjoiners";
 import { MEDIA_CONTRAINTS } from "../../utils/constants";
-// import { StopStreams } from "../../utils/helpers";
+import { StopStreams } from "../../utils/helpers";
 // import InputContextProvider from "../../contexts/inputcontext/inputcontext";
 
 import "./mainscreen.styles.scss";
@@ -29,7 +29,7 @@ const MainScreen: React.FC<ScreenInterface> = ({ socket }) => {
   const dispatch = useDispatch();
   const {setContextStream } = useContext(StreamContext);
   const {meetingId} = useParams();
-  // const mainStream = useSelector((state: any) => state.user.mainStream);
+  const mainStream = useSelector((state: any) => state.user.mainStream);
   const [loadingStream, setLoadingStream] = useState(!true);
   const settings = useSelector((state: any) => state.user.currentUser.settings);
   let connected = false;
@@ -46,7 +46,7 @@ const MainScreen: React.FC<ScreenInterface> = ({ socket }) => {
   };
 
   useEffect(() => {
-    if(meetingId){
+    // if(meetingId){
       if (connected) {
         init();
         setTimeout(() => {
@@ -55,13 +55,13 @@ const MainScreen: React.FC<ScreenInterface> = ({ socket }) => {
         // console.log(mainStream, "on mount");
       }
   
-    }
+    // }
 
     return () => {
       // console.log(mainStream, "on unmount");
-      // if (connected && mainStream) {
-      //   StopStreams(mainStream);
-      // }
+      if (connected && mainStream) {
+        StopStreams(mainStream);
+      }
       //@ts-ignore
       // eslint-disable-next-line react-hooks/exhaustive-deps
       connected = true;
