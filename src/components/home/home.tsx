@@ -1,10 +1,12 @@
-import { useState ,useEffect} from "react";
+import { useState, useEffect, useRef, LegacyRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { Socket } from "socket.io-client";
 
 import {
-  setCurrentUser,getName,setLeaveMeetDetails
+  setCurrentUser,
+  getName,
+  setLeaveMeetDetails,
 } from "../../reduxtoolkit/features/user/userSlice";
 
 import { manageDateTime } from "../../utils/helpers";
@@ -14,83 +16,84 @@ import { ReactComponent as AppIcon } from "../../assets/icons/apps.svg";
 
 import { styled } from "@mui/material/styles";
 import Tooltip, { TooltipProps, tooltipClasses } from "@mui/material/Tooltip";
-import LinkIcon from '@mui/icons-material/Link';
-import ContentCopyIcon from '@mui/icons-material/ContentCopy';
-import AddIcon from '@mui/icons-material/Add';
-import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
-import CloseIcon from '@mui/icons-material/Close';
+import LinkIcon from "@mui/icons-material/Link";
+import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+import AddIcon from "@mui/icons-material/Add";
+import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
+import CloseIcon from "@mui/icons-material/Close";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import FeedbackOutlinedIcon from "@mui/icons-material/FeedbackOutlined";
 import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import VideoCallOutlinedIcon from "@mui/icons-material/VideoCallOutlined";
-import Alert from '@mui/material/Alert';
+import Alert from "@mui/material/Alert";
 import KeyboardIcon from "@mui/icons-material/Keyboard";
 
 import Carousel from "../carousel/carousel";
-import Input from '../input/input';
-import Loaders,{Loader,LoadingText,SharescreenLoader,GoogleLoader} from "../UI/loaders/loaders";
+import Input from "../input/input";
+import Loaders, {
+  Loader,
+  LoadingText,
+  SharescreenLoader,
+  GoogleLoader,
+} from "../UI/loaders/loaders";
 
 import "./home.styles.scss";
 interface HomeInterface {
   socket: Socket;
 }
 
-
 // @ts-ignore
-const CreateMeet = ({show,close,socket,handleInstant}) => {
-
-
+const CreateMeet = ({ show, close, socket, handleInstant,clickedFuture  }) => {
   const clickedInstant = () => {
     close();
     handleInstant();
-  }
-  
-  
-  const handleFutureLink =() => {
+  };
+
+  const handleFutureLink = () => {
     close();
-  }
+    clickedFuture();
+  };
 
-
-  return  (
-    <ul className="create-meet"
-    // onMouseLeave={mutate}
-    style={{
-      display: show ? 'flex' : 'none'
-    }}>
-      
-        {/* // eslint-disable-next-line jsx-a11y/role-supports-aria-props */}
-        <li onClick={handleFutureLink}>
-          <LinkIcon/>
-          {/* {icon-link} */}
-          <span>Create a meeting for later</span>
-        </li>
-        <li  onClick={clickedInstant}>
-          <AddIcon/>
-          {/* {icon-plus} */}
-          <span>Start an instant meeting</span>
-        </li>
-        <li className='disabled'>
-          <CalendarTodayIcon/>
-          {/* {icon-calendar} */}
-          <span>Schedule in Google Calendar</span>
-        </li>
-      </ul>
-  )
-}
+  return (
+    <ul
+      className="create-meet"
+      // onMouseLeave={mutate}
+      style={{
+        display: show ? "flex" : "none",
+      }}
+    >
+      {/* // eslint-disable-next-line jsx-a11y/role-supports-aria-props */}
+      <li onClick={handleFutureLink}>
+        <LinkIcon />
+        {/* {icon-link} */}
+        <span>Create a meeting for later</span>
+      </li>
+      <li onClick={clickedInstant}>
+        <AddIcon />
+        {/* {icon-plus} */}
+        <span>Start an instant meeting</span>
+      </li>
+      <li className="disabled">
+        <CalendarTodayIcon />
+        {/* {icon-calendar} */}
+        <span>Schedule in Google Calendar</span>
+      </li>
+    </ul>
+  );
+};
 const Home: React.FC<HomeInterface> = ({ socket }) => {
   const dispatch = useDispatch();
-  const  name  = useSelector((state:any) => state.user.currentUser.name);
+  const name = useSelector((state: any) => state.user.currentUser.name);
   const navigator = useNavigate();
-
+  const ref: any = useRef();
   const [text, setText] = useState("");
-  const [disable,setDisable] = useState(false);
+  const [disable, setDisable] = useState(false);
   const [hovered, setHovered] = useState(false);
-  const [showCreateModal,setShowCreateModal] = useState(false);
-  const [meetLink,setMeetLink] = useState('');
-  const [sLink,setSLink] = useState(false);
-  const [loading,setLoading] = useState(false);
-
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [meetLink, setMeetLink] = useState("");
+  const [sLink, setSLink] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const { time, day, dateFormat } = manageDateTime();
 
@@ -107,46 +110,81 @@ const Home: React.FC<HomeInterface> = ({ socket }) => {
     setHovered(!true);
   };
 
-
   const handleLink = () => {
-    setSLink(!sLink)
-  }
-
-  const handleClick = () => {
-    // socket.emit("create-meet-link");
-    // socket.on("meet-link-created", (result) => {
-    //   // console.log(result, "meetlink");
-    //   const link = result.link;
-    //   setMeetLink(link);
-    //   handleLink();
-    //   const settings = {
-    //     voice: !true,
-    //     share: false,
-    //     screen: !false,
-    //   };
-
-    //   const data = {
-    //     settings,
-    //     name,
-    //     meetCreator: !false,
-    //   };
-
-    //   dispatch(setCurrentUser(data));
-
-    //   //@ts-ignore
-    //   // socket.emit("meet-started", data);
-
-    //   // dispatch(setMainStream(stream));
-    // });
+    setSLink(!sLink);
   };
+
+  const initJoin = (data: any) => {
+    socket.emit("join-meet",data);
+    socket.on('joined-meet',async (result) => {
+      const meetData = result.meetData;
+      const link = meetData.link;
+      const user = result.userData;
+
+      dispatch(setLeaveMeetDetails(meetData));
+      dispatch(setCurrentUser(user));
+
+      setLoading(false);
+      navigator(`/${link}`);
+    });
+  };
+
+  
+  const handleClickJoin = async () => {
+    let linkStr: string | string[] = "";
+    const trimmedText = text.trim();
+    const checkHttp =
+      trimmedText.startsWith("https://") || trimmedText.startsWith("http://");
+    if (checkHttp) {
+      // console.log('workdds')
+      const link = text.split("/");
+      linkStr = link[link.length - 1];
+      // console.log(link,'split link');
+    } else {
+      if (ref.current) {
+        const link = String(ref.current.value).split("/");
+        const urlStr = link[link.length - 1];
+        // console.log(urlStr,'link 2');
+        linkStr = urlStr;
+      }
+    }
+
+    const settings = {
+      voice: true,
+      cam: true,
+      screen: false,
+    };
+
+    const joinData = {
+      name,
+      meetLink: linkStr,
+      settings,
+      meetCreator: false,
+    };
+
+    // console.log('joindata',joinData);
+    setLoading(true);
+
+    initJoin(joinData);
+
+    // dispatch(setLeaveMeetDetails(meetData));
+    // dispatch(setCurrentUser(creator));
+
+    // setLoading(false);
+    // navigator(`/${linkStr}`);
+  };
+
+  const  handleFutureMeetLink = () => {
+
+  }
 
   const handleInstantLink = () => {
     setLoading(true);
     const settings = {
-      voice:false,
+      voice: false,
       cam: true,
       screen: false,
-      caption:false,
+      caption: false,
     };
 
     const data = {
@@ -157,62 +195,46 @@ const Home: React.FC<HomeInterface> = ({ socket }) => {
 
     // console.log(data,'data sent to be for link')
 
-    socket.emit("create-meet-link",data);
+    socket.emit("create-meet-link", data);
     socket.on("meet-link-created", (result) => {
-      console.log(result, "meet-link-creation result");
-      const {creator,link} = result;
+      // console.log(result, "meet-link-creation result");
+      const { creator, link } = result;
 
       const meetData = {
         link,
-        meetingId:result.currentMeetingId,
+        meetingId: result.currentMeetingId,
         creator,
       };
-
-      console.log('leaveMeetdata',meetData);
 
       dispatch(setLeaveMeetDetails(meetData));
       dispatch(setCurrentUser(creator));
 
       setLoading(false);
       navigator(`/${link}`);
-      // const link = result.link;
-      // setMeetLink(link);
-      // handleLink();
-
-
-      // dispatch(setCurrentUser(data));
-
-      //@ts-ignore
-      // socket.emit("meet-started", data);
-
-      // dispatch(setMainStream(stream));
     });
-  }
+  };
 
   const handleCloseCreateModal = () => {
     setShowCreateModal(false);
-  }
+  };
   const handleCreateModal = () => {
     setShowCreateModal(!false);
     // handleClick();
-  }
-  
+  };
 
   useEffect(() => {
-    if(!name){
+    if (!name) {
       dispatch(getName(true));
     }
-  },[name])
-
+  }, [name]);
 
   return (
     <div className="home">
-
-      <Input/>
+      <Input />
       <Loaders loading={loading}>
         {/* <GoogleLoader/> */}
-        <Loader index={1}/>
-        <LoadingText/>
+        <Loader index={1} />
+        <LoadingText />
       </Loaders>
       <header className="home__header">
         <div title="Low-Budget Google Meet" className="home__header--logo">
@@ -247,7 +269,7 @@ const Home: React.FC<HomeInterface> = ({ socket }) => {
               </button>
             </HtmlTooltip>
 
-            <HtmlTooltip title={<CustomTip text={"Settings"}  />}>
+            <HtmlTooltip title={<CustomTip text={"Settings"} />}>
               <button className="btn">
                 <SettingsOutlinedIcon />
               </button>
@@ -262,7 +284,13 @@ const Home: React.FC<HomeInterface> = ({ socket }) => {
 
               {/* //@ts-ignore */}
               <HtmlTooltip
-                title={<CustomTip text={"Google Account"} name = {name} email={'email@gmail.com'} />}
+                title={
+                  <CustomTip
+                    text={"Google Account"}
+                    name={name}
+                    email={"email@gmail.com"}
+                  />
+                }
               >
                 <button className="btn">
                   <AccountCircleIcon />
@@ -274,7 +302,11 @@ const Home: React.FC<HomeInterface> = ({ socket }) => {
       </header>
 
       <main className="home__main">
-      <LinkModal showLink={sLink && meetLink} link={meetLink} close={handleLink}/>
+        <LinkModal
+          showLink={sLink && meetLink}
+          link={meetLink}
+          close={handleLink}
+        />
         <div className="home__main--right">
           <div className="home__main--right__title">
             Premium video meetings. Now free for everyone.
@@ -285,11 +317,22 @@ const Home: React.FC<HomeInterface> = ({ socket }) => {
           </div>
 
           <div className="home__main--right__cta">
-            <CreateMeet show={showCreateModal} close={handleCloseCreateModal} handleInstant = {handleInstantLink}  socket={socket}/>
+            <CreateMeet
+              show={showCreateModal}
+              close={handleCloseCreateModal}
+              handleInstant={handleInstantLink}
+              socket={socket}
+              clickedFuture={handleFutureMeetLink}
+            />
 
-            <button className="btn-create" onClick={handleCreateModal} disabled={showCreateModal === true ? true : false} style={{
-              opacity: !showCreateModal ? 1 : 0.6,
-            }}>
+            <button
+              className="btn-create"
+              onClick={handleCreateModal}
+              disabled={showCreateModal === true ? true : false}
+              style={{
+                opacity: !showCreateModal ? 1 : 0.6,
+              }}
+            >
               <VideoCallOutlinedIcon />
               <span>New meeting</span>
             </button>
@@ -297,6 +340,8 @@ const Home: React.FC<HomeInterface> = ({ socket }) => {
             <label className="link-input" htmlFor="meetingLinkInput">
               <KeyboardIcon />
               <input
+                value={text}
+                ref={ref}
                 id="meetingLinkInput"
                 placeholder="Enter a code or link"
                 onChange={handleChange}
@@ -306,7 +351,7 @@ const Home: React.FC<HomeInterface> = ({ socket }) => {
             {/* //@ts-ignore */}
             <button
               className="btn-join"
-              onClick={handleClick}
+              onClick={handleClickJoin}
               disabled={!text ? true : false}
               style={{
                 opacity: text !== "" ? 1 : 0.6,
@@ -335,33 +380,43 @@ const Home: React.FC<HomeInterface> = ({ socket }) => {
 export default Home;
 
 //@ts-ignore
-const LinkModal = ({showLink,link,close}) => {
+const LinkModal = ({ showLink, link, close }) => {
   const copyLink = () => {
     navigator.clipboard.writeText(link);
-  }
+  };
   return (
-    <div className='link-modal'
-    style={{
-      display: showLink ? 'flex' : 'none'
-    }}>
-      <div className="link-header"><span>Here's the link to your meeting</span>
-      <span className='close'><CloseIcon onClick={close}/></span>
+    <div
+      className="link-modal"
+      style={{
+        display: showLink ? "flex" : "none",
+      }}
+    >
+      <div className="link-header">
+        <span>Here's the link to your meeting</span>
+        <span className="close">
+          <CloseIcon onClick={close} />
+        </span>
       </div>
-      <p>Copy this link and send it to people you want to meet with. Be sure to save it so you can use it later, too.</p>
+      <p>
+        Copy this link and send it to people you want to meet with. Be sure to
+        save it so you can use it later, too.
+      </p>
       <div className="link-box">
         <span className="link">{link}</span>
-        <span onClick={copyLink} className='copy'><ContentCopyIcon/></span>
+        <span onClick={copyLink} className="copy">
+          <ContentCopyIcon />
+        </span>
       </div>
     </div>
-  )
-}
+  );
+};
 //@ts-ignore
-const CustomTip = ({ text, name = '' , email = '' }) => {
+const CustomTip = ({ text, name = "", email = "" }) => {
   return (
     <div className="tooltip-code">
       <h4>{text}</h4>
-      {name !== '' ? <p>{name}</p> : null}
-      {email !== '' ? <p>{email}</p> : null}
+      {name !== "" ? <p>{name}</p> : null}
+      {email !== "" ? <p>{email}</p> : null}
     </div>
   );
 };

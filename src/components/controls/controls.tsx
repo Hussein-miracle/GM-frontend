@@ -15,43 +15,65 @@ import CallEndIcon from "@mui/icons-material/CallEnd";
 import { ReactComponent as VideoCamOnIcon } from "../../assets/icons/videoCamOn.svg";
 import { ReactComponent as VideoCamOffIcon } from "../../assets/icons/videoCamOff.svg";
 
+
+import {
+  // setMainStream,
+  updateCurrentUserSettings,
+  // setCurrentUser,
+} from "../../reduxtoolkit/features/user/userSlice";
+
 import "./controls.styles.scss";
 // import { closeStreams } from "../../reduxtoolkit/features/user/userSlice";
 interface ControlsInterface {
   socket: Socket;
+  handleShareScreen:Function;
 }
-// {handleMicClick,handleShareScreenClick,handleCamClick})
-const Controls: React.FC<ControlsInterface> = ({ socket }) => {
-  const currentUser = useSelector((state: any) => state.user.currentUser);
+const Controls: React.FC<ControlsInterface> = ({ socket,handleShareScreen }) => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+  const currentUser = useSelector((state: any) => state.user.currentUser);
   const settings = useSelector((state: any) => state.user.currentUser.settings);
   const meet = useSelector((state: any) => state.user.leaveMeetDetails);
   const stream = useSelector((state: any) => state.user.mainStream);
   const [voice, setVoice] = useState(settings.voice || false);
   const [cam, setCam] = useState(settings.cam || true);
+  const [loadingShareStream, setLoadingShareStream] = useState(false);
   const [screen, setScreen] = useState(false);
   const [caption, setCaption] = useState(settings.caption || false);
 
+  const handleVoiceClick = (voice: boolean) => {
+    if (stream) {
+      stream.getAudioTracks()[0].enabled = voice;
+      dispatch (updateCurrentUserSettings({...settings, voice: voice }));
+    }
+  };
+
+  const handleShare = async () => {
+    await handleShareScreen();
+  }
+
+  const handleCamClick = (cam: boolean) => {
+    if (stream) {
+      stream.getVideoTracks()[0].enabled = cam;
+      dispatch(updateCurrentUserSettings({ ...settings,cam: cam }));
+    }
+  };
+
+  const handleCaptionClick = (caption: boolean) => {
+    dispatch(updateCurrentUserSettings({...settings, caption: caption }));
+  };
+
   const handleClickVoice = () => {
+    handleVoiceClick(!voice);
     setVoice(!voice);
   };
   const handleClickCam = () => {
+    handleCamClick(!cam);
     setCam(!cam);
-  };
-  const handleShareScreen = async () => {
-    const stream = await navigator.mediaDevices.getDisplayMedia({
-      video: true,
-      audio: {
-        echoCancellation: true,
-        noiseSuppression: true,
-        sampleRate: 44100,
-      },
-    });
-
-    // console.log(stream);
   };
 
   const handleClickCaption = () => {
+    handleCaptionClick(!caption);
     setCaption(!caption);
   };
 
@@ -94,7 +116,7 @@ const Controls: React.FC<ControlsInterface> = ({ socket }) => {
         <button
           type="button"
           className="controls__btn"
-          onClick={handleShareScreen}
+          onClick={handleShare}
           disabled={settings.screen}
         >
           <PresentToAllIcon />

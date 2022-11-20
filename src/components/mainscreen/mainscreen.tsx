@@ -1,12 +1,16 @@
 import React, { useEffect, useState, useContext } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
+import { useParams,useNavigate } from "react-router-dom";
 
 import { Socket } from "socket.io-client";
 
 import {
   setMainStream,
-  // setCurrentUser,
+  updateCurrentUserSettings,
+  setCurrentUser,
+  setScreenStream,
+  getName,
+  setLeaveMeetDetails,
 } from "../../reduxtoolkit/features/user/userSlice";
 import {
   StreamContext,
@@ -26,15 +30,41 @@ interface ScreenInterface {
 }
 
 const MainScreen: React.FC<ScreenInterface> = ({ socket }) => {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
-  const {setContextStream } = useContext(StreamContext);
-  const {meetingId} = useParams();
+  const { setContextStream } = useContext(StreamContext);
+  const { meetingId } = useParams();
   const mainStream = useSelector((state: any) => state.user.mainStream);
+  const name = useSelector((state: any) => state.user.currentUser.name);
   const [loadingStream, setLoadingStream] = useState(!true);
+  const [loadingShareStream, setLoadingShareStream] = useState(false);
   const settings = useSelector((state: any) => state.user.currentUser.settings);
   let connected = false;
+  let forceConnected = false;
 
   // console.log(settings,'settings');
+
+  const handleLoadingShareStream = (value:boolean) => {
+    setLoadingShareStream(value); 
+  }
+
+  const handleShareScreenEnd = () => {
+    dispatch(updateCurrentUserSettings({ ...settings,screen:false }));
+  }
+  const handleShareScreenStart = async () => {
+    setLoadingShareStream(true);
+    const stream = await navigator.mediaDevices.getDisplayMedia(MEDIA_CONTRAINTS);
+    
+    stream.getVideoTracks()[0].onended = handleShareScreenEnd;
+    
+    // console.log(stream , 'shareStream');
+    dispatch(setScreenStream(stream));
+    dispatch(updateCurrentUserSettings({...settings, screen:true }));
+
+    setTimeout(() => {
+      setLoadingShareStream(false);
+    },1000);
+  };
 
   const init = async () => {
     setLoadingStream(!false);
@@ -44,17 +74,61 @@ const MainScreen: React.FC<ScreenInterface> = ({ socket }) => {
     setContextStream(stream);
     dispatch(setMainStream(stream));
   };
+  const initStraightJoin = async (meetLink:string) => {
+    // const settings = {
+    //   voice: true,
+    //   cam: true,
+    //   screen: false,
+    // };
+
+    // const joinData = {
+    //   name,
+    //   meetLink,
+    //   settings,
+    //   meetCreator: false,
+    // };
+    // socket.emit("join-meet",joinData);
+    // socket.on('joined-meet',async (result) => {
+    //   const meetData = result.meetData;
+    //   const link = meetData.link;
+    //   const user = result.userData;
+
+    //   dispatch(setLeaveMeetDetails(meetData));
+    //   dispatch(setCurrentUser(user));
+
+    //   setLoading(false);
+    //   navigator(`/${link}`);
+    // });
+
+
+    navigate('/');
+  }
+
 
   useEffect(() => {
-    // if(meetingId){
-      if (connected) {
-        init();
-        setTimeout(() => {
-          setLoadingStream(false);
-        }, 1200);
-        // console.log(mainStream, "on mount");
+    if(forceConnected){
+      if(!name || !settings){
+        initStraightJoin(meetingId || '');
       }
   
+    }
+
+
+    return  () => {
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      forceConnected = !false;
+    }
+  },[meetingId])
+  useEffect(() => {
+    // if(meetingId){
+    if (connected) {
+      init();
+      setTimeout(() => {
+        setLoadingStream(false);
+      }, 1200);
+      // console.log(mainStream, "on mount");
+    }
+
     // }
 
     return () => {
@@ -68,11 +142,8 @@ const MainScreen: React.FC<ScreenInterface> = ({ socket }) => {
     };
   }, []);
 
-  // useEffect(() => {
-  //   if(mainStream){
-  //     console.log(mainStream,'mainStream useEfect')
-  //   }
-  //  },[mainStream])
+
+
 
   return (
     <StreamContextProvider>
@@ -81,14 +152,13 @@ const MainScreen: React.FC<ScreenInterface> = ({ socket }) => {
           <MeetJoiners
             loadingStream={loadingStream}
             setLoadingStream={setLoadingStream}
+            handleLoadingShareStream={handleLoadingShareStream} 
           />
         </main>
         <footer className="mainscreen__footer">
           <Controls
-          socket= {socket}
-          // handleShareScreenClick={handleShareScreenClick}
-          // handleMicClick={handleMicClick}
-          // handleCamClick={handleCamClick}
+            socket={socket}
+            handleShareScreen={handleShareScreenStart}
           />
         </footer>
       </div>

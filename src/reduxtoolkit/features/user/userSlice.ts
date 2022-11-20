@@ -58,12 +58,24 @@ const userReducerSlice = createSlice({
     },
     setLeaveMeetDetails: (state,action) => {
       state.leaveMeetDetails = action.payload;
+    },
+    updateCurrentUserSettings:(state,action)=>{
+      const payload = action.payload;
+      // console.log(payload , 'paylod settings');
+      const currentUser = {...state.currentUser};
+      // @ts-ignore
+      const settingsPayload = {...currentUser.settings,...payload};
+      // @ts-ignore
+      console.log(settingsPayload,'settingPayload');
+      const updatedCurrentUser = {...currentUser,settings:{...settingsPayload}};
+      console.log(updatedCurrentUser,'updated current user')
+      state.currentUser = updatedCurrentUser;
     }
     
   },
 });
 
-export const { setMainStream, setUserName, setCurrentUser, getName,    closeStreams,setScreenStream,setLeaveMeetDetails } =
+export const { setMainStream, setUserName, setCurrentUser, getName,    closeStreams,setScreenStream,setLeaveMeetDetails,updateCurrentUserSettings } =
   userReducerSlice.actions;
 
 // export {setMainStream};

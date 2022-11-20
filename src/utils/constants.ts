@@ -4,7 +4,11 @@ import safeMeet from '../assets/images/safe-meet.svg';
 
 export const MEDIA_CONTRAINTS  = {
   video:true,
-  audio:true,
+  audio: {
+    echoCancellation: true,
+    noiseSuppression: true,
+    sampleRate: 44100,
+  },
 }
 
 export const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];

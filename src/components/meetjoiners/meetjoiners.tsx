@@ -1,8 +1,16 @@
-import React, { MutableRefObject, useEffect, useRef ,useContext} from "react";
+import React, {
+  MutableRefObject,
+  useEffect,
+  useRef,
+  useContext,
+  SetStateAction,
+  Dispatch,
+} from "react";
 import { useSelector } from "react-redux";
-import "./meetjoiners.styles.scss";
 import { StreamContext } from "../../contexts/streamContext/streamContext";
 import MeetJoiner from "../meetjoiner/meetjoiner";
+import StreamScreen from "../streamscreen/streamscreen";
+import "./meetjoiners.styles.scss";
 
 const handleGrid = (usersLen: number, factor: number): number => {
   if (usersLen + 1 <= 4) {
@@ -15,12 +23,14 @@ const handleGrid = (usersLen: number, factor: number): number => {
 
 interface MeetJoinerInterface {
   loadingStream: boolean;
-  setLoadingStream: any;
+  handleLoadingShareStream:any;
+  setLoadingStream:any;
 }
 
 const MeetJoiners: React.FC<MeetJoinerInterface> = ({
   loadingStream,
   setLoadingStream,
+  handleLoadingShareStream,
 }) => {
   const camRef = useRef<HTMLVideoElement | null>(
     null
@@ -38,17 +48,14 @@ const MeetJoiners: React.FC<MeetJoinerInterface> = ({
   useEffect(() => {
     // if (connected) {
 
-      if (camRef.current && stream) {
-        // console.log(stream, "stream");
-        camRef.current.srcObject = stream;
-        // camRef.current.muted = currentUserData.settings.voice;
-  
-        // setLoadingStream(false);
-      }
-  
+    if (camRef.current && stream) {
+      // console.log(stream, "stream");
+      camRef.current.srcObject = stream;
+      camRef.current.muted = currentUserData?.settings?.voice || true;
+      handleLoadingShareStream(false);
+    }
 
     // }
-
 
     return () => {
       //@ts-ignore
@@ -95,14 +102,16 @@ const MeetJoiners: React.FC<MeetJoinerInterface> = ({
         "--grid-col": handleGrid(meetJoinersIds.length, 2),
         "--grid-row": handleGrid(meetJoinersIds.length, 3),
       }}
-    >
+      >
+      {/* //@ts-ignore */}
+      <StreamScreen handleLoadingShareStream={handleLoadingShareStream} />
       {/* {joiners} */}
       <MeetJoiner
         key={currentUserData.id}
         creator={currentUserData.meetCreator || false}
         currentJoiner={currentUserData}
         currentIndex={meetJoinersIds.length}
-        hideCam={false}
+        hideCam={currentUserData.settings.screen === true}
         // hideCam={findScreenSharer && !currentUserData.settings.screen}
         load={loadingStream}
         avatar={currentUserData.settings.cam === true ? false : true}
