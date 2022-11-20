@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useParams,useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Navigate } from "react-router-dom";
 
 import { Socket } from "socket.io-client";
 
@@ -44,26 +44,28 @@ const MainScreen: React.FC<ScreenInterface> = ({ socket }) => {
 
   // console.log(settings,'settings');
 
-  const handleLoadingShareStream = (value:boolean) => {
-    setLoadingShareStream(value); 
-  }
+  const handleLoadingShareStream = (value: boolean) => {
+    setLoadingShareStream(value);
+  };
 
   const handleShareScreenEnd = () => {
-    dispatch(updateCurrentUserSettings({ ...settings,screen:false }));
-  }
+    dispatch(updateCurrentUserSettings({ ...settings, screen: false }));
+  };
   const handleShareScreenStart = async () => {
     setLoadingShareStream(true);
-    const stream = await navigator.mediaDevices.getDisplayMedia(MEDIA_CONTRAINTS);
-    
+    const stream = await navigator.mediaDevices.getDisplayMedia(
+      MEDIA_CONTRAINTS
+    );
+
     stream.getVideoTracks()[0].onended = handleShareScreenEnd;
-    
+
     // console.log(stream , 'shareStream');
     dispatch(setScreenStream(stream));
-    dispatch(updateCurrentUserSettings({...settings, screen:true }));
+    dispatch(updateCurrentUserSettings({ ...settings, screen: true }));
 
     setTimeout(() => {
       setLoadingShareStream(false);
-    },1000);
+    }, 1000);
   };
 
   const init = async () => {
@@ -74,7 +76,7 @@ const MainScreen: React.FC<ScreenInterface> = ({ socket }) => {
     setContextStream(stream);
     dispatch(setMainStream(stream));
   };
-  const initStraightJoin = async (meetLink:string) => {
+  const initStraightJoin = async (meetLink: string) => {
     // const settings = {
     //   voice: true,
     //   cam: true,
@@ -100,29 +102,27 @@ const MainScreen: React.FC<ScreenInterface> = ({ socket }) => {
     //   navigator(`/${link}`);
     // });
 
-
-    navigate('/');
-  }
-
+    navigate("/");
+  };
 
   useEffect(() => {
-    if(forceConnected){
-      if(!name || !settings){
-        initStraightJoin(meetingId || '');
+    if (forceConnected) {
+      if (!name || !!settings) {
+        initStraightJoin(meetingId || "");
       }
-  
     }
 
-
-    return  () => {
+    return () => {
       // eslint-disable-next-line react-hooks/exhaustive-deps
       forceConnected = !false;
-    }
-  },[meetingId])
+    };
+  }, [meetingId]);
   useEffect(() => {
     // if(meetingId){
     if (connected) {
-      init();
+      if (name) {
+        init();
+      }
       setTimeout(() => {
         setLoadingStream(false);
       }, 1200);
@@ -133,7 +133,7 @@ const MainScreen: React.FC<ScreenInterface> = ({ socket }) => {
 
     return () => {
       // console.log(mainStream, "on unmount");
-      if (connected && mainStream) {
+      if (mainStream) {
         StopStreams(mainStream);
       }
       //@ts-ignore
@@ -142,27 +142,30 @@ const MainScreen: React.FC<ScreenInterface> = ({ socket }) => {
     };
   }, []);
 
-
-
-
   return (
-    <StreamContextProvider>
-      <div className="mainscreen">
-        <main className="mainscreen__content">
-          <MeetJoiners
-            loadingStream={loadingStream}
-            setLoadingStream={setLoadingStream}
-            handleLoadingShareStream={handleLoadingShareStream} 
-          />
-        </main>
-        <footer className="mainscreen__footer">
-          <Controls
-            socket={socket}
-            handleShareScreen={handleShareScreenStart}
-          />
-        </footer>
-      </div>
-    </StreamContextProvider>
+    <>
+      {name === "" || !settings ? (
+        <Navigate to="/"  replace/>
+      ) : (
+        <StreamContextProvider>
+          <div className="mainscreen">
+            <main className="mainscreen__content">
+              <MeetJoiners
+                loadingStream={loadingStream}
+                setLoadingStream={setLoadingStream}
+                handleLoadingShareStream={handleLoadingShareStream}
+              />
+            </main>
+            <footer className="mainscreen__footer">
+              <Controls
+                socket={socket}
+                handleShareScreen={handleShareScreenStart}
+              />
+            </footer>
+          </div>
+        </StreamContextProvider>
+      )}
+    </>
   );
 };
 

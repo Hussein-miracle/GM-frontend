@@ -1,5 +1,5 @@
 import React, { useState, MutableRefObject, useEffect,useContext } from "react";
-// import { useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import "./meetjoiner.styles.scss";
 import Tooltip from "@mui/material/Tooltip";
 import MicOffIcon from "@mui/icons-material/MicOff";
@@ -42,16 +42,18 @@ const MeetJoiner: React.FC<MeetJoinerProps> = ({
     settings: { voice },
   } = currentJoiner;
   // console.log(currentJoiner, "joiner");
+  const screenStream = useSelector((state: any) => state.user.screenStream);
   const [color, setColor] = useState("blue");
 
   // const {joinerInitialSettings,userName,photoURLColor} = curJoiner;
 
-  // useEffect(() => {
-  //   const genColor = randomColor();
-  //   setColor(genColor);
-  // }, [load, camRef]);
+  useEffect(() => {
+    const genColor = randomColor();
+    setColor(genColor);
+  }, [screenStream]);
+  
   return (
-    <div className={`meetjoiner ${hideCam ? "hidden" : ""}`}>
+    <div className={`meetjoiner ${hideCam || screenStream !== null ? "hidden" : ""}`}>
       {load ? (
         <JoinerLoader2 load={load} />
       ) : (

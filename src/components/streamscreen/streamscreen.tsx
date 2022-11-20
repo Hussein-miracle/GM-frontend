@@ -2,9 +2,12 @@ import React, { useEffect ,useRef,MutableRefObject, SetStateAction,Dispatch} fro
 import { useDispatch, useSelector } from "react-redux";
 
 
+import  './streamscreen.styles.scss';
+
+
 interface ScreenInterface {
   handleLoadingShareStream:any;
-}
+}    
 
 const StreamScreen: React.FC<ScreenInterface> = ({handleLoadingShareStream}) => {
   const  screenStream = useSelector((state: any) => state.user.screenStream);
@@ -20,8 +23,9 @@ const StreamScreen: React.FC<ScreenInterface> = ({handleLoadingShareStream}) => 
   },[screenStream]);
 
   return (
-    <div className='stream-screen'>
-      <video autoPlay playsInline ref={shareRef}>
+    <div className='streamscreen'>
+      {/* <span></span> */}
+      <video autoPlay playsInline ref={shareRef} className='vid' >
       </video>
     </div>
   )

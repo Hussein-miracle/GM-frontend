@@ -38,6 +38,7 @@ const MeetJoiners: React.FC<MeetJoinerInterface> = ({
   const meetJoiners = useSelector((state: any) => state.user.meetJoiners);
   const currentUserData = useSelector((state: any) => state.user.currentUser);
   const stream = useSelector((state: any) => state.user.mainStream);
+  
   const meetJoinersIds: any[] = Object.values(meetJoiners);
 
   let connected = false;

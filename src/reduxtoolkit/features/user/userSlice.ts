@@ -66,9 +66,9 @@ const userReducerSlice = createSlice({
       // @ts-ignore
       const settingsPayload = {...currentUser.settings,...payload};
       // @ts-ignore
-      console.log(settingsPayload,'settingPayload');
+      // console.log(settingsPayload,'settingPayload');
       const updatedCurrentUser = {...currentUser,settings:{...settingsPayload}};
-      console.log(updatedCurrentUser,'updated current user')
+      // console.log(updatedCurrentUser,'updated current user')
       state.currentUser = updatedCurrentUser;
     }
     
