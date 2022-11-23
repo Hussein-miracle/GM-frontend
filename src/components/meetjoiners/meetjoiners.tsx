@@ -8,6 +8,7 @@ import React, {
 } from "react";
 import { useSelector } from "react-redux";
 import { StreamContext } from "../../contexts/streamContext/streamContext";
+import Caption from '../caption/caption';
 import MeetJoiner from "../meetjoiner/meetjoiner";
 import StreamScreen from "../streamscreen/streamscreen";
 import "./meetjoiners.styles.scss";
@@ -23,8 +24,8 @@ const handleGrid = (usersLen: number, factor: number): number => {
 
 interface MeetJoinerInterface {
   loadingStream: boolean;
-  handleLoadingShareStream:any;
-  setLoadingStream:any;
+  handleLoadingShareStream: any;
+  setLoadingStream: any;
 }
 
 const MeetJoiners: React.FC<MeetJoinerInterface> = ({
@@ -38,7 +39,7 @@ const MeetJoiners: React.FC<MeetJoinerInterface> = ({
   const meetJoiners = useSelector((state: any) => state.user.meetJoiners);
   const currentUserData = useSelector((state: any) => state.user.currentUser);
   const stream = useSelector((state: any) => state.user.mainStream);
-  
+
   const meetJoinersIds: any[] = Object.values(meetJoiners);
 
   let connected = false;
@@ -60,6 +61,7 @@ const MeetJoiners: React.FC<MeetJoinerInterface> = ({
 
     return () => {
       //@ts-ignore
+      // eslint-disable-next-line react-hooks/exhaustive-deps
       connected = true;
     };
   }, [currentUserData.settings.voice, stream]);
@@ -74,6 +76,7 @@ const MeetJoiners: React.FC<MeetJoinerInterface> = ({
   //   gridRow = 2;
   // }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const joiners = meetJoinersIds?.map((meetJoiner, index) => {
     // console.log(meetJoiner, "joiner");
     const currentJoiner = meetJoiners[meetJoiner];
@@ -96,29 +99,33 @@ const MeetJoiners: React.FC<MeetJoinerInterface> = ({
   // if(currentUserData === null) return <></>;
 
   return (
-    <div
-      className="meetjoiners"
-      style={{
-        //@ts-ignore//
-        "--grid-col": handleGrid(meetJoinersIds.length, 2),
-        "--grid-row": handleGrid(meetJoinersIds.length, 3),
-      }}
-      >
+    <div className="meet-wrapper">
       {/* //@ts-ignore */}
-      <StreamScreen handleLoadingShareStream={handleLoadingShareStream} />
-      {/* {joiners} */}
-      <MeetJoiner
-        key={currentUserData.id}
-        creator={currentUserData.meetCreator || false}
-        currentJoiner={currentUserData}
-        currentIndex={meetJoinersIds.length}
-        hideCam={currentUserData.settings.screen === true}
-        // hideCam={findScreenSharer && !currentUserData.settings.screen}
-        load={loadingStream}
-        avatar={currentUserData.settings.cam === true ? false : true}
-        camRef={camRef}
-        currentUser={true}
-      />
+      {/* <StreamScreen handleLoadingShareStream={handleLoadingShareStream} /> */}
+      <div
+        className="meetjoiners"
+        style={{
+          //@ts-ignore
+          "--grid-col": handleGrid(meetJoinersIds.length, 2),
+          "--grid-row": handleGrid(meetJoinersIds.length, 3),
+        }}
+      >
+        {/* {joiners} */}
+        <MeetJoiner
+          key={currentUserData.id}
+          creator={currentUserData.meetCreator || false}
+          currentJoiner={currentUserData}
+          currentIndex={meetJoinersIds.length}
+          hideCam={currentUserData.settings.screen === true}
+          // hideCam={findScreenSharer && !currentUserData.settings.screen}
+          load={loadingStream}
+          avatar={currentUserData.settings.cam === true ? false : true}
+          camRef={camRef}
+          currentUser={true}
+        />
+      </div>
+
+      <Caption />
     </div>
   );
 };

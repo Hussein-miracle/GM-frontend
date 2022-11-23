@@ -1,0 +1,38 @@
+.caption{
+  background-color: #000;
+  color: #fff;
+
+  position: absolute;
+  bottom: 15vh;
+  left:50%;
+  transform: translateX(-50%);
+  // margin-inline: 2rem;
+
+
+  height:8rem;
+  width: 80%;
+  border-radius: 4px;
+  padding: 5px;
+
+  &__speak{
+    cursor: pointer;
+    background-color: var(--gm-caption-color);
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    width: 2rem;
+    height: 2rem;
+
+    border-radius: 50%;
+    padding: 5px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__text{
+    margin-top: 2rem;
+    text-align: left;
+  }
+}

@@ -84,6 +84,7 @@ const Controls: React.FC<ControlsInterface> = ({ socket,handleShareScreen }) => 
       const closed = await StopStreams(stream);
       if (closed) {
         navigate("/");
+        window.location.reload();
       }
     }
   };
@@ -105,7 +106,7 @@ const Controls: React.FC<ControlsInterface> = ({ socket,handleShareScreen }) => 
       </Tooltip>
       <Tooltip title={caption ? "Disable Caption" : "Show Caption"} arrow>
         <button
-          className={`controls__btn ${caption ? "caption" : ""}`}
+          className={`controls__btn ${caption ? "caption__btn" : ""}`}
           onClick={handleClickCaption}
         >
           {caption ? <ClosedCaptionOffIcon /> : <ClosedCaptionOffIcon />}

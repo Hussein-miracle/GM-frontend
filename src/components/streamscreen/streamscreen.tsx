@@ -20,6 +20,7 @@ const StreamScreen: React.FC<ScreenInterface> = ({handleLoadingShareStream}) => 
       shareRef.current.srcObject = screenStream;
       handleLoadingShareStream(false);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   },[screenStream]);
 
   return (

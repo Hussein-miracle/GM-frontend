@@ -107,7 +107,7 @@ const MainScreen: React.FC<ScreenInterface> = ({ socket }) => {
 
   useEffect(() => {
     if (forceConnected) {
-      if (!name || !!settings) {
+      if (!name) {
         initStraightJoin(meetingId || "");
       }
     }
@@ -144,7 +144,7 @@ const MainScreen: React.FC<ScreenInterface> = ({ socket }) => {
 
   return (
     <>
-      {name === "" || !settings ? (
+      {name === "" ? (
         <Navigate to="/"  replace/>
       ) : (
         <StreamContextProvider>
