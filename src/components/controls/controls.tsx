@@ -80,8 +80,8 @@ const Controls: React.FC<ControlsInterface> = ({ socket,handleShareScreen }) => 
   const handleLeaveMeet = async () => {
     const leave = window.confirm("Do you want to leave the meeting ?");
     if (leave) {
-      socket.emit("leave-meeting", meet);
       const closed = await StopStreams(stream);
+      socket.emit("leave-meeting", meet);
       if (closed) {
         navigate("/");
         window.location.reload();
@@ -98,10 +98,10 @@ const Controls: React.FC<ControlsInterface> = ({ socket,handleShareScreen }) => 
       </Tooltip>
       <Tooltip title={settings.cam ? "Close Cam" : "Open Cam"} arrow>
         <button
-          className={`controls__btn ${!cam === false ? "off" : ""}`}
+          className={`controls__btn ${cam === false ? "off" : ""}`}
           onClick={handleClickCam}
         >
-          {cam === true ? <VideoCamOffIcon /> : <VideoCamOnIcon />}
+          {cam === true ? <VideoCamOnIcon /> : <VideoCamOffIcon />}
         </button>
       </Tooltip>
       <Tooltip title={caption ? "Disable Caption" : "Show Caption"} arrow>

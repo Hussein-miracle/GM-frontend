@@ -101,13 +101,14 @@ const MeetJoiners: React.FC<MeetJoinerInterface> = ({
   return (
     <div className="meet-wrapper">
       {/* //@ts-ignore */}
-      {/* <StreamScreen handleLoadingShareStream={handleLoadingShareStream} /> */}
+      <StreamScreen handleLoadingShareStream={handleLoadingShareStream} />
       <div
         className="meetjoiners"
         style={{
           //@ts-ignore
           "--grid-col": handleGrid(meetJoinersIds.length, 2),
           "--grid-row": handleGrid(meetJoinersIds.length, 3),
+          // position:  ? 'absolute' : 'relative'
         }}
       >
         {/* {joiners} */}
@@ -125,7 +126,7 @@ const MeetJoiners: React.FC<MeetJoinerInterface> = ({
         />
       </div>
 
-      <Caption />
+      {/* <Caption /> */}
     </div>
   );
 };

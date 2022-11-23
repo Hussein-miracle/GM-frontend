@@ -53,15 +53,15 @@ export const speakOutLoud = (message: string) => {
 
   // femalevoice
   const femalevoice = voices[2];
-  console.log(femalevoice)
+  // console.log(femalevoice)
   const malevoice = voices[1];
 
   // Set the text and voice attributes.
+  speech.voice = femalevoice;
   speech.text = message;
   speech.volume = 1;
   speech.rate = 1;
   speech.pitch = 1;
-  speech.voice = femalevoice;
 
   window.speechSynthesis.speak(speech);
 };

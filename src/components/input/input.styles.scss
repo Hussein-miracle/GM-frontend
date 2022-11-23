@@ -52,8 +52,8 @@
     margin: 6px auto;
     display: block;
     cursor:pointer;
-    color: blue;
-    background-color: #000;
+    color: #fff;
+    background-color: var(--gm-theme-color);
     border: none;
     border-radius: 6px;
     &:focus {
