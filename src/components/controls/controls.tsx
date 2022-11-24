@@ -8,6 +8,7 @@ import Tooltip from "@mui/material/Tooltip";
 import MicIcon from "@mui/icons-material/Mic";
 import MicOffIcon from "@mui/icons-material/MicOff";
 import PresentToAllIcon from "@mui/icons-material/PresentToAll";
+import PanToolIcon from '@mui/icons-material/PanTool';
 import ClosedCaptionOffIcon from "@mui/icons-material/ClosedCaptionOff";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import CallEndIcon from "@mui/icons-material/CallEnd";
@@ -35,11 +36,11 @@ const Controls: React.FC<ControlsInterface> = ({ socket,handleShareScreen }) => 
   const settings = useSelector((state: any) => state.user.currentUser.settings);
   const meet = useSelector((state: any) => state.user.leaveMeetDetails);
   const stream = useSelector((state: any) => state.user.mainStream);
-  const [voice, setVoice] = useState(settings.voice || false);
-  const [cam, setCam] = useState(settings.cam || true);
+  const [voice, setVoice] = useState(settings.voice);
+  const [cam, setCam] = useState(settings.cam);
   const [loadingShareStream, setLoadingShareStream] = useState(false);
-  const [screen, setScreen] = useState(false);
-  const [caption, setCaption] = useState(settings.caption || false);
+  const [screen, setScreen] = useState(settings.screen);
+  const [caption, setCaption] = useState(settings.caption);
 
   const handleVoiceClick = (voice: boolean) => {
     if (stream) {
@@ -113,18 +114,23 @@ const Controls: React.FC<ControlsInterface> = ({ socket,handleShareScreen }) => 
         </button>
       </Tooltip>
 
+      <Tooltip title="👋 Feature Coming Soon..." arrow>
+        <button type="button" className="controls__btn">
+          <PanToolIcon />
+        </button>
+      </Tooltip>
       <Tooltip title="Share Screen" arrow>
         <button
           type="button"
-          className="controls__btn"
+          className={`controls__btn ${screen ? "caption__btn" : ""}`}
           onClick={handleShare}
           disabled={settings.screen}
         >
           <PresentToAllIcon />
         </button>
       </Tooltip>
-      <Tooltip title="More Options" arrow>
-        <button type="button" className="controls__btn disabled">
+      <Tooltip title="👋 Feature Coming Soon..." arrow>
+        <button type="button" className="controls__btn">
           <MoreVertIcon />
         </button>
       </Tooltip>

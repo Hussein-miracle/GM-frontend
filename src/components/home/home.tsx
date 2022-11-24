@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, LegacyRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { Socket } from "socket.io-client";
@@ -26,17 +26,12 @@ import FeedbackOutlinedIcon from "@mui/icons-material/FeedbackOutlined";
 import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import VideoCallOutlinedIcon from "@mui/icons-material/VideoCallOutlined";
-import Alert from "@mui/material/Alert";
 import KeyboardIcon from "@mui/icons-material/Keyboard";
 
 import Carousel from "../carousel/carousel";
 import Input from "../input/input";
-import Loaders, {
-  Loader,
-  LoadingText,
-  SharescreenLoader,
-  GoogleLoader,
-} from "../UI/loaders/loaders";
+import { SuccessNotify } from "../UI/notification/notification";
+import Loaders, { Loader, LoadingText } from "../UI/loaders/loaders";
 
 import "./home.styles.scss";
 interface HomeInterface {
@@ -44,7 +39,8 @@ interface HomeInterface {
 }
 
 // @ts-ignore
-const CreateMeet = ({ show, close, socket, handleInstant,clickedFuture  }) => {
+const CreateMeet = ({ show,close,socket,handleInstant,clickedFuture,mouseLeave,
+}) => {
   const clickedInstant = () => {
     close();
     handleInstant();
@@ -58,7 +54,7 @@ const CreateMeet = ({ show, close, socket, handleInstant,clickedFuture  }) => {
   return (
     <ul
       className="create-meet"
-      // onMouseLeave={mutate}
+      onMouseLeave={mouseLeave}
       style={{
         display: show ? "flex" : "none",
       }}
@@ -66,17 +62,14 @@ const CreateMeet = ({ show, close, socket, handleInstant,clickedFuture  }) => {
       {/* // eslint-disable-next-line jsx-a11y/role-supports-aria-props */}
       <li onClick={handleFutureLink}>
         <LinkIcon />
-        {/* {icon-link} */}
         <span>Create a meeting for later</span>
       </li>
       <li onClick={clickedInstant}>
         <AddIcon />
-        {/* {icon-plus} */}
         <span>Start an instant meeting</span>
       </li>
       <li className="disabled">
         <CalendarTodayIcon />
-        {/* {icon-calendar} */}
         <span>Schedule in Google Calendar</span>
       </li>
     </ul>
@@ -88,11 +81,11 @@ const Home: React.FC<HomeInterface> = ({ socket }) => {
   const navigator = useNavigate();
   const ref: any = useRef();
   const [text, setText] = useState("");
-  const [disable, setDisable] = useState(false);
+  // const [disable, setDisable] = useState(false);
   const [hovered, setHovered] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [meetLink, setMeetLink] = useState("");
-  const [sLink, setSLink] = useState(false);
+  const [futureLink, setShowfutureLink] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const { time, day, dateFormat } = manageDateTime();
@@ -111,12 +104,12 @@ const Home: React.FC<HomeInterface> = ({ socket }) => {
   };
 
   const handleLink = () => {
-    setSLink(!sLink);
+    setShowfutureLink(!futureLink);
   };
 
   const initJoin = (data: any) => {
-    socket.emit("join-meet",data);
-    socket.on('joined-meet',async (result) => {
+    socket.emit("join-meet", data);
+    socket.on("joined-meet", async (result) => {
       const meetData = result.meetData;
       const link = meetData.link;
       const user = result.userData;
@@ -129,7 +122,6 @@ const Home: React.FC<HomeInterface> = ({ socket }) => {
     });
   };
 
-  
   const handleClickJoin = async () => {
     let linkStr: string | string[] = "";
     const trimmedText = text.trim();
@@ -174,9 +166,34 @@ const Home: React.FC<HomeInterface> = ({ socket }) => {
     // navigator(`/${linkStr}`);
   };
 
-  const  handleFutureMeetLink = () => {
+  const handleFutureMeetLink = () => {
+    const settings = {
+      voice: false,
+      cam: true,
+      screen: false,
+      caption: false,
+    };
 
-  }
+    const data = {
+      settings,
+      name,
+      meetCreator: true,
+    };
+
+    socket.emit("create-future-meet-link", data);
+    socket.on("future-meet-link-created", (result) => {
+      // console.log(result, "meet-link-creation result");
+      const { creator, link } = result;
+
+      setMeetLink(link);
+      setShowfutureLink(true);
+      // const meetData = {
+      //   link,
+      //   meetingId: result.currentMeetingId,
+      //   creator,
+      // };
+    });
+  };
 
   const handleInstantLink = () => {
     setLoading(true);
@@ -222,6 +239,12 @@ const Home: React.FC<HomeInterface> = ({ socket }) => {
     // handleClick();
   };
 
+  const handleMouseLeaveCreateBTN = () => {
+    setTimeout(() => {
+      handleCloseCreateModal();
+    }, 500);
+  };
+
   useEffect(() => {
     if (!name) {
       dispatch(getName(true));
@@ -232,7 +255,6 @@ const Home: React.FC<HomeInterface> = ({ socket }) => {
     <div className="home">
       <Input />
       <Loaders loading={loading}>
-        {/* <GoogleLoader/> */}
         <Loader index={1} />
         <LoadingText />
       </Loaders>
@@ -302,8 +324,10 @@ const Home: React.FC<HomeInterface> = ({ socket }) => {
       </header>
 
       <main className="home__main">
+        
         <LinkModal
-          showLink={sLink && meetLink}
+
+          showLink={futureLink && meetLink}
           link={meetLink}
           close={handleLink}
         />
@@ -323,6 +347,7 @@ const Home: React.FC<HomeInterface> = ({ socket }) => {
               handleInstant={handleInstantLink}
               socket={socket}
               clickedFuture={handleFutureMeetLink}
+              mouseLeave={handleMouseLeaveCreateBTN}
             />
 
             <button
@@ -381,8 +406,14 @@ export default Home;
 
 //@ts-ignore
 const LinkModal = ({ showLink, link, close }) => {
+  const [showAlert, setShowAlert] = useState(false);
   const copyLink = () => {
     navigator.clipboard.writeText(link);
+    setShowAlert(true);
+
+    setTimeout(() => {
+      setShowAlert(!true);
+    }, 500);
   };
   return (
     <div
@@ -391,6 +422,7 @@ const LinkModal = ({ showLink, link, close }) => {
         display: showLink ? "flex" : "none",
       }}
     >
+      {showAlert && <SuccessNotify text="Copied" />}
       <div className="link-header">
         <span>Here's the link to your meeting</span>
         <span className="close">

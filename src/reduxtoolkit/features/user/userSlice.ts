@@ -8,6 +8,7 @@ const INITIAL_STATE = {
   mainStream: null,
   askName: !false,
   screenStream: null,
+  showStream: false,
   leaveMeetDetails:null,
 };
 
@@ -53,6 +54,9 @@ const userReducerSlice = createSlice({
 
       state.mainStream = streams;
     },
+    setShowStream: (state,action) => {
+      state.showStream = action.payload;
+    },
     setScreenStream: (state,action) => {
       state.screenStream = action.payload;
     },
@@ -75,7 +79,7 @@ const userReducerSlice = createSlice({
   },
 });
 
-export const { setMainStream, setUserName, setCurrentUser, getName,    closeStreams,setScreenStream,setLeaveMeetDetails,updateCurrentUserSettings } =
+export const { setMainStream, setUserName, setCurrentUser, getName,    closeStreams,setScreenStream,setLeaveMeetDetails,updateCurrentUserSettings,setShowStream } =
   userReducerSlice.actions;
 
 // export {setMainStream};

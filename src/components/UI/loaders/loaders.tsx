@@ -34,7 +34,23 @@ export const GoogleLoader = () => {
 export const LoadingText = () => {
   return <span className="loading-text">Loading</span>;
 };
-
+  
+export const BallsLoader = ({load}:{load:boolean}) => {
+  return (
+    <div
+      className="ball__loader--container"
+      style={{
+        display: load ? "flex" : "none",
+      }}
+    >
+      <div className="ball__loader">
+        <div className="ball"></div>
+        <div className="ball"></div>
+        <div className="ball"></div>
+      </div>
+    </div>
+  );
+};
 // @ts-ignore
 export const JoinerLoader1 = ({ load }) => {
   return (

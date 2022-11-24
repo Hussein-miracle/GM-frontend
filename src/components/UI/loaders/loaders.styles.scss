@@ -76,6 +76,49 @@
     animation: animloader 1s linear infinite;
   }
 }
+
+.ball {
+  height: 0.75rem;
+  width: 0.75rem;
+  background-color: black;
+  border-radius: 50%;
+  position: absolute;
+  &:first-child {
+    top: 5px;
+    left: 20px;
+    animation: ball1 1.5s infinite linear;
+  }
+  &:nth-child(2) {
+    top: 30px;
+    left: 7px;
+    animation: ball2 1.5s infinite linear;
+  }
+  &:nth-child(3) {
+    top: 30px;
+    left: 35px;
+    animation: ball3 1.5s infinite linear;
+  }
+
+  &__loader {
+    border-radius: 50%;
+    margin-top: 1rem;
+    width: 3.5rem;
+    height: 3.5rem;
+    position: relative;
+    background-color: rgba(211, 204, 204, 0.747);
+
+    &--container {
+      display: flex;
+      // height: 100%;
+      // width: 97vw;
+      justify-content: center;
+      align-items: center;
+      box-shadow: none;
+      z-index: 100;
+    }
+  }
+}
+
 .sharescreen-loader {
   width: 8vmax;
   height: 8vmax;
@@ -452,5 +495,60 @@ $shadow-strength: 0.08;
   }
   87% {
     box-shadow: 0.2em -0.2em 0 0 currentcolor;
+  }
+}
+
+@keyframes ball1 {
+  0% {
+    top: 5px;
+    left: 20px;
+  }
+  33% {
+    top: 30px;
+    left: 7px;
+  }
+  66% {
+    top: 30px;
+    left: 35px;
+  }
+  100% {
+    top: 5px;
+    left: 20px;
+  }
+}
+@keyframes ball2 {
+  0% {
+    top: 30px;
+    left: 7px;
+  }
+  33% {
+    top: 30px;
+    left: 35px;
+  }
+  66% {
+    top: 5px;
+    left: 20px;
+  }
+  100% {
+    top: 30px;
+    left: 7px;
+  }
+}
+@keyframes ball3 {
+  0% {
+    top: 30px;
+    left: 35px;
+  }
+  33% {
+    top: 5px;
+    left: 20px;
+  }
+  66% {
+    top: 30px;
+    left: 7px;
+  }
+  100% {
+    top: 30px;
+    left: 35px;
   }
 }

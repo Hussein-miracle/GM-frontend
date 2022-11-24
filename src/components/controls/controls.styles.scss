@@ -26,7 +26,7 @@
     }
 
     &.disabled{
-      opacity: 0.8;
+      opacity: 0.65;
       pointer-events: none;
       cursor: not-allowed;
     }
@@ -44,8 +44,7 @@
     }
 
     &.caption__btn {
-      background-color: rgb(99, 99, 218);
-      box-shadow: 2px 4px 5px rgb(99, 99, 218), -2px -4px 5px rgb(99, 99, 218),-2px -4px 5px rgb(99, 99, 218),2px 4px 5px rgb(99, 99, 218);
+      background-color: rgb(138,180,248);
       .MuiSvgIcon-root,
       svg {
         fill: #000;

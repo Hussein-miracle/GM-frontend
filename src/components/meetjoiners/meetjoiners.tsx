@@ -26,12 +26,14 @@ interface MeetJoinerInterface {
   loadingStream: boolean;
   handleLoadingShareStream: any;
   setLoadingStream: any;
+  loadingShareStream:boolean;
 }
 
 const MeetJoiners: React.FC<MeetJoinerInterface> = ({
   loadingStream,
   setLoadingStream,
   handleLoadingShareStream,
+  loadingShareStream
 }) => {
   const camRef = useRef<HTMLVideoElement | null>(
     null
@@ -54,7 +56,7 @@ const MeetJoiners: React.FC<MeetJoinerInterface> = ({
       // console.log(stream, "stream");
       camRef.current.srcObject = stream;
       camRef.current.muted = currentUserData?.settings?.voice || true;
-      handleLoadingShareStream(false);
+      setLoadingStream(false);
     }
 
     // }
@@ -101,13 +103,13 @@ const MeetJoiners: React.FC<MeetJoinerInterface> = ({
   return (
     <div className="meet-wrapper">
       {/* //@ts-ignore */}
-      <StreamScreen handleLoadingShareStream={handleLoadingShareStream} />
+      <StreamScreen handleLoadingShareStream={handleLoadingShareStream} loadingShareStream={loadingShareStream} />
       <div
         className="meetjoiners"
         style={{
           //@ts-ignore
-          "--grid-col": handleGrid(meetJoinersIds.length, 2),
-          "--grid-row": handleGrid(meetJoinersIds.length, 3),
+          "--grid-col": handleGrid(meetJoinersIds.length > 0 ? meetJoinersIds.length : 2 , 2),
+          "--grid-row": handleGrid(meetJoinersIds.length > 0 ? meetJoinersIds.length : 2 , 3),
           // position:  ? 'absolute' : 'relative'
         }}
       >
@@ -126,7 +128,7 @@ const MeetJoiners: React.FC<MeetJoinerInterface> = ({
         />
       </div>
 
-      {/* <Caption /> */}
+      <Caption />
     </div>
   );
 };

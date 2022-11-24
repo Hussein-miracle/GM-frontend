@@ -1,16 +1,22 @@
 .streamscreen{
   max-width: 88vw;
   min-width: 65vw;
+
   background-color:transparent;
   background-color:var(--gm-caption-color);
   border-radius:4px;
+  height:100%;
 
   position: relative;
-  left: 50%;
-  top: 2vh;
-  transform: translateX(-50%);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  // left: 50%;
+  // top: 2vh;
+  // transform: translateX(-50%);
 
   .vid{
+    margin-block:auto;
     // object-fit: contain;
     // object-fit: cover;
     // width:100% !important;

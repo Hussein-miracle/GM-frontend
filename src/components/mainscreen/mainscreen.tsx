@@ -11,6 +11,7 @@ import {
   setScreenStream,
   getName,
   setLeaveMeetDetails,
+  setShowStream,
 } from "../../reduxtoolkit/features/user/userSlice";
 import {
   StreamContext,
@@ -49,23 +50,29 @@ const MainScreen: React.FC<ScreenInterface> = ({ socket }) => {
   };
 
   const handleShareScreenEnd = () => {
+    dispatch(setShowStream(false));
     dispatch(updateCurrentUserSettings({ ...settings, screen: false }));
   };
   const handleShareScreenStart = async () => {
+    dispatch(setShowStream(true));
     setLoadingShareStream(true);
-    const stream = await navigator.mediaDevices.getDisplayMedia(
-      MEDIA_CONTRAINTS
-    );
+    try {
+      const stream = await navigator.mediaDevices.getDisplayMedia(
+        MEDIA_CONTRAINTS
+      );
 
-    stream.getVideoTracks()[0].onended = handleShareScreenEnd;
+      stream.getVideoTracks()[0].onended = handleShareScreenEnd;
 
-    // console.log(stream , 'shareStream');
-    dispatch(setScreenStream(stream));
-    dispatch(updateCurrentUserSettings({ ...settings, screen: true }));
+      dispatch(setScreenStream(stream));
+      dispatch(updateCurrentUserSettings({ ...settings, screen: true }));
 
-    setTimeout(() => {
-      setLoadingShareStream(false);
-    }, 1000);
+      // setTimeout(() => {
+      //   setLoadingShareStream(false);
+      // }, 1500);
+    } catch (e) {
+      dispatch(setShowStream(false));
+      console.error(e);
+    }
   };
 
   const init = async () => {
@@ -76,47 +83,7 @@ const MainScreen: React.FC<ScreenInterface> = ({ socket }) => {
     setContextStream(stream);
     dispatch(setMainStream(stream));
   };
-  const initStraightJoin = async (meetLink: string) => {
-    // const settings = {
-    //   voice: true,
-    //   cam: true,
-    //   screen: false,
-    // };
 
-    // const joinData = {
-    //   name,
-    //   meetLink,
-    //   settings,
-    //   meetCreator: false,
-    // };
-    // socket.emit("join-meet",joinData);
-    // socket.on('joined-meet',async (result) => {
-    //   const meetData = result.meetData;
-    //   const link = meetData.link;
-    //   const user = result.userData;
-
-    //   dispatch(setLeaveMeetDetails(meetData));
-    //   dispatch(setCurrentUser(user));
-
-    //   setLoading(false);
-    //   navigator(`/${link}`);
-    // });
-
-    navigate("/");
-  };
-
-  useEffect(() => {
-    if (forceConnected) {
-      if (!name) {
-        initStraightJoin(meetingId || "");
-      }
-    }
-
-    return () => {
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-      forceConnected = !false;
-    };
-  }, [meetingId]);
   useEffect(() => {
     // if(meetingId){
     if (connected) {
@@ -145,7 +112,7 @@ const MainScreen: React.FC<ScreenInterface> = ({ socket }) => {
   return (
     <>
       {name === "" ? (
-        <Navigate to="/"  replace/>
+        <Navigate to="/" replace />
       ) : (
         <StreamContextProvider>
           <div className="mainscreen">
@@ -154,6 +121,7 @@ const MainScreen: React.FC<ScreenInterface> = ({ socket }) => {
                 loadingStream={loadingStream}
                 setLoadingStream={setLoadingStream}
                 handleLoadingShareStream={handleLoadingShareStream}
+                loadingShareStream={loadingShareStream}
               />
             </main>
             <footer className="mainscreen__footer">

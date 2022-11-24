@@ -1,35 +1,58 @@
-import React, { useEffect ,useRef,MutableRefObject, SetStateAction,Dispatch} from 'react';
-import { useDispatch, useSelector } from "react-redux";
+import React, { useEffect, useRef, MutableRefObject } from "react";
+import { useSelector } from "react-redux";
 
+import Loaders, { GoogleLoader } from "../UI/loaders/loaders";
 
-import  './streamscreen.styles.scss';
-
+import "./streamscreen.styles.scss";
 
 interface ScreenInterface {
-  handleLoadingShareStream:any;
-}    
+  handleLoadingShareStream: any;
+  loadingShareStream: boolean;
+}
 
-const StreamScreen: React.FC<ScreenInterface> = ({handleLoadingShareStream}) => {
-  const  screenStream = useSelector((state: any) => state.user.screenStream);
+const StreamScreen: React.FC<ScreenInterface> = ({
+  handleLoadingShareStream,
+  loadingShareStream,
+}) => {
+  const screenStream = useSelector((state: any) => state.user.screenStream);
+  const showStream = useSelector((state: any) => state.user.showStream);
   const shareRef = useRef<HTMLVideoElement | null>(
     null
   ) as MutableRefObject<HTMLVideoElement>;
-  
+
   useEffect(() => {
-    if(screenStream && shareRef.current){
+    if (screenStream && shareRef.current) {
       shareRef.current.srcObject = screenStream;
-      handleLoadingShareStream(false);
+      setTimeout(() => {
+        handleLoadingShareStream(false);
+      }, 1500);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  },[screenStream]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [screenStream]);
 
   return (
-    <div className='streamscreen'>
-      {/* <span></span> */}
-      <video autoPlay playsInline ref={shareRef} className='vid' >
-      </video>
+    <div
+      className="streamscreen"
+      style={{
+        display: showStream === true ? "block" : "none",
+      }}
+    >
+      {loadingShareStream || true ? (
+        <Loaders loading={loadingShareStream}>
+          <GoogleLoader />
+        </Loaders>
+      ) : null}
+      <video
+        autoPlay
+        playsInline
+        ref={shareRef}
+        className="vid"
+        style={{
+          display: loadingShareStream ? "none" : "block",
+        }}
+      ></video>
     </div>
-  )
-}
+  );
+};
 
 export default StreamScreen;

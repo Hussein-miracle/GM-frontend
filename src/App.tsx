@@ -25,17 +25,17 @@ function App() {
 
   const handleCloseTab = (e:any) => {
     e.preventDefault();
-    const leave = window.confirm("Do you want to leave the meeting ?");
+    // const leave = window.confirm("Do you want to leave the meeting ?");
   
   }
   
   useEffect(() => {
     if (connected) {
       socket.on("connected", () => {
-        console.log("%c connected  to B.E.", "background:yellow;color:black;");
+        console.log("%c Connected  to Socket Backend ⚡🛡️🛡️⚡", "background:yellow;color:black; padding:12px;border-radius:5px;");
       });
       
-      window.addEventListener('beforeunload',handleCloseTab);
+      // window.addEventListener('beforeunload',handleCloseTab);
 
     }
 
@@ -44,7 +44,7 @@ function App() {
     return () => {
       // window.addEventListener('beforeunload',handleCloseTab);
       if (connected) {
-        window.removeEventListener('beforeunload',handleCloseTab);
+        // window.removeEventListener('beforeunload',handleCloseTab);
       }
       connected = true;
     };

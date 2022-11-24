@@ -1,6 +1,12 @@
-import React, { useState, MutableRefObject, useEffect,useContext } from "react";
+import React, {
+  useState,
+  MutableRefObject,
+  useEffect,
+  useContext,
+} from "react";
 import { useSelector } from "react-redux";
-import "./meetjoiner.styles.scss";
+import { motion } from "framer-motion";
+
 import Tooltip from "@mui/material/Tooltip";
 import MicOffIcon from "@mui/icons-material/MicOff";
 import Screen from "../screen/screen";
@@ -13,6 +19,7 @@ import {
 
 import { randomColor } from "../../utils/helpers";
 // {currentIndex,curJoiner,hideVideo,camRef,showPhoto,currentUser}
+import "./meetjoiner.styles.scss";
 
 type MeetJoinerProps = {
   currentIndex: number | null;
@@ -51,9 +58,32 @@ const MeetJoiner: React.FC<MeetJoinerProps> = ({
     const genColor = randomColor();
     setColor(genColor);
   }, [screenStream]);
-  
+
   return (
-    <div className={`meetjoiner ${hideCam || screenStream !== null ? "hidden" : ""}`}>
+    <motion.div
+      className={`meetjoiner ${hideCam ? "hidden" : ""}`}
+      drag
+      dragElastic={1}
+      dragConstraints={{
+        left: 0,
+        right: 0,
+        top: 0,
+        bottom: 0,
+      }}
+      //@ts-ignore
+      initial={{ scale: 0.85 , rotation: -180 }}
+      animate={{
+        rotate: 0,
+        left: `2vw`,
+        scale:1
+      }}
+      transition={{
+        type: "spring",
+        duration: 2,
+        stiffness: 260,
+        damping: 25,
+      }}
+    >
       {load ? (
         <JoinerLoader2 load={load} />
       ) : (
@@ -82,8 +112,8 @@ const MeetJoiner: React.FC<MeetJoinerProps> = ({
           </div>
           {creator && <span className="creator">Creator</span>}
         </Screen>
-      )} 
-    </div>
+      )}
+    </motion.div>
   );
 };
 
