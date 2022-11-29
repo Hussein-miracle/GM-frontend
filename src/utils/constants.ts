@@ -11,6 +11,44 @@ export const MEDIA_CONTRAINTS = {
   },
 };
 
+
+export const ICESERVERS_1 = [
+  {
+    urls: [
+      "stun:stun1.l.google.com:19302",
+      "stun:stun2.l.google.com:19302",
+      "stun:stun.l.google.com:19302",
+      "stun:stun3.l.google.com:19302",
+      "stun:stun4.l.google.com:19302",
+      "stun:stun.services.mozilla.com",
+    ],
+  },
+];
+
+export const ICESERVERS = {
+  iceServers: [
+    {
+      urls: "stun:stun.services.mozilla.com",
+    },
+    {
+      urls: "stun:stun1.l.google.com:19302",
+    },
+    {
+      urls: "stun:stun2.l.google.com:19302",
+    },
+    {
+      urls: "stun:stun3.l.google.com:19302",
+    },
+    {
+      urls: "stun:stun4.l.google.com:19302",
+    },
+    {
+      urls: "stun:stun.l.google.com:19302",
+    },
+  ],
+};
+
+
 export const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 export const CarouselData = [
