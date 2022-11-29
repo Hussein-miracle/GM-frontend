@@ -12,9 +12,7 @@ import MicOffIcon from "@mui/icons-material/MicOff";
 import Screen from "../screen/screen";
 
 import {
-  JoinerLoader1,
   JoinerLoader2,
-  GoogleLoader,
 } from "../UI/loaders/loaders";
 
 import { randomColor } from "../../utils/helpers";
@@ -49,7 +47,7 @@ const MeetJoiner: React.FC<MeetJoinerProps> = ({
     settings: { voice },
   } = currentJoiner;
   // console.log(currentJoiner, "joiner");
-  const screenStream = useSelector((state: any) => state.user.screenStream);
+  const screenStream = useSelector((state: any) => state.meet.screenStream);
   const [color, setColor] = useState("blue");
 
   // const {joinerInitialSettings,userName,photoURLColor} = curJoiner;

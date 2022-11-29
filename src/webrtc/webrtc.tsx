@@ -1,6 +1,6 @@
 
 
-const sendOffer = (peerConnection,creatorId,receiverId) => {
+export const sendOffer = (_peerConnection: any,_creatorId: any,_receiverId: any) => {
   // accesss meetjoiners collections in the backend 
 
   // get receiverId data;
@@ -21,7 +21,7 @@ const sendOffer = (peerConnection,creatorId,receiverId) => {
 
 
 
-const sendAnswer = async (answerSenderId,userId) => {
+export const sendAnswer = async (_answerSenderId: any,_userId: any) => {
   // get answerSenderId
   // access their db
   // listen to icecandidate event
@@ -35,7 +35,7 @@ const sendAnswer = async (answerSenderId,userId) => {
 }
 
 
-const updateUserSettings = () => {
+export const updateUserSettings = () => {
   // get access to db their settings update it 
 
   

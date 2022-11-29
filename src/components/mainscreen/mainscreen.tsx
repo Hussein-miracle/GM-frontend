@@ -5,14 +5,18 @@ import { useParams, useNavigate, Navigate } from "react-router-dom";
 import { Socket } from "socket.io-client";
 
 import {
-  setMainStream,
   updateCurrentUserSettings,
-  setCurrentUser,
-  setScreenStream,
-  getName,
-  setLeaveMeetDetails,
-  setShowStream,
+  // setCurrentUser,
+  // getName,
 } from "../../reduxtoolkit/features/user/userSlice";
+
+import {
+  setMainStream,
+  setScreenStream,
+  // setLeaveMeetDetails,
+  setShowStream,
+} from "../../reduxtoolkit/features/meet/meetSlice";
+
 import {
   StreamContext,
   StreamContextProvider,
@@ -31,11 +35,11 @@ interface ScreenInterface {
 }
 
 const MainScreen: React.FC<ScreenInterface> = ({ socket }) => {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();/
   const dispatch = useDispatch();
   const { setContextStream } = useContext(StreamContext);
   const { meetingId } = useParams();
-  const mainStream = useSelector((state: any) => state.user.mainStream);
+  const mainStream = useSelector((state: any) => state.meet.mainStream);
   const name = useSelector((state: any) => state.user.currentUser.name);
   const [loadingStream, setLoadingStream] = useState(!true);
   const [loadingShareStream, setLoadingShareStream] = useState(false);

@@ -4,12 +4,7 @@ import DUMMY_JOINERS from "../../../utils/meeters";
 const INITIAL_STATE = {
   currentUser: { name: "" },
   // currentUser:{...DUMMY_JOINERS[0]},
-  meetJoiners: {},
-  mainStream: null,
   askName: !false,
-  screenStream: null,
-  showStream: false,
-  leaveMeetDetails:null,
 };
 
 // INITIAL_STATE.meetJoiners
@@ -25,10 +20,6 @@ const userReducerSlice = createSlice({
   name: "userSlice",
   initialState: INITIAL_STATE,
   reducers: {
-    setMainStream: (state, action) => {
-      // console.log(action,'setStream action')
-      state.mainStream = action.payload;
-    },
     setCurrentUser: (state, action) => {
       const payload = action.payload;
       const user = { ...state.currentUser, ...payload };
@@ -39,48 +30,33 @@ const userReducerSlice = createSlice({
       const user = { ...state.currentUser, name: action.payload };
       state.currentUser = user;
     },
-    addMeetJoiner: (state, action) => {
-      state.meetJoiners = { ...state.meetJoiners, ...action.payload };
-    },
     getName: (state, action) => {
       state.askName = action.payload;
     },
-    closeStreams: (state,action) => {
-      const streams = state.mainStream;
-      // @ts-ignore
-      streams?.getAudioTracks()[0]?.stop();
-      // @ts-ignore
-      streams?.getVideoTracks()[0]?.stop();
-
-      state.mainStream = streams;
-    },
-    setShowStream: (state,action) => {
-      state.showStream = action.payload;
-    },
-    setScreenStream: (state,action) => {
-      state.screenStream = action.payload;
-    },
-    setLeaveMeetDetails: (state,action) => {
-      state.leaveMeetDetails = action.payload;
-    },
-    updateCurrentUserSettings:(state,action)=>{
+    updateCurrentUserSettings: (state, action) => {
       const payload = action.payload;
       // console.log(payload , 'paylod settings');
-      const currentUser = {...state.currentUser};
+      const currentUser = { ...state.currentUser };
       // @ts-ignore
-      const settingsPayload = {...currentUser.settings,...payload};
+      const settingsPayload = { ...currentUser.settings, ...payload };
       // @ts-ignore
       // console.log(settingsPayload,'settingPayload');
-      const updatedCurrentUser = {...currentUser,settings:{...settingsPayload}};
+      const updatedCurrentUser = {
+        ...currentUser,
+        settings: { ...settingsPayload },
+      };
       // console.log(updatedCurrentUser,'updated current user')
       state.currentUser = updatedCurrentUser;
-    }
-    
+    },
   },
 });
 
-export const { setMainStream, setUserName, setCurrentUser, getName,    closeStreams,setScreenStream,setLeaveMeetDetails,updateCurrentUserSettings,setShowStream } =
-  userReducerSlice.actions;
+export const {
+  setUserName,
+  setCurrentUser,
+  getName,
+  updateCurrentUserSettings,
+} = userReducerSlice.actions;
 
 // export {setMainStream};
 

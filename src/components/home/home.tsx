@@ -6,8 +6,8 @@ import { Socket } from "socket.io-client";
 import {
   setCurrentUser,
   getName,
-  setLeaveMeetDetails,
 } from "../../reduxtoolkit/features/user/userSlice";
+import { setLeaveMeetDetails } from "../../reduxtoolkit/features/meet/meetSlice";
 
 import { manageDateTime } from "../../utils/helpers";
 
@@ -39,8 +39,7 @@ interface HomeInterface {
 }
 
 // @ts-ignore
-const CreateMeet = ({ show,close,socket,handleInstant,clickedFuture,mouseLeave,
-}) => {
+const CreateMeet = ({show,close,socket,handleInstant,clickedFuture,mouseLeave}) => {
   const clickedInstant = () => {
     close();
     handleInstant();
@@ -110,6 +109,7 @@ const Home: React.FC<HomeInterface> = ({ socket }) => {
   const initJoin = (data: any) => {
     socket.emit("join-meet", data);
     socket.on("joined-meet", async (result) => {
+      console.log(result, "joined-meet");
       const meetData = result.meetData;
       const link = meetData.link;
       const user = result.userData;
@@ -154,7 +154,6 @@ const Home: React.FC<HomeInterface> = ({ socket }) => {
       meetCreator: false,
     };
 
-    // console.log('joindata',joinData);
     setLoading(true);
 
     initJoin(joinData);
@@ -324,9 +323,7 @@ const Home: React.FC<HomeInterface> = ({ socket }) => {
       </header>
 
       <main className="home__main">
-        
         <LinkModal
-
           showLink={futureLink && meetLink}
           link={meetLink}
           close={handleLink}

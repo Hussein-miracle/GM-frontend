@@ -34,8 +34,8 @@ const Controls: React.FC<ControlsInterface> = ({ socket,handleShareScreen }) => 
   const navigate = useNavigate();
   const currentUser = useSelector((state: any) => state.user.currentUser);
   const settings = useSelector((state: any) => state.user.currentUser.settings);
-  const meet = useSelector((state: any) => state.user.leaveMeetDetails);
-  const stream = useSelector((state: any) => state.user.mainStream);
+  const meet = useSelector((state: any) => state.meet.leaveMeetDetails);
+  const stream = useSelector((state: any) => state.meet.mainStream);
   const [voice, setVoice] = useState(settings.voice);
   const [cam, setCam] = useState(settings.cam);
   const [loadingShareStream, setLoadingShareStream] = useState(false);

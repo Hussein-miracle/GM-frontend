@@ -38,14 +38,14 @@ const MeetJoiners: React.FC<MeetJoinerInterface> = ({
   const camRef = useRef<HTMLVideoElement | null>(
     null
   ) as MutableRefObject<HTMLVideoElement>;
-  const meetJoiners = useSelector((state: any) => state.user.meetJoiners);
+  const meetJoiners = useSelector((state: any) => state.meet.meetJoiners);
   const currentUserData = useSelector((state: any) => state.user.currentUser);
-  const stream = useSelector((state: any) => state.user.mainStream);
+  const stream = useSelector((state: any) => state.meet.mainStream);
 
-  const meetJoinersIds: any[] = Object.values(meetJoiners);
+  const meetJoinersIds: any[] = meetJoiners.map((item: { _id: any; }) =>  item._id);
 
   let connected = false;
-  // console.log(meetJoinersIds);
+  console.log(meetJoinersIds);
   // const currentUser = currentUserData ? Object.values(currentUserData)[0]    : null;
   // console.log(currentUser ,"[cur user meetjoiners component]")
 
@@ -79,21 +79,21 @@ const MeetJoiners: React.FC<MeetJoinerInterface> = ({
   // }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const joiners = meetJoinersIds?.map((meetJoiner, index) => {
+  const joiners = meetJoiners.map((meetJoiner:{_id:string,settings:{voice:boolean},meetCreator:boolean}, index:number) => {
     // console.log(meetJoiner, "joiner");
-    const currentJoiner = meetJoiners[meetJoiner];
+    // const currentJoiner = meetJoiners[meetJoiner];
 
     return (
       <MeetJoiner
-        key={meetJoiner.id}
+        key={meetJoiner._id}
         creator={meetJoiner.meetCreator}
         currentUser={!true}
         load={false}
-        currentJoiner={currentJoiner}
+        currentJoiner={meetJoiner}
         currentIndex={index}
         hideCam={false}
         camRef={null}
-        avatar={meetJoiner.voice}
+        avatar={meetJoiner.settings.voice}
       />
     );
   });

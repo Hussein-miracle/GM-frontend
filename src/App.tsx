@@ -2,15 +2,15 @@ import React, { useEffect, useState } from "react";
 // import { useDispatch} from "react-redux";
 import { Routes, Route } from "react-router-dom";
 import io from "socket.io-client";
-import {useBeforeUnload} from 'react-use';
+// import {useBeforeUnload} from 'react-use';
 
 import MainScreen from "./components/mainscreen/mainscreen";
 import Home from "./components/home/home";
 import "./App.css";
 // import { DefaultEventsMap } from "@socket.io/component-emitter";
 // const socket = io(process.env.REACT_APP_BACKEND_PROD_URL as string);
-const socket = io(process.env.REACT_APP_BACKEND_PROD2_URL as string);
-// const socket = io(process.env.REACT_APP_BACKEND_DEV_URL as string);
+// const socket = io(process.env.REACT_APP_BACKEND_PROD2_URL as string);
+const socket = io(process.env.REACT_APP_BACKEND_DEV_URL as string);
 // * note: implement a notice for socket connection error
 // if(!socket.emit){
 //   alert('NetworkConnection error');

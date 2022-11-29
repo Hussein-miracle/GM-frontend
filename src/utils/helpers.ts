@@ -13,7 +13,7 @@ export const manageDateTime = () => {
     timeZone: zone,
     hour: "numeric",
     minute: "numeric",
-  };
+};
   const date = new Date();
   let day: string | number = date.getDay();
   day = days[day];

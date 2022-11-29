@@ -14,8 +14,8 @@ const StreamScreen: React.FC<ScreenInterface> = ({
   handleLoadingShareStream,
   loadingShareStream,
 }) => {
-  const screenStream = useSelector((state: any) => state.user.screenStream);
-  const showStream = useSelector((state: any) => state.user.showStream);
+  const screenStream = useSelector((state: any) => state.meet.screenStream);
+  const showStream = useSelector((state: any) => state.meet.showStream);
   const shareRef = useRef<HTMLVideoElement | null>(
     null
   ) as MutableRefObject<HTMLVideoElement>;
