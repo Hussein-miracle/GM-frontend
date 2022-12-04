@@ -77,8 +77,12 @@ html {
 }
 
 html,
-body {
+body , #root{
   height: 100%;
+}
+
+#root{
+  isolation: isolate;
 }
 
 svg,
@@ -89,3 +93,5 @@ canvas {
   display: block;
   max-width: 100%;
 }
+
+

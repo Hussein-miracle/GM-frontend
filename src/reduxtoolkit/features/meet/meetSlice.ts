@@ -1,7 +1,9 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { useStore } from "react-redux";
+// import {store} from '../../app/store';
 
 const initialState = {
-  meetJoiners: [],
+  meetJoiners: {},
   showStream: false,
   screenStream: null,
   leaveMeetDetails: null,
@@ -35,11 +37,13 @@ const meetReducerSlice = createSlice({
       state.leaveMeetDetails = action.payload;
     },
     addMeetJoiner: (state, action) => {
-      const meetJoiners = [...state.meetJoiners];
+      console.log(state,'state');
+      const meetJoiners = {...state.meetJoiners};
       const joiner = { ...action.payload };
+
       // @ts-ignore
-      meetJoiners.push(joiner);
-      state.meetJoiners = [...meetJoiners];
+      // meetJoiners.push(joiner);
+      state.meetJoiners = {...meetJoiners};
     },
   },
 });

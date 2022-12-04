@@ -1,24 +1,37 @@
 @mixin carouselbtn {
   background-color: transparent;
   border-radius: 50%;
+
   display: flex;
   justify-content: center;
   align-items: center;
+
   outline: none;
   border: none;
+
+
   width: 3rem;
   height: 3rem;
+
+
   cursor: pointer;
 }
 .carousel{
   // background-color: deeppink;
+
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-inline:1rem;
+
+  padding-inline:16px;
+
   height: 100%;
+  position: relative;
 
   &__btn{
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
     // flex:0.1;
     @include carouselbtn();
     align-self: center;
@@ -37,15 +50,19 @@
 
   
   .right{
-    transform: translateX(-3rem);
+    // transform: translateX(-3rem);
+    right: 0;
   }
 
   .left{
-      transform: translateX(3rem);
+      // transform: translateX(3rem);
+      left: 0;
   
   }
 
   &__main{
     height: 100%;
+    width: 100%;
+    // background-color:peachpuff;
   }
 }
