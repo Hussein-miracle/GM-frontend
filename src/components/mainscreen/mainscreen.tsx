@@ -85,6 +85,7 @@ const MainScreen= ({ socket }:ScreenInterface) => {
     stream.getAudioTracks()[0].enabled = settings.voice;
     stream.getVideoTracks()[0].enabled = settings.cam;
     setContextStream(stream);
+
     dispatch(setMainStream(stream));
           
     socket.on('update-joiners',(data) => {
@@ -261,7 +262,7 @@ const MainScreen= ({ socket }:ScreenInterface) => {
 
   useEffect(() => {
     // if(meetingId){
-    if (connected) {
+
       if (name) {
         init();
       }
@@ -269,7 +270,7 @@ const MainScreen= ({ socket }:ScreenInterface) => {
         setLoadingStream(false);
       }, 1200);
       // console.log(mainStream, "on mount");
-    }
+    // }
 
     // }
 

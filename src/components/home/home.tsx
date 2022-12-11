@@ -150,7 +150,7 @@ const Home = ({ socket }:HomeType) => {
 
     // console.log('meetcreationData',data);
     socket.emit("create-future-meet-link", data);
-    
+
     socket.on("future-meet-link-created", (result) => {
       console.log(result, "meet-link-creation result");
       const { link } = result;
@@ -165,7 +165,7 @@ const Home = ({ socket }:HomeType) => {
     });
   };
 
-  const handleInstantLink = () => {
+  const handleInstantLink = async () => {
     setLoading(true);
     const settings = {
       voice: false,
