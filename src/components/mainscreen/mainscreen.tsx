@@ -14,6 +14,7 @@ import {
   setMainStream,
   setScreenStream,
   // setLeaveMeetDetails,
+  updateMeetingJoiners,
   setShowStream,
 } from "../../reduxtoolkit/features/meet/meetSlice";
 
@@ -26,7 +27,7 @@ import Controls from "../controls/controls";
 import MeetJoiners from "../meetjoiners/meetjoiners";
 import {
   MEDIA_CONTRAINTS,
-  ICESERVERS_1,
+  // ICESERVERS_1,
   ICESERVERS,
 } from "../../utils/constants";
 import { StopStreams } from "../../utils/helpers";
@@ -38,7 +39,7 @@ interface ScreenInterface {
   socket: Socket;
 }
 
-const MainScreen: React.FC<ScreenInterface> = ({ socket }) => {
+const MainScreen= ({ socket }:ScreenInterface) => {
   // const navigate = useNavigate();/
   const dispatch = useDispatch();
   const { setContextStream } = useContext(StreamContext);
@@ -50,8 +51,6 @@ const MainScreen: React.FC<ScreenInterface> = ({ socket }) => {
   const [loadingShareStream, setLoadingShareStream] = useState(false);
   const settings = useSelector((state: any) => state.user.currentUser.settings);
   let connected = false;
-  let forceConnected = false;
-
   // console.log(settings,'settings');
 
   const handleLoadingShareStream = (value: boolean) => {
@@ -74,10 +73,6 @@ const MainScreen: React.FC<ScreenInterface> = ({ socket }) => {
 
       dispatch(setScreenStream(stream));
       dispatch(updateCurrentUserSettings({ ...settings, screen: true }));
-
-      // setTimeout(() => {
-      //   setLoadingShareStream(false);
-      // }, 1500);
     } catch (e) {
       dispatch(setShowStream(false));
       console.error(e);
@@ -91,6 +86,12 @@ const MainScreen: React.FC<ScreenInterface> = ({ socket }) => {
     stream.getVideoTracks()[0].enabled = settings.cam;
     setContextStream(stream);
     dispatch(setMainStream(stream));
+          
+    socket.on('update-joiners',(data) => {
+      const joiners = data.joiners.participants;
+      // console.log(joiners , 'update joiners');
+      dispatch(updateMeetingJoiners(joiners));
+    })
     handlePeerConnection();
   };
 
@@ -104,20 +105,47 @@ const MainScreen: React.FC<ScreenInterface> = ({ socket }) => {
       const candidate = event.candidate.candidate;
       console.log(candidate, "actual candidate details");
 
-      const candidateData = {
-        type: "candidate",
-        label,
-        id,
-        candidate,
-        meetingId,
-      };
+      // const candidateData = {
+      //   type: "candidate",
+      //   label,
+      //   id,
+      //   candidate,
+      //   meetingId,
+      // };
 
-      socket.emit("candidate", candidateData);
+      // socket.emit("candidate", candidateData);
+
+      // socket.on("candidate", (event) => {
+      //   const iceCandidateData = {
+      //     sdpMLineIndex: event.label,
+      //     sdpMid:event.id,
+      //     candidate: event.candidate,
+      //   };
+      //   const candidate = new RTCIceCandidate(iceCandidateData);
+      
+        // rtcPeerConnection.addIceCandidate(candidate);
+      // });
+
+      return event.candidate;
     }
   };
-  const handleOnTrackEvent = () => {
+  const handleOnTrackEvent = (event:any) => {
     // remoteVideo.srcObject = event.streams[0];
     // remoteStream = event.streams[0];
+
+    const remoteStream = new MediaStream();
+
+    const eventAudioStream = mainStream.getAudioTracks()[0];
+    remoteStream.addTrack(eventAudioStream);
+    const eventVideoStream = mainStream.getVideoTracks()[0];
+    remoteStream.addTrack(eventVideoStream);
+
+    // const vid = document.getElementById(
+    //   `meetJoinerCam--${currentIndex}`
+    // );
+    // if (vid) vid.srcObject = remoteStream;
+    
+
   };
   const handleInitPeerConnection = async () => {
     //  here i create an instance of RTCPeerConnection which takes in an argument,the argument being an THE ICESERVERS we want to use;
@@ -139,14 +167,17 @@ const MainScreen: React.FC<ScreenInterface> = ({ socket }) => {
     webrtcPeerConnection.addTrack(videoTrack, mainStream);
 
     //we create an offer event which return us the sessiondescription
-
     const sessionDescription = await webrtcPeerConnection.createOffer();
+
     webrtcPeerConnection.setLocalDescription(sessionDescription);
+
     const offerData = {
       type: "offer",
       sdp: sessionDescription,
       meetingId,
+      userId:currentUser._id,
     };
+
 
     socket.emit("offer", offerData);
 
@@ -157,8 +188,10 @@ const MainScreen: React.FC<ScreenInterface> = ({ socket }) => {
   };
 
   const handleJoinPeerConnection = async (offerDetails: {
-    type: any;
-    sdp: any;
+    type: RTCSdpType;
+    sdp: string;
+    creatorId:string;
+    meetingId:string;
   }) => {
     //  here i create an instance of RTCPeerConnection which takes in an argument,the argument being an THE ICESERVERS we want to use;
     // const webrtcPeerConnection = new RTCPeerConnection(ICESERVERS_1);
@@ -195,6 +228,7 @@ const MainScreen: React.FC<ScreenInterface> = ({ socket }) => {
       type: "answer",
       sdp: sessionDescription,
       meetingId,
+      creatorId:currentUser._id,
     };
 
     socket.emit("answer", answerData);
@@ -216,7 +250,9 @@ const MainScreen: React.FC<ScreenInterface> = ({ socket }) => {
   const handlePeerConnection = () => {
     if (currentUser?.meetCreator !== true) {
       socket.emit("ready-for-peerconnection", { user: currentUser });
-      socket.on("offer-created", handleJoinPeerConnection);
+      socket.on("offer-created", async (offerData) => {
+        await handleJoinPeerConnection(offerData);
+      });
     } else {
       // @ts-ignore
       socket.on("ready-for-peerconnection", handleInitPeerConnection);

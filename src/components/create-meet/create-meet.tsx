@@ -4,15 +4,17 @@ import LinkIcon from "@mui/icons-material/Link";
 
 
 // @ts-ignore
-const CreateMeet = ({show,close,socket,handleInstant,clickedFuture,mouseLeave}) => {
+const CreateMeet = ({show,close,socket,handleInstant,createFutureLink,mouseLeave}) => {
   const clickedInstant = () => {
     close();
     handleInstant();
   };
 
   const handleFutureLink = () => {
+    // console.log('handleFLink');
+    
     close();
-    clickedFuture();
+    createFutureLink();
   };
 
   return (

@@ -2,13 +2,13 @@ import React, {
   MutableRefObject,
   useEffect,
   useRef,
-  useContext,
-  SetStateAction,
-  Dispatch,
+  // useContext,
+  // SetStateAction,
+  // Dispatch,
 } from "react";
 import { useSelector } from "react-redux";
-import { StreamContext } from "../../contexts/streamContext/streamContext";
-import Caption from '../caption/caption';
+// import { StreamContext } from "../../contexts/streamContext/streamContext";
+import Caption from "../caption/caption";
 import MeetJoiner from "../meetjoiner/meetjoiner";
 import StreamScreen from "../streamscreen/streamscreen";
 import "./meetjoiners.styles.scss";
@@ -26,26 +26,28 @@ interface MeetJoinerInterface {
   loadingStream: boolean;
   handleLoadingShareStream: any;
   setLoadingStream: any;
-  loadingShareStream:boolean;
+  loadingShareStream: boolean;
 }
 
-const MeetJoiners: React.FC<MeetJoinerInterface> = ({
+const MeetJoiners = ({
   loadingStream,
   setLoadingStream,
   handleLoadingShareStream,
-  loadingShareStream
-}) => {
+  loadingShareStream,
+}: MeetJoinerInterface) => {
   const camRef = useRef<HTMLVideoElement | null>(
     null
   ) as MutableRefObject<HTMLVideoElement>;
-  const meetJoiners = useSelector((state: any) => state.meet.meetJoiners);
   const currentUserData = useSelector((state: any) => state.user.currentUser);
   const stream = useSelector((state: any) => state.meet.mainStream);
 
-  const meetJoinersIds: any[] = meetJoiners.map((item: { _id: any; }) =>  item._id);
+  const meetJoiners = useSelector((state: any) => state.meet.meetJoiners);
 
-  let connected = false;
-  console.log(meetJoinersIds);
+  const meetJoinersIds: any[] = meetJoiners?.map(
+    (item: { _id: any }) => item._id
+  );
+
+  // console.log(meetJoinersIds);
   // const currentUser = currentUserData ? Object.values(currentUserData)[0]    : null;
   // console.log(currentUser ,"[cur user meetjoiners component]")
 
@@ -62,10 +64,9 @@ const MeetJoiners: React.FC<MeetJoinerInterface> = ({
     // }
 
     return () => {
-      //@ts-ignore
       // eslint-disable-next-line react-hooks/exhaustive-deps
-      connected = true;
     };
+    //@ts-ignore
   }, [currentUserData.settings.voice, stream]);
 
   // const findScreenSharer = meetJoinersIds.find((element) => {
@@ -79,23 +80,25 @@ const MeetJoiners: React.FC<MeetJoinerInterface> = ({
   // }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const joiners = meetJoiners.map((meetJoiner:{_id:string,settings:{voice:boolean},meetCreator:boolean}, index:number) => {
-    // console.log(meetJoiner, "joiner");
-    // const currentJoiner = meetJoiners[meetJoiner];
+  const joiners = meetJoiners?.map((meetJoiner: any, index: number | null) => {
+    const currentJoiner = meetJoiner;
 
-    return (
-      <MeetJoiner
-        key={meetJoiner._id}
-        creator={meetJoiner.meetCreator}
-        currentUser={!true}
-        load={false}
-        currentJoiner={meetJoiner}
-        currentIndex={index}
-        hideCam={false}
-        camRef={null}
-        avatar={meetJoiner.settings.voice}
-      />
-    );
+    if(currentJoiner._id !== currentUserData._id){
+      return (
+        <MeetJoiner
+          key={meetJoiner._id}
+          creator={meetJoiner.meetCreator || false}
+          currentUser={false}
+          load={false}
+          currentJoiner={meetJoiner}
+          currentIndex={index}
+          hideCam={false}
+          camRef={null}
+          avatar={currentJoiner.settings.cam === true ? false : true}
+        />
+      );
+    }
+
   });
 
   // if(currentUserData === null) return <></>;
@@ -103,22 +106,31 @@ const MeetJoiners: React.FC<MeetJoinerInterface> = ({
   return (
     <div className="meet-wrapper">
       {/* //@ts-ignore */}
-      <StreamScreen handleLoadingShareStream={handleLoadingShareStream} loadingShareStream={loadingShareStream} />
+      <StreamScreen
+        handleLoadingShareStream={handleLoadingShareStream}
+        loadingShareStream={loadingShareStream}
+      />
       <div
         className="meetjoiners"
         style={{
           //@ts-ignore
-          "--grid-col": handleGrid(meetJoinersIds.length > 0 ? meetJoinersIds.length : 2 , 2),
-          "--grid-row": handleGrid(meetJoinersIds.length > 0 ? meetJoinersIds.length : 2 , 3),
+          "--grid-col": handleGrid(
+            meetJoinersIds.length > 0 ? meetJoinersIds.length : 2,
+            2
+          ),
+          "--grid-row": handleGrid(
+            meetJoinersIds.length > 0 ? meetJoinersIds.length : 2,
+            3
+          ),
           // position:  ? 'absolute' : 'relative'
         }}
       >
-        {/* {joiners} */}
+        {joiners}
         <MeetJoiner
-          key={currentUserData.id}
+          key={currentUserData._id}
           creator={currentUserData.meetCreator || false}
           currentJoiner={currentUserData}
-          currentIndex={meetJoinersIds.length}
+          currentIndex={meetJoiners.length}
           hideCam={currentUserData.settings.screen === true}
           // hideCam={findScreenSharer && !currentUserData.settings.screen}
           load={loadingStream}

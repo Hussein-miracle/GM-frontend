@@ -2,7 +2,7 @@ import React, {
   useState,
   MutableRefObject,
   useEffect,
-  useContext,
+  // useContext,
 } from "react";
 import { useSelector } from "react-redux";
 import { motion } from "framer-motion";
@@ -11,9 +11,7 @@ import Tooltip from "@mui/material/Tooltip";
 import MicOffIcon from "@mui/icons-material/MicOff";
 import Screen from "../screen/screen";
 
-import {
-  JoinerLoader2,
-} from "../UI/loaders/loaders";
+import { JoinerLoader2 } from "../UI/loaders/loaders";
 
 import { randomColor } from "../../utils/helpers";
 // {currentIndex,curJoiner,hideVideo,camRef,showPhoto,currentUser}
@@ -31,21 +29,13 @@ type MeetJoinerProps = {
 
   // name: string;
 };
-const MeetJoiner: React.FC<MeetJoinerProps> = ({
-  creator,
-  // name,
-  currentUser,
-  camRef,
-  avatar,
-  hideCam,
-  load,
-  currentIndex,
-  currentJoiner,
-}) => {
-  const {
-    name,
-    settings: { voice },
-  } = currentJoiner;
+
+
+const MeetJoiner = (props: MeetJoinerProps) => {
+  const { creator, currentUser,camRef,avatar,hideCam,load,currentIndex,currentJoiner
+  } = props;
+  
+  const { name,settings: { voice }} = currentJoiner;
   // console.log(currentJoiner, "joiner");
   const screenStream = useSelector((state: any) => state.meet.screenStream);
   const [color, setColor] = useState("blue");
@@ -69,17 +59,15 @@ const MeetJoiner: React.FC<MeetJoinerProps> = ({
         bottom: 0,
       }}
       //@ts-ignore
-      initial={{ scale: 0.85 , rotation: -180 }}
+      initial={{ scale: 0.78, rotation: -180 }}
       animate={{
         rotate: 0,
-        left: `2vw`,
-        scale:1
+        left: `1.5vw`,
+        scale: 1,
       }}
       transition={{
         type: "spring",
-        duration: 2,
-        stiffness: 260,
-        damping: 25,
+        duration: 1,    
       }}
     >
       {load ? (
@@ -109,6 +97,7 @@ const MeetJoiner: React.FC<MeetJoinerProps> = ({
             {name} <span> {currentUser ? "(You)" : ""}</span>
           </div>
           {creator && <span className="creator">Creator</span>}
+          {!creator && <span className="joiner">Joiner</span>}
         </Screen>
       )}
     </motion.div>

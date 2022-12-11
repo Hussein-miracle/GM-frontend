@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { Socket } from "socket.io-client";
@@ -8,7 +8,7 @@ import {
   getName,
 } from "../../reduxtoolkit/features/user/userSlice";
 
-import { setLeaveMeetDetails } from "../../reduxtoolkit/features/meet/meetSlice";
+import { setLeaveMeetDetails,updateMeetingJoiners } from "../../reduxtoolkit/features/meet/meetSlice";
 
 import { manageDateTime } from "../../utils/helpers";
 
@@ -32,12 +32,12 @@ import  {CustomTip,HtmlTooltip} from  '../UI/tooltips/tooltips';
 import Loaders, { Loader, LoadingText } from "../UI/loaders/loaders";
 
 import "./home.styles.scss";
-interface HomeInterface {
+type HomeType =  {
   socket: Socket;
 }
 
 
-const Home: React.FC<HomeInterface> = ({ socket }) => {
+const Home = ({ socket }:HomeType) => {
   const dispatch = useDispatch();
   const name = useSelector((state: any) => state.user.currentUser.name);
   const navigator = useNavigate();
@@ -45,13 +45,13 @@ const Home: React.FC<HomeInterface> = ({ socket }) => {
   const [text, setText] = useState("");
   const [hovered, setHovered] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
-  const [meetLink, setMeetLink] = useState("");
-  const [futureLink, setShowfutureLink] = useState(false);
+  const [meetLink, setMeetLink] = useState<string>("");
+  const [futureLink, setShowfutureLink] = useState<boolean>(false);
   const [loading, setLoading] = useState(false);
   const { time, day, dateFormat } = manageDateTime();
   // const [disable, setDisable] = useState(false);
 
-  const handleChange = (e: any) => {
+  const handleChange = (e:React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value;
     setText(val);
   };
@@ -70,15 +70,21 @@ const Home: React.FC<HomeInterface> = ({ socket }) => {
 
   const initJoin = (data: any) => {
     socket.emit("join-meet", data);
-    socket.on("joined-meet", async (result) => {
-      console.log(result, "joined-meet");
+    socket.on("joined-meet", async (result:any) => {
+      console.log(result, "joined-meet data");
       const meetData = result.meetData;
       const link = meetData.link;
-      const user = result.userData;
+      const user = result.joiner;
+      const joiners = result.participants.participants;
+      console.log(joiners , 'joiners');
 
       dispatch(setLeaveMeetDetails(meetData));
       dispatch(setCurrentUser(user));
 
+      setTimeout(() => {
+        dispatch(updateMeetingJoiners(joiners));
+      },500)
+;
       setLoading(false);
       navigator(`/${link}`);
     });
@@ -125,6 +131,7 @@ const Home: React.FC<HomeInterface> = ({ socket }) => {
 
     // setLoading(false);
     // navigator(`/${linkStr}`);
+    // socket.emit('update-joiners');
   };
 
   const handleFutureMeetLink = () => {
@@ -141,10 +148,12 @@ const Home: React.FC<HomeInterface> = ({ socket }) => {
       meetCreator: true,
     };
 
+    // console.log('meetcreationData',data);
     socket.emit("create-future-meet-link", data);
+    
     socket.on("future-meet-link-created", (result) => {
-      // console.log(result, "meet-link-creation result");
-      const { creator, link } = result;
+      console.log(result, "meet-link-creation result");
+      const { link } = result;
 
       setMeetLink(link);
       setShowfutureLink(true);
@@ -175,7 +184,7 @@ const Home: React.FC<HomeInterface> = ({ socket }) => {
 
     socket.emit("create-meet-link", data);
     socket.on("meet-link-created", (result) => {
-      // console.log(result, "meet-link-creation result");
+      console.log(result, "meet-link-creation result");
       const { creator, link } = result;
 
       const meetData = {
@@ -183,9 +192,12 @@ const Home: React.FC<HomeInterface> = ({ socket }) => {
         meetingId: result.currentMeetingId,
         creator,
       };
-
+      
       dispatch(setLeaveMeetDetails(meetData));
       dispatch(setCurrentUser(creator));
+
+      // const
+
 
       setLoading(false);
       navigator(`/${link}`);
@@ -210,6 +222,7 @@ const Home: React.FC<HomeInterface> = ({ socket }) => {
     if (!name) {
       dispatch(getName(true));
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [name]);
 
   return (
@@ -276,7 +289,7 @@ const Home: React.FC<HomeInterface> = ({ socket }) => {
                   <CustomTip
                     text={"Google Account"}
                     name={name}
-                    email={"email@gmail.com"}
+                    email={`${name}@gmail.com?`}
                   />
                 }
               >
@@ -313,7 +326,7 @@ const Home: React.FC<HomeInterface> = ({ socket }) => {
               close={handleCloseCreateModal}
               handleInstant={handleInstantLink}
               socket={socket}
-              clickedFuture={handleFutureMeetLink}
+              createFutureLink={handleFutureMeetLink}
               mouseLeave={handleMouseLeaveCreateBTN}
             />
 

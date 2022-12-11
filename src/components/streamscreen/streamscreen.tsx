@@ -10,10 +10,7 @@ interface ScreenInterface {
   loadingShareStream: boolean;
 }
 
-const StreamScreen: React.FC<ScreenInterface> = ({
-  handleLoadingShareStream,
-  loadingShareStream,
-}) => {
+const StreamScreen = ({ handleLoadingShareStream, loadingShareStream }:ScreenInterface) => {
   const screenStream = useSelector((state: any) => state.meet.screenStream);
   const showStream = useSelector((state: any) => state.meet.showStream);
   const shareRef = useRef<HTMLVideoElement | null>(

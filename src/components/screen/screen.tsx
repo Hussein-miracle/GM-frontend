@@ -2,11 +2,11 @@ import React from 'react';
 import "./screen.styles.scss";
 
 interface ScreenProps{
-  children: React.ReactNode | React.ReactNode[];
+  children: React.ReactNode | React.ReactNode[] | React.ReactElement[] | React.ReactElement;
   // show:boolean;
 }
 
-const Screen:React.FC<ScreenProps> = ({children}:ScreenProps) => {
+const Screen = ({children}:ScreenProps) => {
   return (
     <div className="screen">
       {children}

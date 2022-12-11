@@ -1,13 +1,14 @@
 import {useState} from 'react';
 import CloseIcon from "@mui/icons-material/Close";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+import { Tooltip } from '@mui/material';
 
 
 import { SuccessNotify } from "../UI/notification/notification";
 //@ts-ignore
 const LinkModal = ({ showLink, link, close }) => {
   const [showAlert, setShowAlert] = useState(false);
-  const copyLink = () => {
+  const copyLink = (e:React.MouseEvent<HTMLSpanElement, MouseEvent>) => {
     navigator.clipboard.writeText(link);
     setShowAlert(true);
 
@@ -35,9 +36,12 @@ const LinkModal = ({ showLink, link, close }) => {
       </p>
       <div className="link-box">
         <span className="link">{link}</span>
+        <Tooltip title='Click to copy ✨ meet link.'>
         <span onClick={copyLink} className="copy">
           <ContentCopyIcon />
         </span>
+        </Tooltip>
+
       </div>
     </div>
   );

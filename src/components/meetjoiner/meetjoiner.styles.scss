@@ -1,5 +1,6 @@
 .meetjoiner{
     // background-color: var(--gm-screen-off-color);
+    isolation: isolate;
     background-color: var(--gm-body-text-color);
     display: flex;
     justify-content: center;
@@ -14,6 +15,8 @@
     -o-border-radius: 4px;
     min-height: 200px;
 
+    transition: all .3s ease-in-out;
+
 
 
     video{
@@ -23,6 +26,7 @@
         position: relative;
         object-fit: cover;
         border-radius: 5px;
+        aspect-ratio: 16 / 9;
     }
 
     .mic-off{
@@ -38,6 +42,10 @@
 
         width: 1.5rem;
         height: 1.5rem;
+        opacity: 1;
+        transition: all .2s ease;
+
+        mix-blend-mode: difference;
     }
 
     .avatar{
@@ -63,7 +71,10 @@
 
     .hidden {
         display: none;
-
+    }
+    .hidden-voice {
+        opacity: 0 !important;
+        // visibility: hidden;
     }
     .creator{
         color: #000;
@@ -75,6 +86,19 @@
         position: absolute;
     
         left: 5px;
+        top: 5px;
+    }
+
+    .joiner{
+        color: var(--gm-theme-color-highlight);
+        font-style: italic;
+        background-color: var(--gm-theme-color);
+    
+        border-radius: 6px;
+        padding: 3px;
+        position: absolute;
+    
+        right: 5px;
         top: 5px;
     }
     
@@ -97,7 +121,7 @@
 
 
 @media (max-width: 50em) {
-    @warn "divider: #{50em}";
+    // @warn "divider: #{50em}";
     .meet-joiner{
         min-height: 0px;
     }

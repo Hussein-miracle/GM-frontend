@@ -1,8 +1,9 @@
 import { createSlice } from "@reduxjs/toolkit";
+import {socket} from '../../../App';
 import DUMMY_JOINERS from "../../../utils/meeters";
 
 const INITIAL_STATE = {
-  currentUser: { name: "" },
+  currentUser: { name: "",_id: null },
   // currentUser:{...DUMMY_JOINERS[0]},
   askName: !false,
 };
@@ -47,6 +48,17 @@ const userReducerSlice = createSlice({
       };
       // console.log(updatedCurrentUser,'updated current user')
       state.currentUser = updatedCurrentUser;
+
+      const userId = currentUser._id;
+
+      if(!!userId){
+        socket?.emit('update-settings',{userId,settingsUpdate:settingsPayload});
+
+      }
+
+      // socket.on('updated-settings',(result) => {
+      //   console.log(result , 'settings update result');
+      // })
     },
   },
 });
@@ -58,6 +70,5 @@ export const {
   updateCurrentUserSettings,
 } = userReducerSlice.actions;
 
-// export {setMainStream};
 
 export default userReducerSlice.reducer;

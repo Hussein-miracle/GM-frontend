@@ -1,3 +1,5 @@
+import React from "react";
+
 export const initCaption = (restartSelf = true) => {
   // @ts-ignore
   const SpeechRecognition =
@@ -47,9 +49,9 @@ export const initCaption = (restartSelf = true) => {
   recognition.start();
 };
 
-export const speakOutLoud = (message: string) => {
+export const speakOutLoud = async (message: string) => {
   const speech = new SpeechSynthesisUtterance();
-  const voices = window.speechSynthesis.getVoices();
+  const voices = await window.speechSynthesis.getVoices();
 
   // femalevoice
   const femalevoice = voices[2];

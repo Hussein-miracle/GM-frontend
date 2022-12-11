@@ -29,14 +29,14 @@ interface ControlsInterface {
   socket: Socket;
   handleShareScreen:Function;
 }
-const Controls: React.FC<ControlsInterface> = ({ socket,handleShareScreen }) => {
+const Controls= ({ socket,handleShareScreen }:ControlsInterface) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const currentUser = useSelector((state: any) => state.user.currentUser);
   const settings = useSelector((state: any) => state.user.currentUser.settings);
   const meet = useSelector((state: any) => state.meet.leaveMeetDetails);
   const stream = useSelector((state: any) => state.meet.mainStream);
-  const [voice, setVoice] = useState(settings.voice);
+  const [voice, setVoice] = useState(settings.voice || true);
   const [cam, setCam] = useState(settings.cam);
   const [loadingShareStream, setLoadingShareStream] = useState(false);
   const [screen, setScreen] = useState(settings.screen);
@@ -45,7 +45,7 @@ const Controls: React.FC<ControlsInterface> = ({ socket,handleShareScreen }) => 
   const handleVoiceClick = (voice: boolean) => {
     if (stream) {
       stream.getAudioTracks()[0].enabled = voice;
-      dispatch (updateCurrentUserSettings({...settings, voice: voice }));
+      dispatch (updateCurrentUserSettings({...settings, voice }));
     }
   };
 
