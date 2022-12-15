@@ -76,7 +76,7 @@ const Home = ({ socket }:HomeType) => {
       const link = meetData.link;
       const user = result.joiner;
       const joiners = result.participants.participants;
-      console.log(joiners , 'joiners');
+      // console.log(joiners , 'joiners');
 
       dispatch(setLeaveMeetDetails(meetData));
       dispatch(setCurrentUser(user));

@@ -44,7 +44,9 @@ const MainScreen= ({ socket }:ScreenInterface) => {
   const dispatch = useDispatch();
   const { setContextStream } = useContext(StreamContext);
   const { meetingId } = useParams();
-  const mainStream = useSelector((state: any) => state.meet.mainStream);
+
+  const mainStream = useSelector((state: any) => state.meet.mainStream)
+  const meetDetails = useSelector((state: any) => state.meet.leaveMeetDetails);
   const name = useSelector((state: any) => state.user.currentUser.name);
   const currentUser = useSelector((state: any) => state.user.currentUser);
   const [loadingStream, setLoadingStream] = useState(!true);
@@ -89,9 +91,16 @@ const MainScreen= ({ socket }:ScreenInterface) => {
     dispatch(setMainStream(stream));
           
     socket.on('update-joiners',(data) => {
-      const joiners = data.joiners.participants;
+      console.log('data update',data);
+      const link = data.meetLink;
+      console.log('link',link);
+      console.log('link meetif',meetingId);
+            // const currMeetId = data.currentMeetId;
+      const joiners = data.joiners;
+      if( meetingId  === link){
+        dispatch(updateMeetingJoiners(joiners));
+      }
       // console.log(joiners , 'update joiners');
-      dispatch(updateMeetingJoiners(joiners));
     })
     handlePeerConnection();
   };
