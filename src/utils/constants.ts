@@ -11,6 +11,13 @@ export const MEDIA_CONTRAINTS = {
   },
 };
 
+export const DEFAULT_SETTINGS = {
+  voice: false,
+  cam: true,
+  screen: false,
+  caption: false,
+}
+
 
 export const ICESERVERS_1 = [
   {

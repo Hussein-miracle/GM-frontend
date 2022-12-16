@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { Socket } from "socket.io-client";
 
+
 import {
   setCurrentUser,
   getName,
@@ -11,6 +12,7 @@ import {
 import { setLeaveMeetDetails,updateMeetingJoiners } from "../../reduxtoolkit/features/meet/meetSlice";
 
 import { manageDateTime } from "../../utils/helpers";
+import { DEFAULT_SETTINGS } from "../../utils/constants";
 
 import MeetLogo from "../../assets/images/Google_Meet-Logo.svg";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
@@ -68,10 +70,10 @@ const Home = ({ socket }:HomeType) => {
     setShowfutureLink(!futureLink);
   };
 
-  const initJoin = (data: any) => {
+  const initJoin = async (data: any) => {
     socket.emit("join-meet", data);
     socket.on("joined-meet", async (result:any) => {
-      console.log(result, "joined-meet data");
+      // console.log(result, "joined-meet data");
       const meetData = result.meetData;
       const link = meetData.link;
       const user = result.joiner;
@@ -93,8 +95,7 @@ const Home = ({ socket }:HomeType) => {
   const handleClickJoin = async () => {
     let linkStr: string | string[] = "";
     const trimmedText = text.trim();
-    const checkHttp =
-      trimmedText.startsWith("https://") || trimmedText.startsWith("http://");
+    const checkHttp = trimmedText.startsWith("https://") || trimmedText.startsWith("http://");
     if (checkHttp) {
       // console.log('workdds')
       const link = text.split("/");
@@ -109,29 +110,17 @@ const Home = ({ socket }:HomeType) => {
       }
     }
 
-    const settings = {
-      voice: true,
-      cam: true,
-      screen: false,
-    };
-
     const joinData = {
       name,
       meetLink: linkStr,
-      settings,
+      settings:{...DEFAULT_SETTINGS},
       meetCreator: false,
     };
 
     setLoading(true);
 
-    initJoin(joinData);
+    await initJoin(joinData);
 
-    // dispatch(setLeaveMeetDetails(meetData));
-    // dispatch(setCurrentUser(creator));
-
-    // setLoading(false);
-    // navigator(`/${linkStr}`);
-    // socket.emit('update-joiners');
   };
 
   const handleFutureMeetLink = () => {
@@ -167,15 +156,9 @@ const Home = ({ socket }:HomeType) => {
 
   const handleInstantLink = async () => {
     setLoading(true);
-    const settings = {
-      voice: false,
-      cam: true,
-      screen: false,
-      caption: false,
-    };
 
     const data = {
-      settings,
+      settings:{...DEFAULT_SETTINGS},
       name,
       meetCreator: !false,
     };

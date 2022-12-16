@@ -92,9 +92,10 @@ const MeetJoiners = ({
           load={false}
           currentJoiner={meetJoiner}
           currentIndex={index}
-          hideCam={false}
+          hideCam={currentJoiner.settings.screen === true}
           camRef={null}
           avatar={currentJoiner.settings.cam === true ? false : true}
+          voice = {currentJoiner.settings.voice === true ? !false : !true}
         />
       );
     }
@@ -135,6 +136,7 @@ const MeetJoiners = ({
           // hideCam={findScreenSharer && !currentUserData.settings.screen}
           load={loadingStream}
           avatar={currentUserData.settings.cam === true ? false : true}
+          voice={currentUserData.settings.voice === true ? !false : !true}
           camRef={camRef}
           currentUser={true}
         />

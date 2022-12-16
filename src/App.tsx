@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 // import { useDispatch} from "react-redux";
 import { Routes, Route } from "react-router-dom";
 import io from "socket.io-client";
@@ -16,43 +16,43 @@ export const socket = io(process.env.REACT_APP_BACKEND_PROD_URL as string);
 // }
 
 function App() {
-  let connected = false;
+  // let connected = false;
   // const dispatch = useDispatch();
   // const name = useSelector((state: any) => state.user.currentUser.name)
 
   // useBeforeUnload(true, 'You have unsaved changes, are you sure?');
 
-  const handleCloseTab = (e:any) => {
-    e.preventDefault();
-    // const leave = window.confirm("Do you want to leave the meeting ?");
+  // const handleCloseTab = (e:any) => {
+  //   e.preventDefault();
+  //   // const leave = window.confirm("Do you want to leave the meeting ?");
   
-  }
+  // }
   
-  useEffect(() => {
+  // useEffect(() => {
 
-    socket.on("connected", () => {
-      console.log("%c Connected  to Socket Backend ⚡🛡️🛡️⚡", "background:yellow;color:black; padding:12px;border-radius:5px;");
-    });
+  //   socket.on("connected", () => {
+  //     console.log("%c Connected  to Socket Backend ⚡🛡️🛡️⚡", "background:yellow;color:black; padding:12px;border-radius:5px;");
+  //   });
 
-    if (connected) {
-      socket.on("connected", () => {
-        console.log("%c Connected  to Socket Backend ⚡🛡️🛡️⚡", "background:yellow;color:black; padding:12px;border-radius:5px;");
-      });
+  //   if (connected) {
+  //     socket.on("connected", () => {
+  //       console.log("%c Connected  to Socket Backend ⚡🛡️🛡️⚡", "background:yellow;color:black; padding:12px;border-radius:5px;");
+  //     });
       
-      // window.addEventListener('beforeunload',handleCloseTab);
+  //     // window.addEventListener('beforeunload',handleCloseTab);
 
-    }
+  //   }
 
 
 
-    return () => {
-      // window.addEventListener('beforeunload',handleCloseTab);
-      if (connected) {
-        // window.removeEventListener('beforeunload',handleCloseTab);
-      }
-      connected = true;
-    };
-  }, []);
+  //   return () => {
+  //     // window.addEventListener('beforeunload',handleCloseTab);
+  //     // if (connected) {
+  //     //   // window.removeEventListener('beforeunload',handleCloseTab);
+  //     // }
+  //     // connected = true;
+  //   };
+  // }, []);
 
   return (
     <div className="App">

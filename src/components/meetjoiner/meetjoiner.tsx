@@ -26,16 +26,17 @@ type MeetJoinerProps = {
   currentUser: any;
   creator: boolean;
   load: boolean;
+  voice:boolean;
 
   // name: string;
 };
 
 
 const MeetJoiner = (props: MeetJoinerProps) => {
-  const { creator, currentUser,camRef,avatar,hideCam,load,currentIndex,currentJoiner
+  const { creator, currentUser,camRef,avatar,hideCam,load,currentIndex,currentJoiner,voice
   } = props;
   
-  const { name,settings: { voice }} = currentJoiner;
+  const { name } = currentJoiner;
   // console.log(currentJoiner, "joiner");
   const screenStream = useSelector((state: any) => state.meet.screenStream);
   const [color, setColor] = useState("blue");
@@ -59,9 +60,8 @@ const MeetJoiner = (props: MeetJoinerProps) => {
         bottom: 0,
       }}
       //@ts-ignore
-      initial={{ scale: 0.78, rotation: -180 }}
+      initial={{ scale: 0.88 }}
       animate={{
-        rotate: 0,
         left: `1.5vw`,
         scale: 1,
       }}
@@ -82,7 +82,7 @@ const MeetJoiner = (props: MeetJoinerProps) => {
           ></video>
           <Tooltip title="Muted">
             <MicOffIcon
-              className={`mic-off ${voice === false ? "" : "hidden"}`}
+              className={`mic-off ${ voice === false ? "" : "hidden"}`}
             />
           </Tooltip>
           <div

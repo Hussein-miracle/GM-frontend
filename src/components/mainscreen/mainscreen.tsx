@@ -43,7 +43,7 @@ const MainScreen= ({ socket }:ScreenInterface) => {
   // const navigate = useNavigate();/
   const dispatch = useDispatch();
   const { setContextStream } = useContext(StreamContext);
-  const { meetingLink} = useParams();
+  const { meetingLink } = useParams();
 
   const mainStream = useSelector((state: any) => state.meet.mainStream)
   const meetDetails = useSelector((state: any) => state.meet.leaveMeetDetails);
@@ -184,7 +184,7 @@ const MainScreen= ({ socket }:ScreenInterface) => {
     const offerData = {
       type: "offer",
       sdp: sessionDescription,
-      meetingId,
+      meetingLink,
       userId:currentUser._id,
     };
 
@@ -237,7 +237,7 @@ const MainScreen= ({ socket }:ScreenInterface) => {
     const answerData = {
       type: "answer",
       sdp: sessionDescription,
-      meetingId,
+      meetingLink,
       creatorId:currentUser._id,
     };
 
