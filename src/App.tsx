@@ -58,7 +58,7 @@ function App() {
     <div className="App">
       <Routes>
         <Route path="/" element={<Home socket={socket} />} />
-        <Route path="/:meetingId" element={<MainScreen socket={socket} />} />
+        <Route path="/:meetingLink" element={<MainScreen socket={socket} />} />
       </Routes>
     </div>
   );

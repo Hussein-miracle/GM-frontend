@@ -43,7 +43,7 @@ const MainScreen= ({ socket }:ScreenInterface) => {
   // const navigate = useNavigate();/
   const dispatch = useDispatch();
   const { setContextStream } = useContext(StreamContext);
-  const { meetingId } = useParams();
+  const { meetingLink} = useParams();
 
   const mainStream = useSelector((state: any) => state.meet.mainStream)
   const meetDetails = useSelector((state: any) => state.meet.leaveMeetDetails);
@@ -93,11 +93,11 @@ const MainScreen= ({ socket }:ScreenInterface) => {
     socket.on('update-joiners',(data) => {
       console.log('data update',data);
       const link = data.meetLink;
-      console.log('link',link);
-      console.log('link meetif',meetingId);
+      // console.log('link',link);
+      // console.log('link meetif',meetingId);
             // const currMeetId = data.currentMeetId;
       const joiners = data.joiners;
-      if( meetingId  === link){
+      if( meetingLink  === link){
         dispatch(updateMeetingJoiners(joiners));
       }
       // console.log(joiners , 'update joiners');
