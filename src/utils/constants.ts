@@ -4,11 +4,7 @@ import safeMeet from "../assets/images/safe-meet.svg";
 
 export const MEDIA_CONTRAINTS = {
   video: true,
-  audio: {
-    echoCancellation: true,
-    noiseSuppression: true,
-    sampleRate: 44100,
-  },
+  audio: true
 };
 
 export const DEFAULT_SETTINGS = {
