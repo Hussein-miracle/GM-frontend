@@ -73,20 +73,24 @@ const Home = ({ socket }:HomeType) => {
   const initJoin = async (data: any) => {
     socket.emit("join-meet", data);
     socket.on("joined-meet", async (result:any) => {
-      // console.log(result, "joined-meet data");
+      console.log(result, "joined-meet data");
       const meetData = result.meetData;
       const link = meetData.link;
       const user = result.joiner;
       const joiners = result.participants.participants;
       // console.log(joiners , 'joiners');
 
-      dispatch(setLeaveMeetDetails(meetData));
+      const data = {
+        link,
+        meetingId: result.currentMeetingId,
+        creator:user,
+      };
+      
+      dispatch(setLeaveMeetDetails(data));
       dispatch(setCurrentUser(user));
 
-      setTimeout(() => {
-        dispatch(updateMeetingJoiners(joiners));
-      },500)
-;
+      dispatch(updateMeetingJoiners(joiners));
+
       setLoading(false);
       navigator(`/${link}`);
     });
@@ -167,7 +171,7 @@ const Home = ({ socket }:HomeType) => {
 
     socket.emit("create-meet-link", data);
     socket.on("meet-link-created", (result) => {
-      console.log(result, "meet-link-creation result");
+      // console.log(result, "meet-link-creation result");
       const { creator, link } = result;
 
       const meetData = {
