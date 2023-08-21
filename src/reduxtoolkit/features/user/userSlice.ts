@@ -1,11 +1,14 @@
 import { createSlice } from "@reduxjs/toolkit";
-import {socket} from '../../../App';
-import DUMMY_JOINERS from "../../../utils/meeters";
+import { socket } from '../../../App';
+// import DUMMY_JOINERS from "../../../utils/meeters";
+import { DEFAULT_SETTINGS } from "../../../utils/constants";
 
 const INITIAL_STATE = {
-  currentUser: { name: "",_id: null },
-  // currentUser:{...DUMMY_JOINERS[0]},
-  askName: !false,
+  currentUser: {
+    name: "", _id: null, 
+    settings:{...DEFAULT_SETTINGS}
+  },
+  askName: true,
 };
 
 // INITIAL_STATE.meetJoiners
@@ -36,29 +39,28 @@ const userReducerSlice = createSlice({
     },
     updateCurrentUserSettings: (state, action) => {
       const payload = action.payload;
-      // console.log(payload , 'paylod settings');
-      const currentUser = { ...state.currentUser };
+      console.log(payload , 'paylod settings');
+      const currentUser = state.currentUser;
+      const settings = { ...currentUser.settings, ...payload };
       // @ts-ignore
-      const settingsPayload = { ...currentUser.settings, ...payload };
-      // @ts-ignore
-      // console.log(settingsPayload,'settingPayload');
+      console.log(settings,'new settingsPayload');
       const updatedCurrentUser = {
         ...currentUser,
-        settings: { ...settingsPayload },
+        settings,
       };
-      // console.log(updatedCurrentUser,'updated current user')
+      console.log(updatedCurrentUser,'updated current user')
       state.currentUser = updatedCurrentUser;
 
       const userId = currentUser._id;
 
-      if(!!userId){
-        socket?.emit('update-settings',{userId,settingsUpdate:settingsPayload});
+      if (!!userId) {
+        socket?.emit('update-settings', { userId, settingsUpdate: settings });
 
       }
 
-      // socket.on('updated-settings',(result) => {
-      //   console.log(result , 'settings update result');
-      // })
+      socket.on('updated-settings', (result) => {
+        console.log(result, 'settings update result');
+      })
     },
   },
 });

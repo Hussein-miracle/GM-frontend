@@ -24,20 +24,24 @@ import KeyboardIcon from "@mui/icons-material/Keyboard";
 
 import { ReactComponent as AppIcon } from "../../assets/icons/apps.svg";
 
-import Carousel from "../carousel/carousel";
-import Input from "../input/input";
-import  CreateMeet from '../create-meet/create-meet';
-import LinkModal from "../link-modal/link-modal";
-import  {CustomTip,HtmlTooltip} from  '../UI/tooltips/tooltips';
+import Carousel from "../../components/carousel/carousel";
+import Input from "../../components/input/input";
+import  CreateMeet from '../../components/create-meet/create-meet';
+import LinkModal from "../../components/link-modal/link-modal";
+import  {CustomTip,HtmlTooltip} from  '../../components/UI/tooltips/tooltips';
 
 
-import Loaders, { Loader, LoadingText } from "../UI/loaders/loaders";
+import Loaders, { Loader, LoadingText } from "../../components/UI/loaders/loaders";
 
 import "./home.styles.scss";
+import { UserSettings } from "../../utils/types";
+
 type HomeType =  {
   socket: Socket;
 }
 
+
+const { time, day, dateFormat } = manageDateTime();
 
 const Home = ({ socket }:HomeType) => {
   const dispatch = useDispatch();
@@ -50,7 +54,6 @@ const Home = ({ socket }:HomeType) => {
   const [meetLink, setMeetLink] = useState<string>("");
   const [futureLink, setShowfutureLink] = useState<boolean>(false);
   const [loading, setLoading] = useState(false);
-  const { time, day, dateFormat } = manageDateTime();
   // const [disable, setDisable] = useState(false);
 
   const handleChange = (e:React.ChangeEvent<HTMLInputElement>) => {
@@ -86,12 +89,12 @@ const Home = ({ socket }:HomeType) => {
         creator:user,
       };
       
-      dispatch(setLeaveMeetDetails(data));
       dispatch(setCurrentUser(user));
-
+      
       dispatch(updateMeetingJoiners(joiners));
-
+      
       setLoading(false);
+      dispatch(setLeaveMeetDetails(data));
       navigator(`/${link}`);
     });
   };
@@ -128,11 +131,8 @@ const Home = ({ socket }:HomeType) => {
   };
 
   const handleFutureMeetLink = () => {
-    const settings = {
-      voice: false,
-      cam: true,
-      screen: false,
-      caption: false,
+    const settings:UserSettings = {
+      ...DEFAULT_SETTINGS
     };
 
     const data = {
@@ -164,7 +164,7 @@ const Home = ({ socket }:HomeType) => {
     const data = {
       settings:{...DEFAULT_SETTINGS},
       name,
-      meetCreator: !false,
+      meetCreator: true,
     };
 
     // console.log(data,'data sent to be for link')
@@ -185,6 +185,7 @@ const Home = ({ socket }:HomeType) => {
 
       // const
 
+      console.log(link,'link')
 
       setLoading(false);
       navigator(`/${link}`);
@@ -210,7 +211,7 @@ const Home = ({ socket }:HomeType) => {
       dispatch(getName(true));
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [name]);
+  }, []);
 
   return (
     <div className="home">

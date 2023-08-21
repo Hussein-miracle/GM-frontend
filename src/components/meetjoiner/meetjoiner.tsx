@@ -2,6 +2,7 @@ import React, {
   useState,
   MutableRefObject,
   useEffect,
+  LegacyRef,
   // useContext,
 } from "react";
 import { useSelector } from "react-redux";
@@ -21,7 +22,8 @@ type MeetJoinerProps = {
   currentIndex: number | null;
   currentJoiner: any | null;
   hideCam: boolean;
-  camRef: MutableRefObject<HTMLVideoElement> | null;
+  camRef:LegacyRef<HTMLVideoElement> ;
+  // camRef: any;
   avatar: boolean;
   currentUser: any;
   creator: boolean;
@@ -50,7 +52,7 @@ const MeetJoiner = (props: MeetJoinerProps) => {
 
   return (
     <motion.div
-      className={`meetjoiner ${hideCam ? "hidden" : ""}`}
+      className={`meetjoiner`}
       drag
       dragElastic={1}
       dragConstraints={{
@@ -76,7 +78,7 @@ const MeetJoiner = (props: MeetJoinerProps) => {
         <Screen>
           <video
             ref={camRef}
-            id={`meetJoinerCam--${currentIndex}`}
+            id={`meetJoinerCam-${currentIndex}`}
             autoPlay
             playsInline
           ></video>

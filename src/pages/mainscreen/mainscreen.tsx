@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useParams, useNavigate, Navigate } from "react-router-dom";
+import { useParams, Navigate } from "react-router-dom";
 
 import { Socket } from "socket.io-client";
 
@@ -20,39 +20,44 @@ import {
 
 import {
   StreamContext,
-  StreamContextProvider,
+  // StreamContextProvider,
 } from "../../contexts/streamContext/streamContext";
 
-import Controls from "../controls/controls";
-import MeetJoiners from "../meetjoiners/meetjoiners";
+import Controls from "../../components/controls/controls";
+import MeetJoiners from "../../components/meetjoiners/meetjoiners";
 import {
   MEDIA_CONTRAINTS,
   // ICESERVERS_1,
   ICESERVERS,
 } from "../../utils/constants";
 import { StopStreams } from "../../utils/helpers";
+import { UserSettings } from "../../utils/types";
 // import InputContextProvider from "../../contexts/inputcontext/inputcontext";
 
 import "./mainscreen.styles.scss";
+
 
 interface ScreenInterface {
   socket: Socket;
 }
 
-const MainScreen= ({ socket }:ScreenInterface) => {
+const MainScreen = ({ socket }: ScreenInterface) => {
+  // let connected = false;
   // const navigate = useNavigate();/
+  const { meetingLink } = useParams();
   const dispatch = useDispatch();
   const { setContextStream } = useContext(StreamContext);
-  const { meetingLink } = useParams();
 
-  const mainStream = useSelector((state: any) => state.meet.mainStream)
-  const meetDetails = useSelector((state: any) => state.meet.leaveMeetDetails);
+  const mainStream = useSelector((state: any) => state.meet.mainStream);
+  // const meetDetails = useSelector((state: any) => state.meet.leaveMeetDetails);
   const name = useSelector((state: any) => state.user.currentUser.name);
   const currentUser = useSelector((state: any) => state.user.currentUser);
+
   const [loadingStream, setLoadingStream] = useState(!true);
   const [loadingShareStream, setLoadingShareStream] = useState(false);
-  const settings = useSelector((state: any) => state.user.currentUser.settings);
-  let connected = false;
+  const settings: UserSettings = useSelector(
+    (state: any) => state.user.currentUser.settings
+  );
   // console.log(settings,'settings');
 
   const handleLoadingShareStream = (value: boolean) => {
@@ -61,7 +66,7 @@ const MainScreen= ({ socket }:ScreenInterface) => {
 
   const handleShareScreenEnd = () => {
     dispatch(setShowStream(false));
-    dispatch(updateCurrentUserSettings({ ...settings, screen: false }));
+    dispatch(updateCurrentUserSettings({ ...settings, share_screen: false }));
   };
   const handleShareScreenStart = async () => {
     dispatch(setShowStream(true));
@@ -74,7 +79,7 @@ const MainScreen= ({ socket }:ScreenInterface) => {
       stream.getVideoTracks()[0].onended = handleShareScreenEnd;
 
       dispatch(setScreenStream(stream));
-      dispatch(updateCurrentUserSettings({ ...settings, screen: true }));
+      dispatch(updateCurrentUserSettings({ ...settings, share_screen: true }));
     } catch (e) {
       dispatch(setShowStream(false));
       console.error(e);
@@ -82,30 +87,33 @@ const MainScreen= ({ socket }:ScreenInterface) => {
   };
 
   const init = async () => {
-    setLoadingStream(!false);
+    setLoadingStream(true);
     const stream = await navigator.mediaDevices.getUserMedia(MEDIA_CONTRAINTS);
-    stream.getAudioTracks()[0].enabled = settings.voice;
-    stream.getVideoTracks()[0].enabled = settings.cam;
+    console.log(stream,'stream from source')
+    stream.getAudioTracks()[0].enabled = settings.play_voice;
+    stream.getVideoTracks()[0].enabled = settings.show_cam;
+    dispatch(setMainStream(stream));
     setContextStream(stream);
 
-    dispatch(setMainStream(stream));
-          
-    socket.on('update-joiners',(data) => {
-      console.log('data update',data);
+    socket.on("update-joiners", (data) => {
+      console.log("data update", data);
       const link = data.meetLink;
       // console.log('link',link);
       // console.log('link meetif',meetingId);
-            // const currMeetId = data.currentMeetId;
+      // const currMeetId = data.currentMeetId;
       const joiners = data.joiners;
-      if( meetingLink  === link){
+      if (meetingLink === link) {
         dispatch(updateMeetingJoiners(joiners));
       }
       // console.log(joiners , 'update joiners');
-    })
-    handlePeerConnection();
+    });
+
+    // handlePeerConnection();
+
+    setLoadingStream(false);
   };
 
-  const handleOnIceCandidate = (event:RTCPeerConnectionIceEvent) => {
+  const handleOnIceCandidate = (event: RTCPeerConnectionIceEvent) => {
     if (event.candidate) {
       console.log("Sending ice candidate event", event);
       console.log("Sending ice candidate", event.candidate);
@@ -132,14 +140,14 @@ const MainScreen= ({ socket }:ScreenInterface) => {
       //     candidate: event.candidate,
       //   };
       //   const candidate = new RTCIceCandidate(iceCandidateData);
-      
-        // rtcPeerConnection.addIceCandidate(candidate);
+
+      // rtcPeerConnection.addIceCandidate(candidate);
       // });
 
       return event.candidate;
     }
   };
-  const handleOnTrackEvent = (event:any) => {
+  const handleOnTrackEvent = (event: any) => {
     // remoteVideo.srcObject = event.streams[0];
     // remoteStream = event.streams[0];
 
@@ -154,8 +162,6 @@ const MainScreen= ({ socket }:ScreenInterface) => {
     //   `meetJoinerCam--${currentIndex}`
     // );
     // if (vid) vid.srcObject = remoteStream;
-    
-
   };
   const handleInitPeerConnection = async () => {
     //  here i create an instance of RTCPeerConnection which takes in an argument,the argument being an THE ICESERVERS we want to use;
@@ -185,9 +191,8 @@ const MainScreen= ({ socket }:ScreenInterface) => {
       type: "offer",
       sdp: sessionDescription,
       meetingLink,
-      userId:currentUser._id,
+      userId: currentUser._id,
     };
-
 
     socket.emit("offer", offerData);
 
@@ -200,8 +205,8 @@ const MainScreen= ({ socket }:ScreenInterface) => {
   const handleJoinPeerConnection = async (offerDetails: {
     type: RTCSdpType;
     sdp: string;
-    creatorId:string;
-    meetingId:string;
+    creatorId: string;
+    meetingId: string;
   }) => {
     //  here i create an instance of RTCPeerConnection which takes in an argument,the argument being an THE ICESERVERS we want to use;
     // const webrtcPeerConnection = new RTCPeerConnection(ICESERVERS_1);
@@ -238,7 +243,7 @@ const MainScreen= ({ socket }:ScreenInterface) => {
       type: "answer",
       sdp: sessionDescription,
       meetingLink,
-      creatorId:currentUser._id,
+      creatorId: currentUser._id,
     };
 
     socket.emit("answer", answerData);
@@ -270,55 +275,44 @@ const MainScreen= ({ socket }:ScreenInterface) => {
   };
 
   useEffect(() => {
-    // if(meetingId){
+    if (name) {
+      init();
+    }
 
-      if (name) {
-        init();
-      }
-      setTimeout(() => {
-        setLoadingStream(false);
-      }, 1200);
-      // console.log(mainStream, "on mount");
-    // }
-
-    // }
 
     return () => {
       // console.log(mainStream, "on unmount");
       if (mainStream) {
         StopStreams(mainStream);
       }
-      //@ts-ignore
       // eslint-disable-next-line react-hooks/exhaustive-deps
-      connected = true;
+      // connected = true;
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  if (!name) {
+    return <Navigate to="/" replace />;
+  }
+
   return (
-    <>
-      {name === "" ? (
-        <Navigate to="/" replace />
-      ) : (
-        <StreamContextProvider>
-          <div className="mainscreen">
-            <main className="mainscreen__content">
-              <MeetJoiners
-                loadingStream={loadingStream}
-                setLoadingStream={setLoadingStream}
-                handleLoadingShareStream={handleLoadingShareStream}
-                loadingShareStream={loadingShareStream}
-              />
-            </main>
-            <footer className="mainscreen__footer">
-              <Controls
-                socket={socket}
-                handleShareScreen={handleShareScreenStart}
-              />
-            </footer>
-          </div>
-        </StreamContextProvider>
-      )}
-    </>
+
+      <div className="mainscreen">
+        <main className="mainscreen__content">
+          <MeetJoiners
+            loadingStream={loadingStream}
+            setLoadingStream={setLoadingStream}
+            handleLoadingShareStream={handleLoadingShareStream}
+            loadingShareStream={loadingShareStream}
+          />
+        </main>
+        <footer className="mainscreen__footer">
+          <Controls
+            socket={socket}
+            handleShareScreen={handleShareScreenStart}
+          />
+        </footer>
+      </div>
   );
 };
 

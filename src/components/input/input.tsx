@@ -1,4 +1,4 @@
-import React, { useState, useLayoutEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Tooltip } from "@mui/material";
 import {
@@ -29,15 +29,15 @@ const Input = () => {
   const handleEnter = (e) => {
     // console.log(e.key,'key pressed');
     if (e.key === "Enter") {
-      console.log("gboriwole");
+      // console.log("gboriwole");
       if (username.length >= 3) {
-        console.log("omo iya how far");
+        // console.log("omo iya how far");
         handleSubmit();
       }
     }
   };
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (inputRef?.current) {
       inputRef?.current?.focus();
     }

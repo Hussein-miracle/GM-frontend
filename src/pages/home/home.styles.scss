@@ -28,6 +28,8 @@
   background-color: #fff;
   position: relative;
 
+  overflow-x:hidden;
+
   &__header {
     max-height: 3rem;
     // background-color:chartreuse;

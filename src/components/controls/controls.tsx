@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { Socket } from "socket.io-client";
@@ -8,7 +8,7 @@ import Tooltip from "@mui/material/Tooltip";
 import MicIcon from "@mui/icons-material/Mic";
 import MicOffIcon from "@mui/icons-material/MicOff";
 import PresentToAllIcon from "@mui/icons-material/PresentToAll";
-import PanToolIcon from '@mui/icons-material/PanTool';
+import PanToolIcon from "@mui/icons-material/PanTool";
 import ClosedCaptionOffIcon from "@mui/icons-material/ClosedCaptionOff";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import CallEndIcon from "@mui/icons-material/CallEnd";
@@ -16,66 +16,82 @@ import CallEndIcon from "@mui/icons-material/CallEnd";
 import { ReactComponent as VideoCamOnIcon } from "../../assets/icons/videoCamOn.svg";
 import { ReactComponent as VideoCamOffIcon } from "../../assets/icons/videoCamOff.svg";
 
-
 import {
+  getName,
   // setMainStream,
   updateCurrentUserSettings,
   // setCurrentUser,
 } from "../../reduxtoolkit/features/user/userSlice";
 
-import "./controls.styles.scss";
+import { UserSettings, UserSettingsActions } from "../../utils/types";
+import { StreamContext } from "../../contexts/streamContext/streamContext";
 // import { closeStreams } from "../../reduxtoolkit/features/user/userSlice";
+import "./controls.styles.scss";
 interface ControlsInterface {
   socket: Socket;
-  handleShareScreen:Function;
+  handleShareScreen: Function;
 }
-const Controls= ({ socket,handleShareScreen }:ControlsInterface) => {
+const Controls = ({ socket, handleShareScreen }: ControlsInterface) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const {
+    contextStream: stream,
+    updateStreamSettings,
+    settings: streamSettings,
+  } = useContext(StreamContext);
+  const {
+    play_voice: voice,
+    show_cam: cam,
+    show_caption: caption,
+    share_screen: screen,
+  } = streamSettings;
   const currentUser = useSelector((state: any) => state.user.currentUser);
-  const settings = useSelector((state: any) => state.user.currentUser.settings);
+  const settings: UserSettings = useSelector(
+    (state: any) => state.user.currentUser.settings
+  );
   const meet = useSelector((state: any) => state.meet.leaveMeetDetails);
-  const stream = useSelector((state: any) => state.meet.mainStream);
-  const [voice, setVoice] = useState(settings.voice || true);
-  const [cam, setCam] = useState(settings.cam);
-  const [loadingShareStream, setLoadingShareStream] = useState(false);
-  const [screen, setScreen] = useState(settings.screen);
-  const [caption, setCaption] = useState(settings.caption);
-
-  const handleVoiceClick = (voice: boolean) => {
-    if (stream) {
-      stream.getAudioTracks()[0].enabled = voice;
-      dispatch (updateCurrentUserSettings({...settings, voice }));
-    }
-  };
+  // const [loadingShareStream, setLoadingShareStream] = useState(false);
 
   const handleShare = async () => {
     await handleShareScreen();
-  }
-
-  const handleCamClick = (cam: boolean) => {
-    if (stream) {
-      stream.getVideoTracks()[0].enabled = cam;
-      dispatch(updateCurrentUserSettings({ ...settings,cam: cam }));
-    }
-  };
-
-  const handleCaptionClick = (caption: boolean) => {
-    dispatch(updateCurrentUserSettings({...settings, caption: caption }));
+    updateStreamSettings({
+      type: UserSettingsActions.TOGGLE_SHARE_SCREEN,
+      payload: !screen,
+    });
   };
 
   const handleClickVoice = () => {
-    handleVoiceClick(!voice);
-    setVoice(!voice);
+    // console.log('VOICE CLICK')
+    if (stream?.active) {
+      console.log("VOICE CLICK active");
+      updateStreamSettings({
+        type: UserSettingsActions.TOGGLE_PLAY_VOICE,
+        payload: !voice,
+      });
+      // dispatch(updateCurrentUserSettings({play_voice: !voice }));
+      // stream.getAudioTracks()[0].enabled = settings.play_voice;
+      // setVoice(settings.play_voice)
+    }
   };
+
   const handleClickCam = () => {
-    handleCamClick(!cam);
-    setCam(!cam);
+    if (stream) {
+      console.log(stream, "stream in cam click");
+      // dispatch(updateCurrentUserSettings({show_cam: !cam }));
+      // stream.getVideoTracks()[0].enabled = !cam;/
+      updateStreamSettings({
+        type: UserSettingsActions.TOGGLE_SHOW_CAM,
+        payload: !cam,
+      });
+    }
   };
 
   const handleClickCaption = () => {
-    handleCaptionClick(!caption);
-    setCaption(!caption);
+    // dispatch(updateCurrentUserSettings({ ...settings, show_caption: !caption }));
+    updateStreamSettings({
+      type: UserSettingsActions.TOGGLE_SHOW_CAPTION,
+      payload: !caption,
+    });
   };
 
   const handleLeaveMeet = async () => {
@@ -85,7 +101,8 @@ const Controls= ({ socket,handleShareScreen }:ControlsInterface) => {
       socket.emit("leave-meeting", meet);
       if (closed) {
         navigate("/");
-        window.location.reload();
+        // window.location.reload();
+        dispatch(getName(true));
       }
     }
   };
@@ -97,7 +114,7 @@ const Controls= ({ socket,handleShareScreen }:ControlsInterface) => {
           {voice === true ? <MicIcon /> : <MicOffIcon />}
         </button>
       </Tooltip>
-      <Tooltip title={settings.cam ? "Close Cam" : "Open Cam"} arrow>
+      <Tooltip title={settings.show_cam ? "Close Cam" : "Open Cam"} arrow>
         <button
           className={`controls__btn ${cam === false ? "off" : ""}`}
           onClick={handleClickCam}
@@ -124,7 +141,7 @@ const Controls= ({ socket,handleShareScreen }:ControlsInterface) => {
           type="button"
           className={`controls__btn ${screen ? "caption__btn" : ""}`}
           onClick={handleShare}
-          disabled={settings.screen}
+          disabled={settings.share_screen}
         >
           <PresentToAllIcon />
         </button>

@@ -8,13 +8,13 @@ import { speakOutLoud } from "../../utils/speech";
 import "./caption.styles.scss";
 
 // @ts-ignore
-const SpeechRecognition =
-  // @ts-ignore
-  window?.SpeechRecognition || window?.webkitSpeechRecognition;
-  const recognition = new SpeechRecognition();
-  recognition.continuous = true;
-  recognition.interimResults = true;
-  recognition.lang = "en-US";
+const SpeechRecognition = window?.SpeechRecognition || window?.webkitSpeechRecognition;
+const recognition = new SpeechRecognition();
+recognition.continuous = true;
+recognition.interimResults = true;
+recognition.lang = "en-US";
+
+
 
 const Caption = () => {
   const settings = useSelector(

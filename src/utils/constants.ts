@@ -1,17 +1,18 @@
 import getLink from "../assets/images/get-link.svg";
 import planAhead from "../assets/images/plan-ahead.svg";
 import safeMeet from "../assets/images/safe-meet.svg";
+import { UserSettings } from "./types";
 
 export const MEDIA_CONTRAINTS = {
   video: true,
   audio: true
 };
 
-export const DEFAULT_SETTINGS = {
-  voice: false,
-  cam: true,
-  screen: false,
-  caption: false,
+export const DEFAULT_SETTINGS:UserSettings = {
+  play_voice: false,
+  show_cam: true,
+  share_screen: false,
+  show_caption: false,
 }
 
 
@@ -77,3 +78,11 @@ export const CarouselData = [
       "No one can join a meeting unless invited or admitted by the host",
   },
 ];
+
+
+export enum SOCKET_EVENTS{
+  CREATE_MEET_LINK = 'create-meet-link',
+  JOIN_MEET = 'join-meet',
+  CREATE_FUTURE_MEET_LINK = 'create-future-meet-link',
+  LEAVE_MEET = 'leave-meet',
+}
