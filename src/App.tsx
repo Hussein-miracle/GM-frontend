@@ -1,17 +1,21 @@
-import React, { useEffect } from "react";
 // import { useDispatch,useSelector} from "react-redux";
 import { Routes, Route } from "react-router-dom";
+// import { useBeforeUnload } from "react-use";
+import { Toaster } from "react-hot-toast";
 import io from "socket.io-client";
 // import {useBeforeUnload} from 'react-use';
 
 import MainScreen from "./pages/mainscreen/mainscreen";
 import Home from "./pages/home/home";
-import "./App.css";
 import StreamContextProvider from "./contexts/streamContext/streamContext";
 
+
+import "./App.css";
+
 // const socket = io(process.env.REACT_APP_BACKEND_PROD2_URL as string);
-export const socket = io(process.env.REACT_APP_BACKEND_DEV_URL as string);
+export const socket = io(process.env.REACT_APP_BACKEND_DEV_URL as string, { withCredentials: true});
 // * note: implement a notice for socket connection error
+
 // if(!socket.emit){
 //   alert('NetworkConnection error');
 // }
@@ -19,19 +23,19 @@ export const socket = io(process.env.REACT_APP_BACKEND_DEV_URL as string);
 // export const socket = io(process.env.REACT_APP_BACKEND_PROD_URL as string, { transports: ["websocket"],forceNew:true ,reconnectionAttempts: "Infinity" , });
 
 function App() {
-  let connected = false;
+  // let connected = false;
   // const dispatch = useDispatch();
   // const name = useSelector((state: any) => state.user.currentUser?.name)
 
   // useBeforeUnload(true, 'You have unsaved changes, are you sure?');
 
-  const handleCloseTab = (e:any) => {
-    e.preventDefault();
-    const leave = window.confirm("Do you want to leave the meeting ?");
+  // const handleCloseTab = (e:any) => {
+  //   e.preventDefault();
+  //   const leave = window.confirm("Do you want to leave the meeting ?");
 
-  }
+  // }
 
-  useEffect(() => {
+  // useEffect(() => {
     // if (connected) {
     socket.on("connect", () => {
       console.log(
@@ -47,23 +51,24 @@ function App() {
       );
     });
 
-    window.addEventListener('beforeunload',handleCloseTab);
+    // window.addEventListener('beforeunload',handleCloseTab);
 
     // }
 
-    return () => {
-      // window.addEventListener('beforeunload',handleCloseTab);
-      // if (connected) {
-        window.removeEventListener('beforeunload',handleCloseTab);
-      // }
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-      // connected = true;
-    };
-  }, []);
+  //   return () => {
+  //     // window.addEventListener('beforeunload',handleCloseTab);
+  //     // if (connected) {
+  //       // window.removeEventListener('beforeunload',handleCloseTab);
+  //     // }
+  //     // eslint-disable-next-line react-hooks/exhaustive-deps
+  //     // connected = true;
+  //   };
+  // }, []);
 
   return (
     <div className="App">
       <StreamContextProvider>
+        <Toaster gutter={20}/>
         <Routes>
           <Route path="/" element={<Home socket={socket} />} />
           <Route

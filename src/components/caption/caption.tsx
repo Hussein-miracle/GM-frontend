@@ -82,7 +82,7 @@ const Caption = () => {
     <div
       className="caption"
       style={{
-        display: settings?.caption === true || false ? "block" : "none",
+        display: settings?.show_caption === true || false ? "block" : "none",
       }}
     >
       <Tooltip title="Click to hear the translation" arrow={true}>

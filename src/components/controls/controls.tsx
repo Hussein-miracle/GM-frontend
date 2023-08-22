@@ -1,9 +1,7 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useContext } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { Socket } from "socket.io-client";
-
-import { StopStreams } from "../../utils/helpers";
 import Tooltip from "@mui/material/Tooltip";
 import MicIcon from "@mui/icons-material/Mic";
 import MicOffIcon from "@mui/icons-material/MicOff";
@@ -19,7 +17,7 @@ import { ReactComponent as VideoCamOffIcon } from "../../assets/icons/videoCamOf
 import {
   getName,
   // setMainStream,
-  updateCurrentUserSettings,
+  // updateCurrentUserSettings,
   // setCurrentUser,
 } from "../../reduxtoolkit/features/user/userSlice";
 
@@ -31,6 +29,7 @@ interface ControlsInterface {
   socket: Socket;
   handleShareScreen: Function;
 }
+
 const Controls = ({ socket, handleShareScreen }: ControlsInterface) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -38,6 +37,7 @@ const Controls = ({ socket, handleShareScreen }: ControlsInterface) => {
     contextStream: stream,
     updateStreamSettings,
     settings: streamSettings,
+    stopStreams,
   } = useContext(StreamContext);
   const {
     play_voice: voice,
@@ -45,7 +45,7 @@ const Controls = ({ socket, handleShareScreen }: ControlsInterface) => {
     show_caption: caption,
     share_screen: screen,
   } = streamSettings;
-  const currentUser = useSelector((state: any) => state.user.currentUser);
+  // const currentUser = useSelector((state: any) => state.user.currentUser);
   const settings: UserSettings = useSelector(
     (state: any) => state.user.currentUser.settings
   );
@@ -63,7 +63,7 @@ const Controls = ({ socket, handleShareScreen }: ControlsInterface) => {
   const handleClickVoice = () => {
     // console.log('VOICE CLICK')
     if (stream?.active) {
-      console.log("VOICE CLICK active");
+      // console.log("VOICE CLICK active");
       updateStreamSettings({
         type: UserSettingsActions.TOGGLE_PLAY_VOICE,
         payload: !voice,
@@ -76,7 +76,7 @@ const Controls = ({ socket, handleShareScreen }: ControlsInterface) => {
 
   const handleClickCam = () => {
     if (stream) {
-      console.log(stream, "stream in cam click");
+      // console.log(stream, "stream in cam click");
       // dispatch(updateCurrentUserSettings({show_cam: !cam }));
       // stream.getVideoTracks()[0].enabled = !cam;/
       updateStreamSettings({
@@ -97,9 +97,9 @@ const Controls = ({ socket, handleShareScreen }: ControlsInterface) => {
   const handleLeaveMeet = async () => {
     const leave = window.confirm("Do you want to leave the meeting ?");
     if (leave) {
-      const closed = await StopStreams(stream);
+      const closed = await stopStreams(stream!);
       socket.emit("leave-meeting", meet);
-      if (closed) {
+      if (closed === true) {
         navigate("/");
         // window.location.reload();
         dispatch(getName(true));

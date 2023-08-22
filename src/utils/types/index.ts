@@ -12,3 +12,14 @@ export const enum UserSettingsActions{
   TOGGLE_SHOW_CAPTION = 'TOGGLE_SHOW_CAPTION',
   TOGGLE_PLAY_VOICE = 'TOGGLE_PLAY_VOICE',
 }
+
+export interface SessionDataType{
+  userId:string;
+  meetingId:string;
+  sessionDescription:{
+    type:RTCSdpType;
+    sdp:string;
+  }
+}
+
+ 

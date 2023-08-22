@@ -10,7 +10,7 @@ import React, {
 } from "react";
 import { useSelector } from "react-redux";
 import { StreamContext } from "../../contexts/streamContext/streamContext";
-import Caption from "../caption/caption";
+// import Caption from "../caption/caption";
 import MeetJoiner from "../meetjoiner/meetjoiner";
 // import StreamScreen from "../streamscreen/streamscreen";
 import "./meetjoiners.styles.scss";
@@ -37,23 +37,36 @@ const MeetJoiners = ({
   handleLoadingShareStream,
   loadingShareStream,
 }: MeetJoinerInterface) => {
-  // let connected = false;
+  const renderCount = useRef(0)
   const { contextStream, settings } = useContext(StreamContext);
+  // let connected = false;
   const camRef = useRef<HTMLVideoElement>(
     null!
   ) as MutableRefObject<HTMLVideoElement>;
   const currentUserData = useSelector((state: any) => state.user.currentUser);
-  // const stream:MediaStream = useSelector((state: any) => state.meet.mainStream);
-
   const meetJoiners = useSelector((state: any) => state.meet.meetJoiners);
 
-  const meetJoinersIds: any[] = meetJoiners?.map(
-    (item: { _id: any }) => item._id
-  );
+  // const stream:MediaStream = useSelector((state: any) => state.meet.mainStream);
+  // const meetJoinersIds: any[] = meetJoiners.map(
+  //   (item: { _id: any }) => item._id
+  // );
 
   // console.log(meetJoinersIds);
   // const currentUser = currentUserData ? Object.values(currentUserData)[0]    : null;
   // console.log(currentUser ,"[cur user meetjoiners component]")
+
+  // useEffect(() => {
+  //   ++renderCount.current;
+
+  //   console.log({renderCount:renderCount.current,why:'meetJoiners'})
+
+  // },[meetJoiners])
+  // useEffect(() => {
+  //   ++renderCount.current;
+
+  //   console.log({renderCount:renderCount.current,why:'contextStream'})
+
+  // },[contextStream])
 
   useEffect(() => {
     // if (connected) {
@@ -82,11 +95,29 @@ const MeetJoiners = ({
   // }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars, array-callback-return
-  const joiners = meetJoiners.map((meetJoiner: any, index: number | null) => {
+  const joiners = meetJoiners.length <= 0  ? null : meetJoiners.map((meetJoiner: any, index: number) => {
     const currentJoiner = meetJoiner;
-    console.log(currentJoiner,'currJoiner')
+    console.log(currentJoiner._id,`currJoiner --- ${index}`)
 
     if (currentJoiner._id !== currentUserData._id) {
+      const pc = currentJoiner?.peerConnection;
+      const remoteStream = new MediaStream();
+      if (pc) {
+        pc.ontrack = (event:any) => {
+          event.streams[0].getTracks().forEach((track: MediaStreamTrack) => {
+            remoteStream.addTrack(track);
+          });
+          
+          const joinerVid = document.querySelector(`#meetJoinerCam--${index}`) as HTMLVideoElement;
+          
+          if (joinerVid){
+            console.log(joinerVid,'joinerVid')
+            joinerVid.srcObject = remoteStream;
+          }
+            
+        };
+      }
+
       return (
         <MeetJoiner
           key={currentJoiner._id}
@@ -102,9 +133,11 @@ const MeetJoiners = ({
         />
       );
     } else {
-      return <></>;
+      return null;
     }
   });
+
+  console.log(joiners,'joiners')
 
   // if(currentUserData === null) return <></>;
 
@@ -120,11 +153,11 @@ const MeetJoiners = ({
         style={{
           //@ts-ignore
           "--grid-col": handleGrid(
-            meetJoinersIds.length > 0 ? meetJoinersIds.length : 2,
+            meetJoiners.length > 0 ? meetJoiners.length : 2,
             2
           ),
           "--grid-row": handleGrid(
-            meetJoinersIds.length > 0 ? meetJoinersIds.length : 2,
+            meetJoiners.length > 0 ? meetJoiners.length : 2,
             3
           ),
           // position:  ? 'absolute' : 'relative'
@@ -132,7 +165,7 @@ const MeetJoiners = ({
       >
         {joiners}
         <MeetJoiner
-          key={currentUserData._id ?? meetJoiners.length}
+          key={currentUserData._id ?? meetJoiners.length+1}
           creator={currentUserData.meetCreator || false}
           currentJoiner={currentUserData}
           currentIndex={meetJoiners.length}
@@ -146,7 +179,7 @@ const MeetJoiners = ({
         />
       </div>
 
-      <Caption />
+      {/* <Caption /> */}
     </div>
   );
 };

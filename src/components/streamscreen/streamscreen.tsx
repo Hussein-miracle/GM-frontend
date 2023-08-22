@@ -22,7 +22,7 @@ const StreamScreen = ({ handleLoadingShareStream, loadingShareStream }:ScreenInt
       shareRef.current.srcObject = screenStream;
       setTimeout(() => {
         handleLoadingShareStream(false);
-      }, 1500);
+      }, 500);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [screenStream]);

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { Socket } from "socket.io-client";
-
+import toast from 'react-hot-toast';
 
 import {
   setCurrentUser,
@@ -12,9 +12,9 @@ import {
 import { setLeaveMeetDetails,updateMeetingJoiners } from "../../reduxtoolkit/features/meet/meetSlice";
 
 import { manageDateTime } from "../../utils/helpers";
-import { DEFAULT_SETTINGS } from "../../utils/constants";
+import { DEFAULT_SETTINGS, SOCKET_EVENTS } from "../../utils/constants";
+import { UserSettings } from "../../utils/types";
 
-import MeetLogo from "../../assets/images/Google_Meet-Logo.svg";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import FeedbackOutlinedIcon from "@mui/icons-material/FeedbackOutlined";
 import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
@@ -22,6 +22,7 @@ import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import VideoCallOutlinedIcon from "@mui/icons-material/VideoCallOutlined";
 import KeyboardIcon from "@mui/icons-material/Keyboard";
 
+import MeetLogo from "../../assets/images/Google_Meet-Logo.svg";
 import { ReactComponent as AppIcon } from "../../assets/icons/apps.svg";
 
 import Carousel from "../../components/carousel/carousel";
@@ -29,12 +30,11 @@ import Input from "../../components/input/input";
 import  CreateMeet from '../../components/create-meet/create-meet';
 import LinkModal from "../../components/link-modal/link-modal";
 import  {CustomTip,HtmlTooltip} from  '../../components/UI/tooltips/tooltips';
-
-
 import Loaders, { Loader, LoadingText } from "../../components/UI/loaders/loaders";
 
+
+
 import "./home.styles.scss";
-import { UserSettings } from "../../utils/types";
 
 type HomeType =  {
   socket: Socket;
@@ -45,9 +45,9 @@ const { time, day, dateFormat } = manageDateTime();
 
 const Home = ({ socket }:HomeType) => {
   const dispatch = useDispatch();
-  const name = useSelector((state: any) => state.user.currentUser.name);
-  const navigator = useNavigate();
   const ref: any = useRef();
+  const name:string = useSelector((state: any) => state.user.currentUser.name);
+  const navigator = useNavigate();
   const [text, setText] = useState("");
   const [hovered, setHovered] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -74,14 +74,28 @@ const Home = ({ socket }:HomeType) => {
   };
 
   const initJoin = async (data: any) => {
-    socket.emit("join-meet", data);
-    socket.on("joined-meet", async (result:any) => {
+    socket.emit(SOCKET_EVENTS.JOIN_MEET, data);
+
+    socket.on(SOCKET_EVENTS.JOINED_MEET, async (result:any) => {
       console.log(result, "joined-meet data");
+      if(result.status === 404){
+        toast.error(`${result.message}`,{
+          duration:3500,
+        })
+
+        setLoading(false);
+
+        return;
+      }
       const meetData = result.meetData;
       const link = meetData.link;
       const user = result.joiner;
       const joiners = result.participants.participants;
+      toast.success(`JOINED MEET ${user.name}`,{
+        duration:1000,
+      })
       // console.log(joiners , 'joiners');
+
 
       const data = {
         link,
@@ -142,11 +156,13 @@ const Home = ({ socket }:HomeType) => {
     };
 
     // console.log('meetcreationData',data);
-    socket.emit("create-future-meet-link", data);
+    socket.emit(SOCKET_EVENTS.CREATE_FUTURE_MEET_LINK, data);
 
-    socket.on("future-meet-link-created", (result) => {
+    socket.on(SOCKET_EVENTS.FUTURE_MEET_LINK_CREATED, (result) => {
       console.log(result, "meet-link-creation result");
       const { link } = result;
+
+      
 
       setMeetLink(link);
       setShowfutureLink(true);
@@ -169,8 +185,9 @@ const Home = ({ socket }:HomeType) => {
 
     // console.log(data,'data sent to be for link')
 
-    socket.emit("create-meet-link", data);
-    socket.on("meet-link-created", (result) => {
+    socket.emit(SOCKET_EVENTS.CREATE_MEET_LINK, data);
+
+    socket.on(SOCKET_EVENTS.MEET_LINK_CREATED, (result) => {
       // console.log(result, "meet-link-creation result");
       const { creator, link } = result;
 

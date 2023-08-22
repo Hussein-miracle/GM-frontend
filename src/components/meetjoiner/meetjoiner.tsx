@@ -78,7 +78,7 @@ const MeetJoiner = (props: MeetJoinerProps) => {
         <Screen>
           <video
             ref={camRef}
-            id={`meetJoinerCam-${currentIndex}`}
+            id={`meetJoinerCam--${currentIndex}`}
             autoPlay
             playsInline
           ></video>

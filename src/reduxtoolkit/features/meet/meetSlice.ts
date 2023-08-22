@@ -22,7 +22,7 @@ const meetReducerSlice = createSlice({
   initialState:INITIAL_STATE,
   reducers: {
     setMainStream: (state, action) => {
-      console.log(action,'setStream action')
+      // console.log(action,'setStream action')
       state.mainStream = action.payload;
     },
     closeStreams: (state, _action) => {
@@ -46,6 +46,8 @@ const meetReducerSlice = createSlice({
     addMeetJoiner: (state, action) => {
       // const currentUser = store.getState().user?.currentUser;
       // console.log(state,'state');
+      console.log(action,'meetjoin action');
+      
 
       const meetJoiners = {...state.meetJoiners};
       const joiner = { ...action.payload };

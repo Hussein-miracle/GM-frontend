@@ -1,4 +1,4 @@
-import { createContext, useState, ReactNode, useReducer } from "react";
+import { createContext, useState, ReactNode, useReducer, useRef, useEffect } from "react";
 import { UserSettings, UserSettingsActions } from "../../utils/types";
 import { DEFAULT_SETTINGS } from "../../utils/constants";
 
@@ -7,7 +7,7 @@ type StreamContextInterface = {
   setContextStream: (stream: MediaStream) => void;
   setShareScreenStream: (stream: MediaStream) => void;
   shareScreenStream: MediaStream | null;
-  stopStreams: (stream: MediaStream) => void;
+  stopStreams: (stream: MediaStream) => any;
   settings: UserSettings;
   updateStreamSettings: (s: any) => void;
 };
@@ -42,7 +42,7 @@ const settingsReducer = (
   state: UserSettings,
   action: StreamActionType
 ): typeof INITIAL_SETTINGS_STATE => {
-  console.log(action,'action received')
+  // console.log(action,'action received')
   switch (action.type) {
 
     case UserSettingsActions.TOGGLE_PLAY_VOICE:
@@ -72,14 +72,16 @@ const settingsReducer = (
 };
 
 export const StreamContextProvider = ({ children }: Props) => {
-  // const streamPersist = useRef();
-  const [contextStream, setContextStream] = useState<MediaStream>(null!);
-  const [shareScreenStream, setShareScreenStream] =
-    useState<MediaStream | null>(null);
+  const streamPersist = useRef<MediaStream>(null!);
+  const {current:contextStreamPersisted} = streamPersist;
+  const [contextStream, setUpdateContextStream] = useState<MediaStream>(streamPersist.current ?? null!);
+  const [shareScreenStream, setShareScreenStream] = useState<MediaStream | null>(null);
   const [settings, dispatch] = useReducer(settingsReducer, DEFAULT_SETTINGS);
-  // const setMainStream = (streamData:any) =>  {
-  //     setStream(streamData);
-  // }
+
+  const setContextStream = (stream:MediaStream) => {
+    streamPersist.current = stream;
+    setUpdateContextStream(stream);
+  }
 
 
   const mutateVoice = (streamAction:boolean) => {
@@ -106,10 +108,11 @@ export const StreamContextProvider = ({ children }: Props) => {
     dispatch(payload);
   };
 
-  const stopStreams = async (stream: MediaStream) => {
+  const stopStreams = async (stream: MediaStream):Promise<Error | Boolean> => {
     try {
       stream.getAudioTracks()[0].stop();
       stream.getVideoTracks()[0].stop();
+      // setContextStream(stream);
     } catch (err) {
       console.error(err);
       const error = new Error();
@@ -120,6 +123,14 @@ export const StreamContextProvider = ({ children }: Props) => {
 
     return true;
   };
+
+
+  useEffect(() => {
+    if(contextStreamPersisted){
+      setUpdateContextStream(contextStreamPersisted)
+    }
+  },[contextStreamPersisted])
+  
   const val: StreamContextInterface = {
     contextStream,
     setContextStream,
