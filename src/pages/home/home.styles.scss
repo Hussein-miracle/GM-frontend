@@ -1,4 +1,4 @@
-@use 'sass:math';
+@use "sass:math";
 
 @mixin center {
   display: flex;
@@ -25,18 +25,25 @@
 
   height: 100%;
 
+  width: 100%;
   background-color: #fff;
   position: relative;
 
-  overflow-x:hidden;
+  overflow-x: hidden;
 
+  @media screen and (max-width: 640px) {
+    padding: 0.5rem;
+  }
+  // @media screen  and (max-width:6){
+
+  // }
   &__header {
     max-height: 3rem;
     // background-color:chartreuse;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    
+
     &--logo {
       // background-color: aqua;
 
@@ -94,6 +101,10 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+
+      @media screen and (max-width: 640px) {
+        display: none;
+      }
 
       .time-date {
         align-self: center;
@@ -197,24 +208,29 @@
 
   &__main {
     position: relative;
-    margin-top: .8rem;
+    margin-top: 0.8rem;
     height: 85%;
 
     padding-inline: 1rem;
 
-
     display: flex;
     // justify-content: space-between;
+    flex-direction: row;
     align-items: center;
     gap: 2rem;
     // flex-wrap: wrap;
 
-
     background-color: #fff;
     // background-color: cornflowerblue;
 
+    @media screen and (max-width: 768px) {
+      flex-direction: column;
+      height: fit-content;
+    }
 
-
+    @media screen and (max-width: 640px) {
+      padding-inline: 0;
+    }
     &--left {
       // background-color: #212121;
       padding-top: 32px;
@@ -222,6 +238,9 @@
       flex: 1;
       // max-width: 45vw;
       // flex-shrink: 200;
+      @media screen  and (max-width:640px){
+        padding-top: 16px;
+      }
 
       &__title {
         font-family: "Google Sans Display", Roboto, Arial, sans-serif;
@@ -232,12 +251,22 @@
         letter-spacing: 0;
         line-height: 3.5rem;
 
-        padding-bottom: 24px + math.div(16 , 2);
+        padding-bottom: 24px + math.div(16, 2);
 
         color: rgba(0, 0, 0, 0.87);
         text-align: left;
 
         max-width: 35rem;
+
+        @media screen and (max-width: 640px) {
+          font-size: 1.75rem;
+          font-weight: 400;
+
+          letter-spacing: 0;
+          line-height: 2.45rem;
+
+          padding-bottom: 24px;
+        }
       }
       &__sub {
         font-family: "Google Sans", Roboto, Arial, sans-serif;
@@ -253,17 +282,31 @@
 
         max-width: 30rem;
         padding-bottom: 3em;
+
+        
+    @media screen  and (max-width:640px){
+      padding-bottom: 1em;
+      
+      font-size: 1rem;
+    }
       }
 
       &__cta {
         position: relative;
         display: flex;
+        flex-direction: row;
         // justify-content: space-evenly;
         gap: 8px;
         height: 2.5rem;
-
+        
         // justify-content: space-between;
         align-items: center;
+        @media screen  and (max-width:640px){
+          flex-wrap: wrap;
+          flex-direction: column;
+          min-height: 2.5rem;
+          height: fit-content;
+        }
 
         .btn {
           &-create {
@@ -307,6 +350,7 @@
           background-color: #fff;
           width: 16rem;
           height: 100%;
+          min-height: 2.5rem;
           margin-left: 10px;
           border-radius: 4px;
           border: 1px solid #212121;
@@ -334,21 +378,27 @@
             outline: none;
             border: none;
             padding-inline: 4px;
+            
           }
         }
       }
     }
 
     &--right {
-      flex:1;
+      flex: 1;
       // background-color: coral;
       // height: 100%;
       // max-width: 45vw;
       // padding-top: 32px;
       padding-inline: 10px;
+
+      @media screen  and (max-width:640px){
+        // flex: auto;
+        // height: fit-content;
+        padding-inline: 0px;
+        margin-block-start: 18px;
+      }
     }
-
-
   }
 }
 
@@ -465,11 +515,8 @@
     // background-color: #212121;
   }
 
-  @media screen and (max-width:450px) {
+  @media screen and (max-width: 450px) {
     width: 20rem;
     height: 10rem;
   }
 }
-
-
-

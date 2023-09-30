@@ -1,15 +1,18 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { Socket } from "socket.io-client";
-import toast from 'react-hot-toast';
+import toast from "react-hot-toast";
 
 import {
   setCurrentUser,
   getName,
 } from "../../reduxtoolkit/features/user/userSlice";
 
-import { setLeaveMeetDetails,updateMeetingJoiners } from "../../reduxtoolkit/features/meet/meetSlice";
+import {
+  setLeaveMeetDetails,
+  updateMeetingJoiners,
+} from "../../reduxtoolkit/features/meet/meetSlice";
 
 import { manageDateTime } from "../../utils/helpers";
 import { DEFAULT_SETTINGS, SOCKET_EVENTS } from "../../utils/constants";
@@ -27,26 +30,26 @@ import { ReactComponent as AppIcon } from "../../assets/icons/apps.svg";
 
 import Carousel from "../../components/carousel/carousel";
 import Input from "../../components/input/input";
-import  CreateMeet from '../../components/create-meet/create-meet';
+import CreateMeet from "../../components/create-meet/create-meet";
 import LinkModal from "../../components/link-modal/link-modal";
-import  {CustomTip,HtmlTooltip} from  '../../components/UI/tooltips/tooltips';
-import Loaders, { Loader, LoadingText } from "../../components/UI/loaders/loaders";
-
-
+import { CustomTip, HtmlTooltip } from "../../components/UI/tooltips/tooltips";
+import Loaders, {
+  Loader,
+  LoadingText,
+} from "../../components/UI/loaders/loaders";
 
 import "./home.styles.scss";
 
-type HomeType =  {
+type HomeType = {
   socket: Socket;
-}
-
+};
 
 const { time, day, dateFormat } = manageDateTime();
 
-const Home = ({ socket }:HomeType) => {
+const Home = ({ socket }: HomeType) => {
   const dispatch = useDispatch();
   const ref: any = useRef();
-  const name:string = useSelector((state: any) => state.user.currentUser.name);
+  const currentUser = useSelector((state: any) => state.user.currentUser);
   const navigator = useNavigate();
   const [text, setText] = useState("");
   const [hovered, setHovered] = useState(false);
@@ -56,7 +59,7 @@ const Home = ({ socket }:HomeType) => {
   const [loading, setLoading] = useState(false);
   // const [disable, setDisable] = useState(false);
 
-  const handleChange = (e:React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value;
     setText(val);
   };
@@ -73,15 +76,15 @@ const Home = ({ socket }:HomeType) => {
     setShowfutureLink(!futureLink);
   };
 
-  const initJoin = async (data: any) => {
+  const initJoin =  useCallback(async (data: any) => {
     socket.emit(SOCKET_EVENTS.JOIN_MEET, data);
 
-    socket.on(SOCKET_EVENTS.JOINED_MEET, async (result:any) => {
+    socket.on(SOCKET_EVENTS.JOINED_MEET, async (result: any) => {
       console.log(result, "joined-meet data");
-      if(result.status === 404){
-        toast.error(`${result.message}`,{
-          duration:3500,
-        })
+      if (result.status === 404) {
+        toast.error(`${result.message}`, {
+          duration: 3500,
+        });
 
         setLoading(false);
 
@@ -91,32 +94,37 @@ const Home = ({ socket }:HomeType) => {
       const link = meetData.link;
       const user = result.joiner;
       const joiners = result.participants.participants;
-      toast.success(`JOINED MEET ${user.name}`,{
-        duration:1000,
-      })
+      toast.success(`JOINED MEET ${user.name}`, {
+        duration: 1000,
+      });
       // console.log(joiners , 'joiners');
-
 
       const data = {
         link,
         meetingId: result.currentMeetingId,
-        creator:user,
+        creator: user,
       };
-      
+
       dispatch(setCurrentUser(user));
-      
+
       dispatch(updateMeetingJoiners(joiners));
-      
+
       setLoading(false);
       dispatch(setLeaveMeetDetails(data));
       navigator(`/${link}`);
     });
-  };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  },[])
+  const handleClickJoin = useCallback(async () => {
+    if(!currentUser?.name){
+      dispatch(getName(true));
+      return;
+    } 
 
-  const handleClickJoin = async () => {
     let linkStr: string | string[] = "";
     const trimmedText = text.trim();
-    const checkHttp = trimmedText.startsWith("https://") || trimmedText.startsWith("http://");
+    const checkHttp =
+      trimmedText.startsWith("https://") || trimmedText.startsWith("http://");
     if (checkHttp) {
       // console.log('workdds')
       const link = text.split("/");
@@ -132,26 +140,26 @@ const Home = ({ socket }:HomeType) => {
     }
 
     const joinData = {
-      name,
+      name:currentUser.name,
       meetLink: linkStr,
-      settings:{...DEFAULT_SETTINGS},
+      settings: { ...DEFAULT_SETTINGS },
       meetCreator: false,
     };
 
     setLoading(true);
 
     await initJoin(joinData);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentUser?.name]);
 
-  };
-
-  const handleFutureMeetLink = () => {
-    const settings:UserSettings = {
-      ...DEFAULT_SETTINGS
+  const handleFutureMeetLink =  useCallback(() => {
+    const settings: UserSettings = {
+      ...DEFAULT_SETTINGS,
     };
 
     const data = {
       settings,
-      name,
+      name:currentUser.name,
       meetCreator: true,
     };
 
@@ -162,8 +170,6 @@ const Home = ({ socket }:HomeType) => {
       console.log(result, "meet-link-creation result");
       const { link } = result;
 
-      
-
       setMeetLink(link);
       setShowfutureLink(true);
       // const meetData = {
@@ -172,18 +178,26 @@ const Home = ({ socket }:HomeType) => {
       //   creator,
       // };
     });
-  };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  },[])
 
-  const handleInstantLink = async () => {
+  const handleInstantLink = useCallback( async () => {
+    console.log({name:currentUser.name});
+    
+    if(!currentUser?.name){
+      dispatch(getName(true));
+      return;
+    } 
+
     setLoading(true);
 
     const data = {
-      settings:{...DEFAULT_SETTINGS},
-      name,
+      settings: { ...DEFAULT_SETTINGS },
+      name:currentUser.name,
       meetCreator: true,
     };
 
-    // console.log(data,'data sent to be for link')
+    console.log(data,'data sent to be for link')
 
     socket.emit(SOCKET_EVENTS.CREATE_MEET_LINK, data);
 
@@ -196,19 +210,20 @@ const Home = ({ socket }:HomeType) => {
         meetingId: result.currentMeetingId,
         creator,
       };
-      
+
       dispatch(setLeaveMeetDetails(meetData));
       dispatch(setCurrentUser(creator));
 
       // const
 
-      console.log(link,'link')
+      console.log(link, "link");
 
       setLoading(false);
       navigator(`/${link}`);
     });
-  };
-
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  },[currentUser.name])
+  
   const handleCloseCreateModal = () => {
     setShowCreateModal(false);
   };
@@ -224,10 +239,10 @@ const Home = ({ socket }:HomeType) => {
   };
 
   useEffect(() => {
-    if (!name) {
+    if (!currentUser.name && currentUser?.name.length < 3) {
       dispatch(getName(true));
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -238,8 +253,10 @@ const Home = ({ socket }:HomeType) => {
         <LoadingText />
       </Loaders>
       <header className="home__header">
-
-        <div title="Low-Budget Google Meet" className="home__header--logo home-logo">
+        <div
+          title="Low-Budget Google Meet"
+          className="home__header--logo home-logo"
+        >
           <img
             src={MeetLogo}
             className="home__header--logo__img"
@@ -249,11 +266,9 @@ const Home = ({ socket }:HomeType) => {
           <span className="home__header--logo__title">Low-Budget Google</span>
 
           <span className="home__header--logo__text">Meet</span>
-
         </div>
 
         <div className="home__header--utilities">
-
           <div className="time-date">
             <span>{time}</span>
             <span className="dot"> &#183;</span>
@@ -293,8 +308,8 @@ const Home = ({ socket }:HomeType) => {
                 title={
                   <CustomTip
                     text={"Google Account"}
-                    name={name}
-                    email={`${name}@gmail.com?`}
+                    name={currentUser?.name ?? 'User'}
+                    email={`${currentUser?.name ?? 'user'}@gmail.com?`}
                   />
                 }
               >
@@ -304,9 +319,7 @@ const Home = ({ socket }:HomeType) => {
               </HtmlTooltip>
             </div>
           </div>
-
         </div>
-
       </header>
 
       <main className="home__main">
@@ -347,7 +360,8 @@ const Home = ({ socket }:HomeType) => {
               <span>New meeting</span>
             </button>
 
-            <label className="link-input" htmlFor="meetingLinkInput">
+
+<label className="link-input" htmlFor="meetingLinkInput">
               <KeyboardIcon />
               <input
                 value={text}
@@ -383,11 +397,9 @@ const Home = ({ socket }:HomeType) => {
         <div className="home__main--right">
           <Carousel />
         </div>
-
       </main>
     </div>
   );
 };
 
 export default Home;
-

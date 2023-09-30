@@ -9,11 +9,12 @@ import MainScreen from "./pages/mainscreen/mainscreen";
 import Home from "./pages/home/home";
 import StreamContextProvider from "./contexts/streamContext/streamContext";
 
-
 import "./App.css";
 
 // const socket = io(process.env.REACT_APP_BACKEND_PROD2_URL as string);
-export const socket = io(process.env.REACT_APP_BACKEND_DEV_URL as string, { withCredentials: true});
+export const socket = (function () {
+  return io(process.env.REACT_APP_BACKEND_DEV_URL as string);
+})();
 // * note: implement a notice for socket connection error
 
 // if(!socket.emit){
@@ -36,24 +37,24 @@ function App() {
   // }
 
   // useEffect(() => {
-    // if (connected) {
-    socket.on("connect", () => {
-      console.log(
-        "%c Connected  to Socket Backend ⚡🛡️🛡️⚡",
-        "background:yellow;color:black; padding:12px;border-radius:5px;"
-      );
-    });
+  // if (connected) {
+  socket.on("connect", () => {
+    console.log(
+      "%c Connected  to Socket Backend ⚡🛡️🛡️⚡",
+      "background:yellow;color:black; padding:12px;border-radius:5px;"
+    );
+  });
 
-    socket.on("connected", () => {
-      console.log(
-        "%c Connected  to Socket Backend ⚡..🛡️⚡",
-        "background:yellow;color:black; padding:12px;border-radius:5px;"
-      );
-    });
+  socket.on("connected", () => {
+    console.log(
+      "%c Connected  to Socket Backend ⚡..🛡️⚡",
+      "background:yellow;color:black; padding:12px;border-radius:5px;"
+    );
+  });
 
-    // window.addEventListener('beforeunload',handleCloseTab);
+  // window.addEventListener('beforeunload',handleCloseTab);
 
-    // }
+  // }
 
   //   return () => {
   //     // window.addEventListener('beforeunload',handleCloseTab);
@@ -67,8 +68,8 @@ function App() {
 
   return (
     <div className="App">
+      <Toaster gutter={20} />
       <StreamContextProvider>
-        <Toaster gutter={20}/>
         <Routes>
           <Route path="/" element={<Home socket={socket} />} />
           <Route

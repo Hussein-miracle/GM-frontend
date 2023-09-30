@@ -1,4 +1,4 @@
-export interface UserSettings{
+export type UserSettings = {
   share_screen:  boolean,
   play_voice: boolean,
   show_cam: boolean,

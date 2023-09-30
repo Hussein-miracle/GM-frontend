@@ -3,6 +3,7 @@ import React, {
   // RefObject,
   useContext,
   useEffect,
+  useMemo,
   useRef,
   // useContext,
   // SetStateAction,
@@ -37,7 +38,7 @@ const MeetJoiners = ({
   handleLoadingShareStream,
   loadingShareStream,
 }: MeetJoinerInterface) => {
-  const renderCount = useRef(0)
+  // const renderCount = useRef(0);
   const { contextStream, settings } = useContext(StreamContext);
   // let connected = false;
   const camRef = useRef<HTMLVideoElement>(
@@ -82,7 +83,8 @@ const MeetJoiners = ({
       // eslint-disable-next-line react-hooks/exhaustive-deps
       // connected = true;
     };
-  }, [currentUserData.settings.play_voice, setLoadingStream, contextStream]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentUserData.settings.play_voice, contextStream]);
 
   // const findScreenSharer = meetJoinersIds.find((element) => {
   //   const currentJoiner = meetJoiners[element];
@@ -95,49 +97,52 @@ const MeetJoiners = ({
   // }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars, array-callback-return
-  const joiners = meetJoiners.length <= 0  ? null : meetJoiners.map((meetJoiner: any, index: number) => {
-    const currentJoiner = meetJoiner;
-    console.log(currentJoiner._id,`currJoiner --- ${index}`)
+  const joiners = useMemo(() => {
+    return meetJoiners.map((meetJoiner: any, index: number) => {
+      const currentJoiner = meetJoiner;
+      console.log(currentJoiner._id, `currJoiner --- ${index}`);
 
-    if (currentJoiner._id !== currentUserData._id) {
-      const pc = currentJoiner?.peerConnection;
-      const remoteStream = new MediaStream();
-      if (pc) {
-        pc.ontrack = (event:any) => {
-          event.streams[0].getTracks().forEach((track: MediaStreamTrack) => {
-            remoteStream.addTrack(track);
-          });
-          
-          const joinerVid = document.querySelector(`#meetJoinerCam--${index}`) as HTMLVideoElement;
-          
-          if (joinerVid){
-            console.log(joinerVid,'joinerVid')
-            joinerVid.srcObject = remoteStream;
-          }
-            
-        };
+      if (currentJoiner._id !== currentUserData._id) {
+        const pc = currentJoiner?.peerConnection;
+        const remoteStream = new MediaStream();
+        if (pc) {
+          pc.ontrack = (event: any) => {
+            event.streams[0].getTracks().forEach((track: MediaStreamTrack) => {
+              remoteStream.addTrack(track);
+            });
+
+            const joinerVid = document.querySelector(
+              `#meetJoinerCam--${index}`
+            ) as HTMLVideoElement;
+
+            if (joinerVid) {
+              console.log(joinerVid, "joinerVid");
+              joinerVid.srcObject = remoteStream;
+            }
+          };
+        }
+
+        return (
+          <MeetJoiner
+            key={currentJoiner._id}
+            creator={meetJoiner.meetCreator || false}
+            currentUser={false}
+            load={false}
+            currentJoiner={meetJoiner}
+            currentIndex={index}
+            hideCam={currentJoiner.settings.share_screen === true}
+            camRef={null}
+            avatar={currentJoiner.settings.show_cam === true ? false : true}
+            voice={currentJoiner.settings.play_voice === true ? !false : !true}
+          />
+        );
+      } else {
+        return null;
       }
-
-      return (
-        <MeetJoiner
-          key={currentJoiner._id}
-          creator={meetJoiner.meetCreator || false}
-          currentUser={false}
-          load={false}
-          currentJoiner={meetJoiner}
-          currentIndex={index}
-          hideCam={currentJoiner.settings.share_screen === true}
-          camRef={null}
-          avatar={currentJoiner.settings.show_cam === true ? false : true}
-          voice={currentJoiner.settings.play_voice === true ? !false : !true}
-        />
-      );
-    } else {
-      return null;
-    }
-  });
-
-  console.log(joiners,'joiners')
+    });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [meetJoiners]);
+  console.log(joiners, "joiners");
 
   // if(currentUserData === null) return <></>;
 
@@ -165,15 +170,17 @@ const MeetJoiners = ({
       >
         {joiners}
         <MeetJoiner
-          key={currentUserData._id ?? meetJoiners.length+1}
+          key={currentUserData._id || meetJoiners.length}
           creator={currentUserData.meetCreator || false}
           currentJoiner={currentUserData}
-          currentIndex={meetJoiners.length}
-          hideCam={settings.share_screen === true}
+          currentIndex={currentUserData._id || meetJoiners.length}
+          hideCam={settings.share_screen === true || settings.show_cam}
           // hideCam={findScreenSharer && !settings.screen}
           load={loadingStream}
-          avatar={settings.show_cam === true ? false : true}
-          voice={settings.play_voice === true ? !false : !true}
+          // voice={settings.play_voice === true ? !false : !true}
+          // avatar={settings.show_cam === true ? false : true}
+          avatar={!settings.show_cam}
+          voice={settings.play_voice}
           camRef={camRef}
           currentUser={true}
         />

@@ -3,6 +3,8 @@ import React, {
   MutableRefObject,
   useEffect,
   LegacyRef,
+  useRef,
+  useContext,
   // useContext,
 } from "react";
 import { useSelector } from "react-redux";
@@ -17,6 +19,7 @@ import { JoinerLoader2 } from "../UI/loaders/loaders";
 import { randomColor } from "../../utils/helpers";
 // {currentIndex,curJoiner,hideVideo,camRef,showPhoto,currentUser}
 import "./meetjoiner.styles.scss";
+import { StreamContext } from "../../contexts/streamContext/streamContext";
 
 type MeetJoinerProps = {
   currentIndex: number | null;
@@ -35,20 +38,21 @@ type MeetJoinerProps = {
 
 
 const MeetJoiner = (props: MeetJoinerProps) => {
+
   const { creator, currentUser,camRef,avatar,hideCam,load,currentIndex,currentJoiner,voice
   } = props;
   
   const { name } = currentJoiner;
   // console.log(currentJoiner, "joiner");
-  const screenStream = useSelector((state: any) => state.meet.screenStream);
-  const [color, setColor] = useState("blue");
+  // const screenStream = useSelector((state: any) => state.meet.screenStream);
+  const color = useRef("blue");
 
   // const {joinerInitialSettings,userName,photoURLColor} = curJoiner;
 
   useEffect(() => {
     const genColor = randomColor();
-    setColor(genColor);
-  }, [screenStream]);
+    color.current = genColor;
+  }, []);
 
   return (
     <motion.div
@@ -76,12 +80,15 @@ const MeetJoiner = (props: MeetJoinerProps) => {
         <JoinerLoader2 load={load} />
       ) : (
         <Screen>
-          <video
+{  hideCam ?        <video
             ref={camRef}
             id={`meetJoinerCam--${currentIndex}`}
             autoPlay
             playsInline
           ></video>
+        
+       : <div className="vid-rep">hi</div> 
+        }
           <Tooltip title="Muted">
             <MicOffIcon
               className={`mic-off ${ voice === false ? "" : "hidden"}`}
@@ -90,7 +97,7 @@ const MeetJoiner = (props: MeetJoinerProps) => {
           <div
             className={`avatar ${avatar === false ? "hidden" : ""}`}
             style={{
-              backgroundColor: color,
+              backgroundColor: color.current,
             }}
           >
             {name[0].toUpperCase()}

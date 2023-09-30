@@ -5,8 +5,9 @@ import { DEFAULT_SETTINGS } from "../../../utils/constants";
 
 const INITIAL_STATE = {
   currentUser: {
-    name: "", _id: null, 
-    settings:{...DEFAULT_SETTINGS}
+    name: "", 
+    _id: null,
+    settings: { ...DEFAULT_SETTINGS }
   },
   askName: true,
 };
@@ -31,24 +32,28 @@ const userReducerSlice = createSlice({
       state.currentUser = user;
     },
     setUserName: (state, action) => {
+      console.log({ name:action.payload });
+
       const user = { ...state.currentUser, name: action.payload };
+      console.log({user});
+      
       state.currentUser = user;
     },
-    getName: (state, action) => {
+    getName: (state, action:{payload:boolean}) => {
       state.askName = action.payload;
     },
     updateCurrentUserSettings: (state, action) => {
       const payload = action.payload;
-      console.log(payload , 'paylod settings');
+      console.log(payload, 'paylod settings');
       const currentUser = state.currentUser;
       const settings = { ...currentUser.settings, ...payload };
       // @ts-ignore
-      console.log(settings,'new settingsPayload');
+      console.log(settings, 'new settingsPayload');
       const updatedCurrentUser = {
         ...currentUser,
         settings,
       };
-      console.log(updatedCurrentUser,'updated current user')
+      console.log(updatedCurrentUser, 'updated current user')
       state.currentUser = updatedCurrentUser;
 
       const userId = currentUser._id;

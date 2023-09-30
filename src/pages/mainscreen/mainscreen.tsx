@@ -5,6 +5,7 @@ import React, {
   useContext,
   // useCallback,
   useRef,
+  useCallback,
 } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams, Navigate } from "react-router-dom";
@@ -45,15 +46,13 @@ import { SessionDataType, UserSettings } from "../../utils/types";
 
 import "./mainscreen.styles.scss";
 import toast from "react-hot-toast";
+import { GoogleLoader } from "../../components/UI/loaders/loaders";
 
 interface ScreenInterface {
   socket: Socket;
 }
 
 const MainScreen = ({ socket }: ScreenInterface) => {
-  const peerConnectionInited = useRef(false);
-  // let connected = false;
-  // const navigate = useNavigate();/
   const { meetingLink } = useParams();
   const dispatch = useDispatch();
   const {
@@ -78,11 +77,12 @@ const MainScreen = ({ socket }: ScreenInterface) => {
     setLoadingShareStream(value);
   };
 
-  const handleShareScreenEnd = () => {
+  const handleShareScreenEnd = useCallback(() => {
     dispatch(setShowStream(false));
     dispatch(updateCurrentUserSettings({ ...settings, share_screen: false }));
-  };
-  const handleShareScreenStart = async () => {
+  },[])
+
+  const handleShareScreenStart = useCallback( async () => {
     dispatch(setShowStream(true));
     setLoadingShareStream(true);
     try {
@@ -98,39 +98,40 @@ const MainScreen = ({ socket }: ScreenInterface) => {
       dispatch(setShowStream(false));
       console.error(e);
     }
-  };
+  },[])
 
-  const init = async () => {
-    setLoadingStream(true);
-    const stream = await navigator.mediaDevices.getUserMedia(MEDIA_CONTRAINTS);
-    //console.log(stream,'stream from source')
-    stream.getAudioTracks()[0].enabled = settings.play_voice;
-    stream.getVideoTracks()[0].enabled = settings.show_cam;
-    dispatch(setMainStream(stream));
-    setContextStream(stream);
+  const init = useCallback(
+    async () => {
+      setLoadingStream(true);
+      const stream = await navigator.mediaDevices.getUserMedia(MEDIA_CONTRAINTS);
+      //console.log(stream,'stream from source')
+      stream.getAudioTracks()[0].enabled = settings.play_voice;
+      stream.getVideoTracks()[0].enabled = settings.show_cam;
+      dispatch(setMainStream(stream));
+      setContextStream(stream);
+  
+      socket.on(SOCKET_EVENTS.UPDATE_JOINERS, (data) => {
+        console.log("data update", data);
+        const link = data.meetLink;
+        // console.log('link',link);
+        // console.log('link meetif',meetingId);
+        // const currMeetId = data.currentMeetId;
+        const joiners = data.joiners;
+        if (meetingLink === link) {
+          dispatch(updateMeetingJoiners(joiners));
+          console.log(joiners , 'update joiners');
+        }
+      });
+  
+      handlePeerConnection();
+  
+      setLoadingStream(false);
+    },[]
+  )
 
-    socket.on(SOCKET_EVENTS.UPDATE_JOINERS, (data) => {
-      console.log("data update", data);
-      const link = data.meetLink;
-      // console.log('link',link);
-      // console.log('link meetif',meetingId);
-      // const currMeetId = data.currentMeetId;
-      const joiners = data.joiners;
-      if (meetingLink === link) {
-        dispatch(updateMeetingJoiners(joiners));
-      }
-      // console.log(joiners , 'update joiners');
-    });
-
-    handlePeerConnection();
-
-    setLoadingStream(false);
-  };
-
-
-  function handleOnIceCandidate(iceEvent: RTCPeerConnectionIceEvent) {
+  const handleOnIceCandidate = useCallback((iceEvent: RTCPeerConnectionIceEvent) => {
     if (iceEvent.candidate) {
-      console.log({iceEvent})
+      console.log({ iceEvent });
       console.log("Sending ice  iceEvent", iceEvent);
       console.log("Sending ice candidate", iceEvent.candidate);
 
@@ -156,11 +157,10 @@ const MainScreen = ({ socket }: ScreenInterface) => {
       // };
 
       // socket.emit(SOCKET_EVENTS.CANDIDATE, candidateData);
-
     }
-  }
+  },[])
 
-  function handleOnTrackEvent(event: any) {
+  const handleOnTrackEvent = useCallback((event: any) => {
     if (!mainStream) {
       toast.error(APP_ERRORS.MEDIASTREAM_NOT_YET_AVAILABLE, {
         duration: 5000,
@@ -170,10 +170,10 @@ const MainScreen = ({ socket }: ScreenInterface) => {
     // remoteVideo.srcObject = event.streams[0];
     // remoteVideoStream = event.streams[0];
 
-    console.log(event,'handleOnTrackEvent data')
-    const remoteStream =  event.streams[0];
+    console.log(event, "handleOnTrackEvent data");
+    const remoteStream = event.streams[0];
 
-    console.log({remoteStream},'remoteStream handleOnTrackEvent')
+    console.log({ remoteStream }, "remoteStream handleOnTrackEvent");
     // const remoteStream = new MediaStream();
 
     // const eventAudioStream = mainStream.getAudioTracks()[0];
@@ -181,10 +181,8 @@ const MainScreen = ({ socket }: ScreenInterface) => {
     // const eventVideoStream = mainStream.getVideoTracks()[0];
     // remoteStream.addTrack(eventVideoStream);
 
-
     // socket.emit('c')
-
-  }
+  },[])
 
   const handleInitPeerConnection = async function () {
     if (!mainStream) {
@@ -198,9 +196,9 @@ const MainScreen = ({ socket }: ScreenInterface) => {
       return;
     }
 
-    if (peerConnectionInited.current === true) {
-      return;
-    }
+    // if (peerConnectionInited.current === true) {
+    //   return;
+    // }
     //  here i create an instance of RTCPeerConnection which takes in an argument,the argument being an THE ICESERVERS we want to use;
     // const webrtcPeerConnection = new RTCPeerConnection(ICESERVERS_1);
     const webrtcPeerConnection = new RTCPeerConnection(ICESERVERS);
@@ -237,100 +235,111 @@ const MainScreen = ({ socket }: ScreenInterface) => {
 
     socket.emit(SOCKET_EVENTS.OFFER, offerData);
 
-    socket.on(SOCKET_EVENTS.ANSWER_CREATED, async (event:SessionDataType) => {
-      const remoteDescription = new RTCSessionDescription(event.sessionDescription);
+    socket.on(SOCKET_EVENTS.ANSWER_CREATED, async (event: SessionDataType) => {
+      const remoteDescription = new RTCSessionDescription(
+        event.sessionDescription
+      );
       await webrtcPeerConnection.setRemoteDescription(remoteDescription);
     });
 
-    socket.on(SOCKET_EVENTS.CANDIDATE_CREATED, async (icecandidateEvent:any) => {
-      const candidate = {
-        sdpMLineIndex:icecandidateEvent.label,
-        candidate:icecandidateEvent.candidate,
-        sdpMid:icecandidateEvent.id,
+    socket.on(
+      SOCKET_EVENTS.CANDIDATE_CREATED,
+      async (icecandidateEvent: any) => {
+        const candidate = {
+          sdpMLineIndex: icecandidateEvent.label,
+          candidate: icecandidateEvent.candidate,
+          sdpMid: icecandidateEvent.id,
+        };
+
+        const icecandidate = new RTCIceCandidate(candidate);
+
+        await webrtcPeerConnection.addIceCandidate(icecandidate);
+      }
+    );
+  }
+ 
+  // }, [mainStream]);
+
+
+
+  const handleJoinPeerConnection = useCallback(
+    async (offerDetails: SessionDataType) => {
+      if (!mainStream) {
+        console.log(
+          mainStream,
+          "mainStream not available handleJoinPeerConnection"
+        );
+        toast.error(APP_ERRORS.MEDIASTREAM_NOT_YET_AVAILABLE, {
+          duration: 5000,
+        });
+        return;
       }
 
-      const icecandidate = new RTCIceCandidate(candidate);
-
-      await webrtcPeerConnection.addIceCandidate(icecandidate)
-    })
-  
-    peerConnectionInited.current = true;
-  };
-
-  const handleJoinPeerConnection = async (offerDetails: SessionDataType) => {
-    if (!mainStream) {
       console.log(
-        mainStream,
-        "mainStream not available handleJoinPeerConnection"
+        `%c ${SOCKET_EVENTS.OFFER_CREATED} > INSIDE THE CALLBACK`,
+        "background:black;color:white;padding:8px;border-radius:10px;"
       );
-      toast.error(APP_ERRORS.MEDIASTREAM_NOT_YET_AVAILABLE, {
-        duration: 5000,
-      });
-      return;
-    }
+      // if (peerConnectionInited.current === true) {
+      //   return;
+      // }
 
-    console.log(
-      `%c ${SOCKET_EVENTS.OFFER_CREATED} > INSIDE THE CALLBACK`,
-      "background:black;color:white;padding:8px;border-radius:10px;"
-    );
-    if (peerConnectionInited.current === true) {
-      return;
-    }
+      console.log(
+        `%c ${SOCKET_EVENTS.OFFER_CREATED} > CB INITTED!!! LET'S FUCKOING GO`,
+        "background:green;color:white;padding:8px;border-radius:10px;"
+      );
+      // const {sessionDescription:} = offerDetails;
+      //  here i create an instance of RTCPeerConnection which takes in an argument,the argument being an THE ICESERVERS we want to use;
+      // const webrtcPeerConnection = new RTCPeerConnection(ICESERVERS_1);
+      const webrtcPeerConnection = new RTCPeerConnection(ICESERVERS);
 
-    console.log(
-      `%c ${SOCKET_EVENTS.OFFER_CREATED} > CB INITTED!!! LET'S FUCKOING GO`,
-      "background:green;color:white;padding:8px;border-radius:10px;"
-    );
-    // const {sessionDescription:} = offerDetails;
-    //  here i create an instance of RTCPeerConnection which takes in an argument,the argument being an THE ICESERVERS we want to use;
-    // const webrtcPeerConnection = new RTCPeerConnection(ICESERVERS_1);
-    const webrtcPeerConnection = new RTCPeerConnection(ICESERVERS);
+      // // we assign a function that handles what should happen natively if there's an icecandidate event
+      // webrtcPeerConnection.onicecandidate = handleOnIceCandidate;
 
-    // // we assign a function that handles what should happen natively if there's an icecandidate event
-    // webrtcPeerConnection.onicecandidate = handleOnIceCandidate;
+      // // we assign a function that handles what should happen natively if there's a track event
+      // webrtcPeerConnection.ontrack = handleOnTrackEvent;
 
-    // // we assign a function that handles what should happen natively if there's a track event
-    // webrtcPeerConnection.ontrack = handleOnTrackEvent;
+      // we add the first track to the rtcpeerConnection :-> audio
+      const audioTrack = mainStream.getAudioTracks()[0];
+      webrtcPeerConnection.addTrack(audioTrack, mainStream);
 
-    // we add the first track to the rtcpeerConnection :-> audio
-    const audioTrack = mainStream.getAudioTracks()[0];
-    webrtcPeerConnection.addTrack(audioTrack, mainStream);
+      // we add the second track to the rtcpeerConnection :-> video
+      const videoTrack = mainStream.getVideoTracks()[0];
+      webrtcPeerConnection.addTrack(videoTrack, mainStream);
 
-    // we add the second track to the rtcpeerConnection :-> video
-    const videoTrack = mainStream.getVideoTracks()[0];
-    webrtcPeerConnection.addTrack(videoTrack, mainStream);
+      //we receive the remote Description
+      const remoteSessionDetails = {
+        type: offerDetails.sessionDescription.type,
+        sdp: offerDetails.sessionDescription.sdp,
+      };
+      const remoteDescription = new RTCSessionDescription(remoteSessionDetails);
 
-    //we receive the remote Description
-    const remoteSessionDetails = {
-      type: offerDetails.sessionDescription.type,
-      sdp: offerDetails.sessionDescription.sdp,
-    };
-    const remoteDescription = new RTCSessionDescription(remoteSessionDetails);
+      webrtcPeerConnection.setRemoteDescription(remoteDescription);
 
-    webrtcPeerConnection.setRemoteDescription(remoteDescription);
+      //we create an answer event which return us the sessiondescription
 
-    //we create an answer event which return us the sessiondescription
+      const sessionDescription = await webrtcPeerConnection.createAnswer();
+      webrtcPeerConnection.setLocalDescription(sessionDescription);
 
-    const sessionDescription = await webrtcPeerConnection.createAnswer();
-    webrtcPeerConnection.setLocalDescription(sessionDescription);
+      const answerData = {
+        sessionDescription,
+        meeting: {
+          meetingLink,
+          ...meetDetails,
+        },
+        userId: currentUser._id,
+      };
 
-    const answerData = {
-      sessionDescription,
-      meeting: {
-        meetingLink,
-        ...meetDetails,
-      },
-      userId: currentUser._id,
-    };
+      socket.emit(SOCKET_EVENTS.ANSWER, answerData);
 
-    socket.emit(SOCKET_EVENTS.ANSWER, answerData);
+      // peerConnectionInited.current = true;
+    },
+    [mainStream]
+  );
 
-    peerConnectionInited.current = true;
-  };
+  const handlePeerConnection = useCallback(() => {
+    console.log({ currentUser });
+    if (currentUser.meetCreated.trim() !== meetingLink?.trim()  && meetingLink) {
 
-
-  function handlePeerConnection() {
-    if (currentUser?.meetCreated && currentUser.meetCreated !== meetingLink) {
       socket.emit(SOCKET_EVENTS.READY_FOR_PEERCONNECTION, {
         user: currentUser,
         meeting: {
@@ -340,6 +349,11 @@ const MainScreen = ({ socket }: ScreenInterface) => {
         userId: currentUser._id,
       });
 
+      console.log(
+        `%c ${SOCKET_EVENTS.READY_FOR_PEERCONNECTION} EMITTER CALLED BY ${currentUser.name} `,
+        "background:black;color:white;padding:4px;"
+      );
+
       socket.on(SOCKET_EVENTS.OFFER_CREATED, async (offerData) => {
         console.log(
           `%c ${SOCKET_EVENTS.OFFER_CREATED} LISTENING CALLED `,
@@ -347,13 +361,13 @@ const MainScreen = ({ socket }: ScreenInterface) => {
         );
         await handleJoinPeerConnection(offerData);
       });
-    } else{
+    } else {
       socket.on(
         SOCKET_EVENTS.CLIENTS_READY_FOR_PEERCONNECTION,
         handleInitPeerConnection
       );
     }
-  }
+  }, []);
 
   useEffect(() => {
     if (mainStream?.active) {
@@ -382,7 +396,7 @@ const MainScreen = ({ socket }: ScreenInterface) => {
   }
 
   if (!mainStream) {
-    return null;
+    return <GoogleLoader />;
   }
 
   return (

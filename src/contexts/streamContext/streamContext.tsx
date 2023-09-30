@@ -1,4 +1,13 @@
-import { createContext, useState, ReactNode, useReducer, useRef, useEffect } from "react";
+/* eslint-disable react-hooks/exhaustive-deps */
+import {
+  createContext,
+  useState,
+  ReactNode,
+  useReducer,
+  useRef,
+  useEffect,
+  useCallback,
+} from "react";
 import { UserSettings, UserSettingsActions } from "../../utils/types";
 import { DEFAULT_SETTINGS } from "../../utils/constants";
 
@@ -19,7 +28,7 @@ const initialContextState: StreamContextInterface = {
   setShareScreenStream: (stream: MediaStream) => void {},
   stopStreams: (stream: MediaStream) => {},
   settings: { ...DEFAULT_SETTINGS },
-  updateStreamSettings:(s:StreamActionType) =>  {},
+  updateStreamSettings: (s: StreamActionType) => {},
 };
 
 type Props = {
@@ -29,10 +38,10 @@ type Props = {
 export const StreamContext =
   createContext<StreamContextInterface>(initialContextState);
 
-interface StreamActionType {
+type StreamActionType = {
   type: UserSettingsActions;
   payload: boolean;
-}
+};
 
 const INITIAL_SETTINGS_STATE: UserSettings = {
   ...DEFAULT_SETTINGS,
@@ -44,13 +53,14 @@ const settingsReducer = (
 ): typeof INITIAL_SETTINGS_STATE => {
   // console.log(action,'action received')
   switch (action.type) {
-
     case UserSettingsActions.TOGGLE_PLAY_VOICE:
       return {
         ...state,
         play_voice: action.payload,
       };
     case UserSettingsActions.TOGGLE_SHOW_CAM:
+      console.log("tged::", UserSettingsActions.TOGGLE_SHOW_CAM);
+
       return {
         ...state,
         show_cam: action.payload,
@@ -73,42 +83,53 @@ const settingsReducer = (
 
 export const StreamContextProvider = ({ children }: Props) => {
   const streamPersist = useRef<MediaStream>(null!);
-  const {current:contextStreamPersisted} = streamPersist;
-  const [contextStream, setUpdateContextStream] = useState<MediaStream>(streamPersist.current ?? null!);
-  const [shareScreenStream, setShareScreenStream] = useState<MediaStream | null>(null);
-  const [settings, dispatch] = useReducer(settingsReducer, DEFAULT_SETTINGS);
+  const { current: contextStreamPersisted } = streamPersist;
+  const [contextStream, setUpdateContextStream] = useState<MediaStream | null>(
+    null
+  );
+  const [shareScreenStream, setShareScreenStream] =
+    useState<MediaStream | null>(null);
+  const [settings, dispatch] = useReducer(settingsReducer, INITIAL_SETTINGS_STATE);
 
-  const setContextStream = (stream:MediaStream) => {
+  const setContextStream = useCallback((stream: MediaStream) => {
     streamPersist.current = stream;
     setUpdateContextStream(stream);
-  }
+  }, [contextStream]);
 
+  const mutateVoice = useCallback(
+    (streamAction: boolean) => {
+      if (!contextStream) return;
+      // contextStream.getAudioTracks()[0].enabled = streamAction;
+    },
+    [contextStream]
+  );
 
-  const mutateVoice = (streamAction:boolean) => {
-    contextStream.getAudioTracks()[0].enabled = streamAction;
-  }
-  const mutateCam = (streamAction:boolean) => {
-    contextStream.getVideoTracks()[0].enabled = streamAction;
-  }
+  const mutateCam = useCallback(
+    (streamAction: boolean) => {
+      if (!contextStream) return;
+      // contextStream.getVideoTracks()[0].enabled = streamAction;
+    },
+    [contextStream]
+  );
 
+  const updateStreamSettings = useCallback(
+    (streamAction: StreamActionType) => {
+      // console.log(payload,'recedd')
 
+      if (streamAction.type === UserSettingsActions.TOGGLE_PLAY_VOICE) {
+        mutateVoice(streamAction.payload);
+      }
 
-  const updateStreamSettings = (payload: StreamActionType) => {
+      if (streamAction.type === UserSettingsActions.TOGGLE_SHOW_CAM) {
+        mutateCam(streamAction.payload);
+      }
 
-    // console.log(payload,'recedd')
+      dispatch(streamAction);
+    },
+    [dispatch]
+  );
 
-    if(payload.type === UserSettingsActions.TOGGLE_PLAY_VOICE){
-      mutateVoice(payload.payload)
-    }
-
-    if(payload.type === UserSettingsActions.TOGGLE_SHOW_CAM){
-      mutateCam(payload.payload)
-    }
-
-    dispatch(payload);
-  };
-
-  const stopStreams = async (stream: MediaStream):Promise<Error | Boolean> => {
+  const stopStreams = async (stream: MediaStream): Promise<Error | Boolean> => {
     try {
       stream.getAudioTracks()[0].stop();
       stream.getVideoTracks()[0].stop();
@@ -118,19 +139,18 @@ export const StreamContextProvider = ({ children }: Props) => {
       const error = new Error();
       error.message = "Unable to stop streams";
       // error.status = 403;
-      return error;
+      throw error;
     }
 
     return true;
   };
 
-
   useEffect(() => {
-    if(contextStreamPersisted){
-      setUpdateContextStream(contextStreamPersisted)
+    if (contextStreamPersisted) {
+      setUpdateContextStream(contextStreamPersisted);
     }
-  },[contextStreamPersisted])
-  
+  }, [contextStreamPersisted]);
+
   const val: StreamContextInterface = {
     contextStream,
     setContextStream,

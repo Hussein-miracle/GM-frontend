@@ -36,15 +36,21 @@ const Controls = ({ socket, handleShareScreen }: ControlsInterface) => {
   const {
     contextStream: stream,
     updateStreamSettings,
-    settings: streamSettings,
+    settings: {
+      play_voice: voice,
+      show_cam: cam,
+      show_caption: caption,
+      share_screen: screen,
+    },
+    // settings: streamSettings,
     stopStreams,
   } = useContext(StreamContext);
-  const {
-    play_voice: voice,
-    show_cam: cam,
-    show_caption: caption,
-    share_screen: screen,
-  } = streamSettings;
+  // const {
+  //   play_voice: voice,
+  //   show_cam: cam,
+  //   show_caption: caption,
+  //   share_screen: screen,
+  // } = streamSettings;
   // const currentUser = useSelector((state: any) => state.user.currentUser);
   const settings: UserSettings = useSelector(
     (state: any) => state.user.currentUser.settings
@@ -78,7 +84,7 @@ const Controls = ({ socket, handleShareScreen }: ControlsInterface) => {
     if (stream) {
       // console.log(stream, "stream in cam click");
       // dispatch(updateCurrentUserSettings({show_cam: !cam }));
-      // stream.getVideoTracks()[0].enabled = !cam;/
+      stream.getVideoTracks()[0].enabled = !cam;
       updateStreamSettings({
         type: UserSettingsActions.TOGGLE_SHOW_CAM,
         payload: !cam,

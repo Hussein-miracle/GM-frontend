@@ -12,9 +12,17 @@
     min-width: 20rem;
     height: 20rem;
     object-fit: cover;
+
+    @media screen  and (max-width:640px){
+      min-width: 15rem;
+      height: 15rem;
+    }
   }
 
   h3{
     margin-block: 10px;
+    @media screen  and (max-width:640px){
+      margin-block: 6px;
+    }
   }
 }

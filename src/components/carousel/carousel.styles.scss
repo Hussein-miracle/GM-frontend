@@ -28,6 +28,10 @@
   height: 100%;
   position: relative;
 
+  @media screen  and (max-width:640px){
+    padding-inline: 10px;
+  }
+
   &__btn{
     position: absolute;
     top: 50%;
@@ -52,12 +56,21 @@
   .right{
     // transform: translateX(-3rem);
     right: 0;
+
+    @media screen  and (max-width:640px){
+      right: 8px;
+      transform: translateY(-100%);
+    }
   }
 
   .left{
       // transform: translateX(3rem);
       left: 0;
   
+      @media screen  and (max-width:640px){
+        left: 8px;
+        transform: translateY(-100%);
+      }
   }
 
   &__main{

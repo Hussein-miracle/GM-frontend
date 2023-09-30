@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, ChangeEvent } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Tooltip } from "@mui/material";
 import {
@@ -15,18 +15,20 @@ const Input = () => {
   const askname = useSelector((state: any) => state.user.askName);
   const [username, setName] = useState("");
 
-  const handleChange = (e: any) => {
-    setName(e.target.value);
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const stringText = e.target.value;
+    console.log({stringText});
+    setName(stringText);
   };
 
   const handleSubmit = () => {
     dispatch(setUserName(username));
     dispatch(getName(false));
-    setName("");
+    // setName("");
   };
 
   // @ts-ignore
-  const handleEnter = (e) => {
+  const handleEnter = (e:MouseEvent<HTMLButtonElement>) => {
     // console.log(e.key,'key pressed');
     if (e.key === "Enter") {
       // console.log("gboriwole");
@@ -68,11 +70,15 @@ const Input = () => {
 
           <div className="input-container">
             {/* ⚡✨ */}
-            <label htmlFor="input-name">What's the name ⚡⚡⚡?</label>
+            <label htmlFor="input-name">What's the voyager's<span className="" style={{
+              color:'black',
+              fontSize:10,
+              verticalAlign:'middle',
+              marginInline:2
+            }}>(you)</span> name?</label>
             <input
               className="input"
               type="text"
-              onKeyDown={handleEnter}
               ref={inputRef}
               value={username}
               id="input-name"
@@ -83,11 +89,11 @@ const Input = () => {
               onClick={handleSubmit}
               disabled={username.length < 3}
               style={{
-                cursor:
-                  username.length < 3 ? "not-allowed" : "pointer",
+                cursor:username.length < 3 ? "not-allowed" : "pointer",
+                opacity: username.length < 3 ? 0.58 : 1
               }}
             >
-              Ok
+              OK
             </button>
             <div className="hint">This is so you don't have to go through the stress of signing up or in</div>
             <div className="hint">Your name should be at least 3 letter word</div>
