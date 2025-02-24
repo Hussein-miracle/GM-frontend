@@ -12,9 +12,8 @@ A modern Google meet clone built with React, focusing on replicating core  funct
 
 ## Features
 
-- Email composition and sending
+- Video conferencing
 - Inbox management
-- Email categorization (Primary, Social, Promotions)
 - Responsive design
 - Material UI components
 - Redux state management
